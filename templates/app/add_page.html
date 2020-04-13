@@ -1,0 +1,123 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/add_page.css' %}">
+
+<div class="container mt-5 mb-5">
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ formset_page.management_form }}
+        {{ formset_location.management_form }}
+
+        <div id="card-field" class="container-fluid mt-3">
+
+            <h3 class="text-center mb-2">Form Tambah Halaman
+                <span class="btn-group float-right">
+                    <a href="{% url 'app:add_page' %}">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </a>
+                </span>
+                <span class="btn-group float-right">
+                    <a href="{% url 'app:page' %}" style="color: white; text-decoration: none;">
+                        <button type="button" class="btn btn-secondary mr-2">
+                            batal
+                        </button>
+                    </a>
+                </span>
+            </h3>
+
+            <hr>
+
+            <div class="container-fluid mt-5 mb-5">
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="{{ form_application.names.id_for_label }}">{{ form_application.names.label }}</label>
+                    <div class="col-sm-4">
+                        {{ form_application.names }}
+                    </div>
+                </div>
+                
+                {% for page in formset_page %}
+                    <fieldset class="page-border">
+
+                        <legend class="page-border">Halaman ke-1</legend>
+
+                        <div class="container">
+
+                            <div class="form-group row mb-4">
+                                <label class="col-sm-2 col-form-label"
+                                    for="{{ page.name.id_for_label }}">{{ page.name.label }}</label>
+                                <div class="col-sm-10">{{ page.name }}</div>
+                            </div>
+
+                            {% for location in formset_location %}
+                            <div class="location-div ml-5">
+
+                                <div class="form-group row mb-0">
+                                    <div class="col-sm-12">
+                                        <strong>
+                                            <label class="radio-inline mr-2" for="{{ location.is_slider.id_for_label }}" style="color: #007bff;">{{ location.is_slider.label }}</label>
+                                            {% for option in location.is_slider %}
+                                            <label for="radio-inline" style="color: #007bff;">
+                                                {{ option }}
+                                            </label>
+                                            {% endfor %}
+                                        </strong>
+                                    </div>    
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label" for="{{ location.name.id_for_label }}">{{ location.name.label }}</label>
+                                    <div class="col-sm-9">{{ location.name }}</div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label mr-3" for="{{ location.width.id_for_label}}">{{ location.width.label }}</label>
+                                    {{ location.width }}
+
+                                    <label class="mr-2 ml-2" for="{{ form_banner.height.id_for_label}}">{{ location.height.label }}</label>
+                                    {{ location.height }}            
+                                </div>     
+
+                            </div>
+                            {% endfor %}
+
+                            <button id="id_page-tambah-0" type="button" class="btn btn-sm btn-primary float-right">Tambah Lokasi</button>
+                            
+                        </div>
+                        
+                    </fieldset>
+                {% endfor %}
+                
+                <div class="container mb-5">
+                    <div class="form-group row float-right">
+                        <button type="button" class="btn btn-primary" onclick="clonePage('fieldset.page-border:last');">Tambah Halaman</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <img id="previewImg" src="" style="width: 100%; max-width: 800px;">
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/add_page.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+{% endblock content %}  

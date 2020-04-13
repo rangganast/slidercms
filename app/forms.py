@@ -1,0 +1,98 @@
+from django import forms
+from .models import Application, Page, Location, Banner, Installation
+from django.forms import modelformset_factory
+from django.utils.translation import ugettext_lazy as _
+
+class ApplicationForm(forms.ModelForm):
+    choices = tuple(Application.objects.defer("name").values_list())
+
+    names = forms.ChoiceField(choices=choices, widget=forms.Select(attrs={'class' : 'custom-select'}), label='Nama Aplikasi')
+
+    class Meta:
+        model = Application
+        fields = ['names']
+
+class PageForm(forms.ModelForm):
+    class Meta:
+        model = Page
+        fields = ['name']
+        labels = {
+            'name' : 'Nama Halaman',
+        }
+        widgets = {
+            'name' : forms.TextInput(attrs={'class' : 'form-control'})
+        }
+
+PageFormSet = modelformset_factory(Page, form=PageForm, extra=1, can_delete=True)
+
+class LocationForm(forms.ModelForm):
+    choices = [
+        (True, 'Ya'),
+        (False, 'Tidak')
+    ]
+
+    is_slider = forms.CharField(label='Apakah lokasi pemasangan banner berupa "Slider"?', widget=forms.RadioSelect(choices=choices, attrs={'class' : 'ml-2'}))
+
+    class Meta:
+        model = Location
+        fields = ['is_slider', 'name', 'height', 'width']
+        labels = {
+            'name' : 'Nama Lokasi Pemasangan',
+            'width' : 'Ukuran Gambar',
+            'height' : 'x',
+        }
+        widgets = {
+            'name' : forms.TextInput(attrs={'class' : 'form-control'}),
+            'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3'}),
+            'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3'}),
+        }
+
+LocationFormSet = modelformset_factory(Location, form=LocationForm, extra=1, can_delete=True)
+
+class BannerForm(forms.ModelForm):
+    class Meta:
+        model = Banner
+        fields = ['name', 'description', 'image', 'height', 'width']
+        labels = {
+            'name' : _('Nama Banner'),
+            'description' : _('Deskripsi'),
+            'image' : _('Gambar Banner'),
+            'width' : _('Ukuran'),
+            'height' : _('x'),
+        }
+        widgets = {
+            'name' : forms.TextInput(attrs={'class' : 'form-control', 'required' : 'true'}),
+            'description' : forms.Textarea({'class': 'form-control', 'required': 'True'}),
+            'image' : forms.FileInput(attrs={'class': 'form-control', 'onchange': 'upload_img(this);', 'required' : 'True'}),
+            'height' : forms.NumberInput(attrs={'class': 'form-control col-sm-3', 'readonly' : 'true'}),
+            'width' : forms.NumberInput(attrs={'class': 'form-control col-sm-3', 'readonly' : 'true'}),
+        }
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        print(image)
+
+        if image != None:
+            img = Image.open(image)
+            # w, h = img.size
+
+            # width = 1500
+            # height = 444
+            # if w != width or h != height:
+            #     raise forms.ValidationError(_('Gambar harus berukuran %s x %s pixels.' % (width, height)))
+
+            main, sub = image.content_type.split('/')
+            if not (main == 'image' and sub.lower() in ['jpeg', 'pjpeg', 'png', 'jpg']):
+                raise forms.ValidationError(_('Format file harus JPG, JPEG atau PNG.'))
+
+            if len(image) > (1 * 1024 * 1024):
+                raise forms.ValidationError(_('File berukuran maksimal 1 MB.'))
+
+        else:
+            pass
+        return image
+
+class InstallationForm(forms.ModelForm):
+    class Meta:
+        model = Installation
+        fields = ['redirect']

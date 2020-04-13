@@ -1,0 +1,24 @@
+.searchspan {
+    float: left;
+    margin-left: 7px;
+    margin-top: -26px;
+    position: absolute;
+    z-index: 2;
+}
+
+.searchinput {
+    padding-left: 30px;
+}
+
+/* .dataTables_wrapper .dataTables_filter {
+    float: right;
+    text-align: right;
+    visibility: hidden;
+} */
+
+.spanFormat {
+    text-align: left;
+    display: table-cell;
+    min-width: 10px;
+    padding-right: 10px;
+}

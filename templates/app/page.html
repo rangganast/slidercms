@@ -1,0 +1,137 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/banner.css' %}">
+
+<div class="container mt-5 mb-5">
+    <h3 class="mt-3 mb-3">Manajemen Halaman</h3>
+
+    <div class="control-group mb-3">
+        <div class="row">
+            <div class="col input-wrapper">
+                <input id="myInputTextField" type="text"
+                    class="form-control form-control-borderless searchinput" placeholder="Cari...">
+                <span class="fas fa-search searchspan"></span>
+            </div>
+        </div>
+    </div>
+
+    <table id="pageTable" class="table table-striped mt-3">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">No</th>
+                <th scope="col">Nama Aplikasi</th>
+                <th scope="col">Nama Halaman</th>
+                <th scope="col">Nama Lokasi Pemasangan</th>
+                <th scope="col">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            {% for banner in banners %}
+            
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{banner.name}}</td>
+                <td>{{banner.description}}</td>
+                <td>
+                    <a class="open-imgModal" href="" data-toggle="modal" data-target="#imgModal" data-url="http://127.0.0.1:8000/media/{{banner.image}}">
+                        <img src="http://127.0.0.1:8000/media/{{banner.image}}" alt="" height="40">
+                    </a>
+                </td>
+                <td>
+                    <span class="spanFormat">
+                        <form action="{% url 'app:update_banner' pk=banner.id %}" method="GET">
+                            <button type="submit" class="btn btn-sm btn-warning">Update</button>
+                        </form>
+                    </span>
+
+                    {% if banner.is_archived == False %}
+
+                    <span class="spanFormat">
+                        <form action="{% url 'app:archive_banner' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{ banner.id }}">
+                            <button type="submit" class="btn btn-sm btn-danger">Archive</button>
+                        </form>
+                    </span>
+
+                    {% else %}
+
+                    <span class="spanFormat">
+                        <form action="{% url 'app:archive_banner' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{ banner.id }}">
+                            <button type="submit" class="btn btn-sm btn-danger">Unarchive</button>
+                        </form>
+                    </span>
+  
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+                
+        </tbody>
+    </table>
+
+</div>
+
+<div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <img id="previewImg" src="" style="width: 100%; max-width: 800px;">
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/page.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<script type="text/javascript">
+
+    {% if messages %}
+    {% for message in messages %}
+    
+    {% if 'banner_added' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+        })
+    {% endif %}
+
+    {% if 'banner_updated' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+        })
+    {% endif %}
+    
+    {% if 'banner_archived' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+        })
+    {% endif %}
+    
+    {% if 'banner_unarchived' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+        })
+    {% endif %}
+        
+    {% endfor %}
+    {% endif %}
+        
+</script>
+
+{% endblock content %}  
