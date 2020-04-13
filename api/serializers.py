@@ -4,13 +4,13 @@ from app.models import Location, Banner, Installation
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
-        fields = ('id', 'device', 'page', 'is_slider', 'height', 'width', 'is_archived')
+        fields = ('id', 'application', 'page', 'is_slider', 'height', 'width', 'is_archived')
 
-    device = serializers.SerializerMethodField('get_device')
+    application = serializers.SerializerMethodField('get_application')
     page = serializers.SerializerMethodField('get_page')
 
-    def get_device(self, obj):
-        return obj.page.device.id
+    def get_application(self, obj):
+        return obj.page.application.id
 
     def get_page(self, obj):
         return obj.page.id

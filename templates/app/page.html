@@ -31,20 +31,22 @@
         </thead>
         <tbody>
             
-            {% for banner in banners %}
+            {% for location in locations %}
             
             <tr>
-                <td>{{forloop.counter}}</td>
-                <td>{{banner.name}}</td>
-                <td>{{banner.description}}</td>
-                <td>
-                    <a class="open-imgModal" href="" data-toggle="modal" data-target="#imgModal" data-url="http://127.0.0.1:8000/media/{{banner.image}}">
-                        <img src="http://127.0.0.1:8000/media/{{banner.image}}" alt="" height="40">
-                    </a>
-                </td>
+                <td>{{ forloop.counter }}</td>
+                
+                {% for application in applications %}
+                {% if application.id == location.application_id %}
+                <td>{{ location.application_id }}</td>
+                {% endif %}
+                {% endfor %}
+                    
+                <td>Halaman</td>
+                <td>Lokasi</td>
                 <td>
                     <span class="spanFormat">
-                        <form action="{% url 'app:update_banner' pk=banner.id %}" method="GET">
+                        <form action="" method="GET">
                             <button type="submit" class="btn btn-sm btn-warning">Update</button>
                         </form>
                     </span>
@@ -52,7 +54,7 @@
                     {% if banner.is_archived == False %}
 
                     <span class="spanFormat">
-                        <form action="{% url 'app:archive_banner' %}" method="POST">
+                        <form action="" method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="id" value="{{ banner.id }}">
                             <button type="submit" class="btn btn-sm btn-danger">Archive</button>
@@ -62,7 +64,7 @@
                     {% else %}
 
                     <span class="spanFormat">
-                        <form action="{% url 'app:archive_banner' %}" method="POST">
+                        <form action="" method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="id" value="{{ banner.id }}">
                             <button type="submit" class="btn btn-sm btn-danger">Unarchive</button>

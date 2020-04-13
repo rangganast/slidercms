@@ -22,7 +22,7 @@ class Application(models.Model):
 
 class Page(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=5)
-    device = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='devices')
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='applications')
     name = models.CharField(max_length=100)
 
     def __str__(self):
