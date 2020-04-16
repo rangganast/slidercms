@@ -42,67 +42,74 @@
                 </div>
                 
                 {% for page in formset_page %}
-                    <fieldset class="page-border">
+                <fieldset id="id_page-0-fieldset" class="page-border fieldset">
 
-                        <legend class="page-border">Halaman ke-1</legend>
+                    <legend class="page-border">Halaman ke-1</legend>
 
-                        <div class="container">
+                    <div class="container">
 
-                            <div class="form-group row mb-4">
-                                <label class="col-sm-2 col-form-label"
-                                    for="{{ page.name.id_for_label }}">{{ page.name.label }}</label>
-                                <div class="col-sm-10">{{ page.name }}</div>
-                            </div>
-
-                            {% for location in formset_location %}
-                            <div class="location-div ml-5">
-
-                                <div class="form-group row mb-0">
-                                    <div class="col-sm-12">
-                                        <strong>
-                                            <label class="radio-inline mr-2" for="{{ location.is_slider.id_for_label }}" style="color: #007bff;">{{ location.is_slider.label }}</label>
-                                            {% for option in location.is_slider %}
-                                            <label for="radio-inline" style="color: #007bff;">
-                                                {{ option }}
-                                            </label>
-                                            {% endfor %}
-                                        </strong>
-                                    </div>    
-                                </div>
-
-                                <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label" for="{{ location.name.id_for_label }}">{{ location.name.label }}</label>
-                                    <div class="col-sm-9">{{ location.name }}</div>
-                                </div>
-
-                                <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label mr-3" for="{{ location.width.id_for_label}}">{{ location.width.label }}</label>
-                                    {{ location.width }}
-
-                                    <label class="mr-2 ml-2" for="{{ form_banner.height.id_for_label}}">{{ location.height.label }}</label>
-                                    {{ location.height }}            
-                                </div>     
-
-                            </div>
-                            {% endfor %}
-
-                            <button id="id_page-tambah-0" type="button" class="btn btn-sm btn-primary float-right">Tambah Lokasi</button>
-                            
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-2 col-form-label"
+                                for="{{ page.name.id_for_label }}">{{ page.name.label }}</label>
+                            <div class="col-sm-10">{{ page.name }}</div>
+                            <input id="id_page-0-min" type="hidden" name="page-0-min" value="0">
+                            <input id="id_page-0-max" type="hidden" name="page-0-max" value="0">
                         </div>
+
+                        {% for location in formset_location %}
+                        <div class="location-div ml-5">
+
+                            <div class="form-group row mb-0 location-slider">
+                                <div class="col-sm-12">
+                                    <strong>
+                                        <label class="radio-inline mr-2" for="{{ location.is_slider.id_for_label }}" style="color: #007bff;">{{ location.is_slider.label }}</label>
+                                        {% for option in location.is_slider %}
+                                        <label for="radio-inline" style="color: #007bff;">
+                                            {{ option }}
+                                        </label>
+                                        {% endfor %}
+                                    </strong>
+                                </div>    
+                            </div>
+
+                            <div class="form-group row location-name">
+                                <label class="col-sm-3 col-form-label" for="{{ location.name.id_for_label }}">{{ location.name.label }}</label>
+                                <div class="col-sm-9">{{ location.name }}</div>
+                            </div>
+
+                            <div class="form-group row location-size">
+                                <label class="col-sm-3 col-form-label mr-3" for="{{ location.width.id_for_label}}">{{ location.width.label }}</label>
+                                {{ location.width }}
+
+                                <label class="mr-2 ml-2" for="{{ location.height.id_for_label}}">{{ location.height.label }}</label>
+                                {{ location.height }}            
+                            </div>     
+
+                        </div>
+                        {% endfor %}
+
+                        <button id="id_location-add-0" type="button" class="btn btn-sm btn-primary float-right"
+                            onclick="cloneLocation(this);">Tambah Lokasi</button>
+                        <button id="id_location-delete-0" type="button" class="btn btn-sm btn-danger float-right mr-2"
+                            onclick="removeLocation(this);" style="display: none;">Hapus Lokasi</button>
                         
-                    </fieldset>
+                    </div>
+                    
+                </fieldset>
                 {% endfor %}
                 
                 <div class="container mb-5">
                     <div class="form-group row float-right">
-                        <button type="button" class="btn btn-primary" onclick="clonePage('fieldset.page-border:last');">Tambah Halaman</button>
+                        <button id="id_page-delete-button" type="button" class="btn btn-danger float-right mr-2"
+                            onclick="removePage('fieldset.page-border:last');" style="display: none;">Hapus Halaman</button>
+                        <button id="id_page-add-button" type="button" class="btn btn-primary float-right"
+                            onclick="clonePage('fieldset.page-border:last');">Tambah Halaman</button>
                     </div>
                 </div>
 
             </div>
 
         </div>
-
     </form>
 
 </div>

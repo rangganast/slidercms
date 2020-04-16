@@ -36,27 +36,34 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 
-                {% for application in applications %}
-                {% if application.id == location.application_id %}
-                <td>{{ location.application_id }}</td>
-                {% endif %}
-                {% endfor %}
+                {% for page in pages %}
                     
-                <td>Halaman</td>
-                <td>Lokasi</td>
+                    {% for app in apps %}
+                        {% if page.application_id == app.id %}
+                            <td>hai</td>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page.id == location.page_id %}
+                        <td>{{page.name}}</td>
+                    {% endif %}
+
+                {% endfor %}
+
+                <td>{{ location.name }}</td>
                 <td>
                     <span class="spanFormat">
-                        <form action="" method="GET">
+                        <form action="{% url 'app:update_page' pk=location.id %}" method="GET">
                             <button type="submit" class="btn btn-sm btn-warning">Update</button>
                         </form>
                     </span>
 
-                    {% if banner.is_archived == False %}
+                    {% if location.is_archived == False %}
 
                     <span class="spanFormat">
-                        <form action="" method="POST">
+                        <form action="{% url 'app:archive_page' %}" method="POST">
                             {% csrf_token %}
-                            <input type="hidden" name="id" value="{{ banner.id }}">
+                            <input type="hidden" name="id" value="{{ location.id }}">
                             <button type="submit" class="btn btn-sm btn-danger">Archive</button>
                         </form>
                     </span>
@@ -64,9 +71,9 @@
                     {% else %}
 
                     <span class="spanFormat">
-                        <form action="" method="POST">
+                        <form action="{% url 'app:archive_page' %}" method="POST">
                             {% csrf_token %}
-                            <input type="hidden" name="id" value="{{ banner.id }}">
+                            <input type="hidden" name="id" value="{{ location.id }}">
                             <button type="submit" class="btn btn-sm btn-danger">Unarchive</button>
                         </form>
                     </span>
@@ -74,6 +81,7 @@
                     {% endif %}
                 </td>
             </tr>
+
             {% endfor %}
                 
         </tbody>
@@ -115,7 +123,7 @@
         })
     {% endif %}
     
-    {% if 'banner_archived' in message.tags %}
+    {% if 'location_archived' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
@@ -123,7 +131,7 @@
         })
     {% endif %}
     
-    {% if 'banner_unarchived' in message.tags %}
+    {% if 'location_unarchived' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',

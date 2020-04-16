@@ -135,6 +135,20 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIAFILES_DIRS = [os.path.join(BASE_DIR, 'media')]
 
-LOGIN_URL = 'web:login'
-LOGIN_REDIRECT_URL = 'web:index'
-LOGOUT_REDIRECT_URL = 'web:login'
+LOGIN_URL = 'app:login'
+LOGIN_REDIRECT_URL = 'app:page'
+LOGOUT_REDIRECT_URL = 'app:login'
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_RENDERER_CLASSES': (
+    #     'rest_framework.renderers.JSONRenderer',
+    # ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.DjangoModelPermissions',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}

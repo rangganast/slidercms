@@ -12,7 +12,7 @@ class Application(models.Model):
         if not self.id:
             max = Application.objects.aggregate(id_max=Max('id'))['id_max']
             if max is not None:
-                max = max[-3]
+                max = max[-3:]
                 max = int(max)
                 max += 1
             else:
@@ -32,7 +32,7 @@ class Page(models.Model):
         if not self.id:
             max = Page.objects.aggregate(id_max=Max('id'))['id_max']
             if max is not None:
-                max = max[-3]
+                max = max[-3:]
                 max = int(max)
                 max += 1
             else:
@@ -41,7 +41,7 @@ class Page(models.Model):
         super().save(*kwargs)
 
 class Location(models.Model):
-    id = models.CharField(primary_key=True, editable=False, max_length=5)
+    id = models.CharField(primary_key=True, editable=False, max_length=6)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='pages')
     is_slider = models.BooleanField()
     name = models.CharField(max_length=100)
@@ -56,12 +56,12 @@ class Location(models.Model):
         if not self.id:
             max = Location.objects.aggregate(id_max=Max('id'))['id_max']
             if max is not None:
-                max = max[-3]
+                max = max[-3:]
                 max = int(max)
                 max += 1
             else:
                 max = 1
-            self.id = "LC" + "{0:03d}".format(max)
+            self.id = "LOC" + "{0:03d}".format(max)
         super().save(*kwargs)
 
 class Banner(models.Model):
@@ -85,7 +85,7 @@ class Banner(models.Model):
         if not self.id:
             max = Banner.objects.aggregate(id_max=Max('id'))['id_max']
             if max is not None:
-                max = max[-3]
+                max = max[-3:]
                 max = int(max)
                 max += 1
             else:
@@ -104,7 +104,7 @@ class Installation(models.Model):
         if not self.id:
             max = Installation.objects.aggregate(id_max=Max('id'))['id_max']
             if max is not None:
-                max = max[-3]
+                max = max[-3:]
                 max = int(max)
                 max += 1
             else:

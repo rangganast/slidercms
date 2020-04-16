@@ -2,6 +2,17 @@ from django import forms
 from .models import Application, Page, Location, Banner, Installation
 from django.forms import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.forms import AuthenticationForm
+
+class LoginForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': _(
+            "Username atau password salah."
+        )
+    }
+
+    username = forms.CharField(widget=forms.TextInput(attrs={'type': 'text', 'id': 'inputEmail', 'class': 'form-control', 'name': 'username', 'placeholder': 'Username', 'required': 'True', 'autofocus': 'True'}))
+    password = forms.CharField(widget=forms.TextInput(attrs={'type': 'password', 'id': 'inputPassword', 'class': 'form-control', 'name': 'password', 'placeholder': 'Password', 'required': 'True',}))
 
 class ApplicationForm(forms.ModelForm):
     choices = tuple(Application.objects.defer("name").values_list())
@@ -43,8 +54,8 @@ class LocationForm(forms.ModelForm):
         }
         widgets = {
             'name' : forms.TextInput(attrs={'class' : 'form-control'}),
-            'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3'}),
-            'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3'}),
+            'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width'}),
+            'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height'}),
         }
 
 LocationFormSet = modelformset_factory(Location, form=LocationForm, extra=1, can_delete=True)

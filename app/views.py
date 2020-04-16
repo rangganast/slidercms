@@ -34,8 +34,8 @@ class AddPageView(View):
 
     def get(self, request):
         form_application = self.form_class['form_application']()
-        formset_page = self.form_class['formset_page'](prefix='page')
-        formset_location = self.form_class['formset_location'](prefix='location')
+        formset_page = self.form_class['formset_page'](prefix='page', queryset=Page.objects.none())
+        formset_location = self.form_class['formset_location'](prefix='location', queryset=Location.objects.none())
 
         context = {
             'form_application' : form_application,
@@ -44,6 +44,68 @@ class AddPageView(View):
         }
 
         return render(request, self.template_name, context)
+    
+    def post(self, request):
+        form_application = self.form_class['form_application'](request.POST or None)
+        formset_page = self.form_class['formset_page'](request.POST or None, prefix='page', queryset=Page.objects.none())
+        formset_location = self.form_class['formset_location'](request.POST or None, prefix='location', queryset=Location.objects.none())
+
+        if form_application.is_valid() and formset_page.is_valid() and formset_location.is_valid():
+            app_instance = Application.objects.get(pk=form_application.cleaned_data['names'])
+
+            pageform = formset_page.cleaned_data
+
+            for i in range(len(pageform)):
+                if pageform[i]:
+                    name = pageform[i]['name']
+
+                    page_instance = Page(name=name, application=app_instance)
+                    page_instance.save()
+
+                    min_loc = request.POST.get('page-' + str(i) + '-min')
+                    max_loc = request.POST.get('page-' + str(i) + '-max')
+
+                    locform = formset_location.cleaned_data
+
+                    for i in range(int(min_loc), int(max_loc) + 1):
+                        if locform[i]:
+                            name = locform[i]['name']
+                            is_slider = locform[i]['is_slider']
+                            width = locform[i]['width']
+                            height = locform[i]['height']
+
+                            loc_instance = Location(name=name, width=width, height=height, is_slider=is_slider ,page=page_instance)
+                            loc_instance.save()
+
+            return redirect(reverse('app:page'))
+
+        else:
+            print(form_application.errors)
+            print(formset_page.errors)
+            print(formset_location.errors)
+
+            return redirect(reverse('app:add_page'))
+
+class UpdatePageView(View):
+    pass
+
+class ArchivePageView(View):
+    def post(self, request):
+        id = self.request.POST.get('id')
+        location_instance = Location.objects.get(id=id)
+
+        if location_instance.is_archived == True:
+            location_instance.is_archived = False
+            location_instance.save()
+            messages.add_message(request, messages.INFO, "Data berhasil di-unarchive!", extra_tags="location_unarchived")
+
+            return redirect(reverse('app:page'))
+        else:
+            location_instance.is_archived = True
+            location_instance.save()
+            messages.add_message(request, messages.INFO, "Data berhasil di-archive!", extra_tags="location_archived")
+
+            return redirect(reverse('app:page'))
 
 class BannerView(View):
     template_name = 'app/banner.html'
@@ -57,7 +119,7 @@ class BannerView(View):
 
         return render(request, self.template_name, context)
 
-class AddBannerForm(View):
+class AddBannerView(View):
     form_class = {
         'form_banner' : BannerForm,
     }
@@ -97,7 +159,7 @@ class AddBannerForm(View):
 
         return redirect(reverse('app:banner'))
 
-class UpdateBannerForm(View):
+class UpdateBannerView(View):
     form_class = {
         'form_banner' : BannerForm,
     }
@@ -142,7 +204,7 @@ class UpdateBannerForm(View):
 
         return redirect(reverse('app:banner'))
 
-class ArchiveBannerForm(View):
+class ArchiveBannerView(View):
     def post(self, request):
         id = self.request.POST.get('id')
         banner_instance = Banner.objects.get(id=id)
