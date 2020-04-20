@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/banner.css' %}">
+<link rel="stylesheet" href="{% static 'css/page.css' %}">
 
 <div class="container mt-5 mb-5">
     <h3 class="mt-3 mb-3">Manajemen Halaman</h3>
@@ -31,59 +31,43 @@
         </thead>
         <tbody>
             
-            {% for location in locations %}
-            
+            {% for content in contents %}
             <tr>
                 <td>{{ forloop.counter }}</td>
-                
-                {% for page in pages %}
-                    
-                    {% for app in apps %}
-                        {% if page.application_id == app.id %}
-                            <td>hai</td>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if page.id == location.page_id %}
-                        <td>{{page.name}}</td>
-                    {% endif %}
-
-                {% endfor %}
-
-                <td>{{ location.name }}</td>
+                <td>{{ content.app }}</td>
+                <td>{{ content.page }}</td>
+                <td>{{ content.location }}</td>
                 <td>
                     <span class="spanFormat">
-                        <form action="{% url 'app:update_page' pk=location.id %}" method="GET">
-                            <button type="submit" class="btn btn-sm btn-warning">Update</button>
+                        <form action="{% url 'app:update_page' pk_page=content.page_id pk_location=content.location_id %}"
+                            method="GET">
+                            <button type="submit" class="btn btn-sm btn-warning" {% if content.is_active %}disabled{% else %}{% endif %}>Update</button>
                         </form>
                     </span>
 
-                    {% if location.is_archived == False %}
+                    {% if content.is_archived == False %}
 
                     <span class="spanFormat">
-                        <form action="{% url 'app:archive_page' %}" method="POST">
+                        <form id="form_page_archive_{{ content.location_id}}" action="{% url 'app:archive_page' pk=content.location_id %}" method="POST">
                             {% csrf_token %}
-                            <input type="hidden" name="id" value="{{ location.id }}">
-                            <button type="submit" class="btn btn-sm btn-danger">Archive</button>
+                            <button id="{{ content.location_id }}" type="button" onclick="archive(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
                         </form>
                     </span>
 
                     {% else %}
 
                     <span class="spanFormat">
-                        <form action="{% url 'app:archive_page' %}" method="POST">
+                        <form id="form_page_archive_{{ content.location_id}}" action="{% url 'app:archive_page' pk=content.location_id %}" method="POST">
                             {% csrf_token %}
-                            <input type="hidden" name="id" value="{{ location.id }}">
-                            <button type="submit" class="btn btn-sm btn-danger">Unarchive</button>
+                            <button id="{{ content.location_id }}" type="button" onclick="unarchive(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
                         </form>
                     </span>
-  
+
                     {% endif %}
                 </td>
             </tr>
-
             {% endfor %}
-                
+
         </tbody>
     </table>
 
@@ -107,11 +91,12 @@
     {% if messages %}
     {% for message in messages %}
     
-    {% if 'banner_added' in message.tags %}
+    {% if 'location_added' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
             text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
         })
     {% endif %}
 
@@ -120,6 +105,7 @@
             icon: 'success',
             title: 'Berhasil!',
             text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
         })
     {% endif %}
     
@@ -128,6 +114,7 @@
             icon: 'success',
             title: 'Berhasil!',
             text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
         })
     {% endif %}
     
@@ -136,6 +123,7 @@
             icon: 'success',
             title: 'Berhasil!',
             text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
         })
     {% endif %}
         

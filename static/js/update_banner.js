@@ -1,3 +1,7 @@
+$(document).ready(function () {
+    $('#id_image').removeAttr('required');
+})
+
 function upload_img(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();

@@ -15,3 +15,46 @@ $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/page/
 $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
 })
+
+function archive(input) {
+    var pk = $(input).attr('id');
+    console.log(pk);
+    Swal.fire({
+        title: 'Archive',
+        icon: 'info',
+        html: 'Anda yakin ingin meng-archive location ini?',
+        showCancelButton: true,
+        showCloseButton: true,
+        focusConfirm: false,
+        cancelButtonText: 'Batal',
+        cancelButtonClass: 'btn btn-secondary',
+        confirmButtonText: 'Archive',
+        confirmButtonClass: 'btn btn-danger',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.value) {
+            $('#form_page_archive_' + pk).submit();
+        };
+    });
+};
+
+function unarchive(input) {
+    var pk = $(input).attr('id');
+    Swal.fire({
+        title: 'Unarchive',
+        icon: 'info',
+        html: 'Anda yakin ingin meng-unarchive location ini?',
+        showCancelButton: true,
+        showCloseButton: true,
+        focusConfirm: false,
+        cancelButtonText: 'Batal',
+        cancelButtonClass: 'btn btn-secondary',
+        confirmButtonText: 'Unarchive',
+        confirmButtonClass: 'btn btn-danger',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.value) {
+            $('#form_page_archive_' + pk).submit();
+        };
+    });
+};

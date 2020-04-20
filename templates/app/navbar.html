@@ -6,7 +6,7 @@
         <strong>Slider Manager</strong>
     </div>
     <div class="list-group list-group-flush">
-        <a href="{% url 'app:page' %}" class="list-group-item list-group-item-action bg-light">
+        <a href="" class="list-group-item list-group-item-action bg-light">
             <i class="fas fa-file-alt mr-2"></i>
             <strong>Manajemen Halaman</strong>
         </a>
@@ -22,30 +22,13 @@
             <i class="fas fa-user mr-2"></i>
             <strong>Manajemen Pengguna</strong>
         </a>
-        <a href="" data-toggle="modal" data-target="#logoutModal" class="list-group-item list-group-item-action bg-light">
+        <a href="#" onclick="logout();" class="list-group-item list-group-item-action bg-light">
             <i class="fas fa-sign-out-alt mr-2"></i>
             <strong>Logout</strong>
         </a>
     </div>    
 </div>
 
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Logout</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-             </div>
-            <div class="modal-body">
-                Anda yakin ingin logout?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                <a type="button" href="{% url 'app:logout' %}" class="btn btn-danger">Logout</a>
-            </div>
-        </div>
-    </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<script src="{% static 'js/navbar.js' %}"></script>

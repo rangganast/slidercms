@@ -1,4 +1,5 @@
 from django import forms
+from PIL import Image
 from .models import Application, Page, Location, Banner, Installation
 from django.forms import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
@@ -31,7 +32,7 @@ class PageForm(forms.ModelForm):
             'name' : 'Nama Halaman',
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control'})
+            'name' : forms.TextInput(attrs={'class' : 'form-control', 'required': 'True'})
         }
 
 PageFormSet = modelformset_factory(Page, form=PageForm, extra=1, can_delete=True)
@@ -53,9 +54,9 @@ class LocationForm(forms.ModelForm):
             'height' : 'x',
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control'}),
-            'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width'}),
-            'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height'}),
+            'name' : forms.TextInput(attrs={'class' : 'form-control','required': 'True'}),
+            'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True'}),
+            'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True'}),
         }
 
 LocationFormSet = modelformset_factory(Location, form=LocationForm, extra=1, can_delete=True)
@@ -79,9 +80,12 @@ class BannerForm(forms.ModelForm):
             'width' : forms.NumberInput(attrs={'class': 'form-control col-sm-3', 'readonly' : 'true'}),
         }
 
+        def __init__(self, *args, **kwargs):
+            super(BannerForm, self).__init__(*args, **kwargs)
+            self.fields['image'].required = False
+
     def clean_image(self):
         image = self.cleaned_data.get('image', False)
-        print(image)
 
         if image != None:
             img = Image.open(image)

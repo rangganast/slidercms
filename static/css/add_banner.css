@@ -1,0 +1,17 @@
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:active,
+.btn-secondary:visited,
+.btn-secondary:focus {
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus {
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}

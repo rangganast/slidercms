@@ -32,42 +32,40 @@
         </thead>
         <tbody>
             
-            {% for banner in banners %}
+            {% for content in contents %}
             
             <tr>
                 <td>{{forloop.counter}}</td>
-                <td>{{banner.name}}</td>
-                <td>{{banner.description}}</td>
-                <td>{{banner.width}} x {{banner.height}}</td>
+                <td>{{content.name}}</td>
+                <td>{{content.description}}</td>
+                <td>{{content.width}} x {{content.height}}</td>
                 <td>
-                    <a class="open-imgModal" href="" data-toggle="modal" data-target="#imgModal" data-url="http://127.0.0.1:8000/media/{{banner.image}}">
-                        <img src="http://127.0.0.1:8000/media/{{banner.image}}" alt="" height="40">
+                    <a class="open-imgModal" href="" data-toggle="modal" data-target="#imgModal" data-url="https://banner-slider-qa.holahalo.dev/media/{{banner.image}}">
+                        <img src="https://banner-slider-qa.holahalo.dev/media/{{content.image}}" alt="" height="40">
                     </a>
                 </td>
                 <td>
                     <span class="spanFormat">
-                        <form action="{% url 'app:update_banner' pk=banner.id %}" method="GET">
-                            <button type="submit" class="btn btn-sm btn-warning">Update</button>
+                        <form action="{% url 'app:update_banner' pk=content.id %}" method="GET">
+                            <button type="submit" class="btn btn-sm btn-warning" {% if content.is_active %}disabled{% else %}{% endif %}>Update</button>
                         </form>
                     </span>
 
-                    {% if banner.is_archived == False %}
+                    {% if content.is_archived == False %}
 
                     <span class="spanFormat">
-                        <form action="{% url 'app:archive_banner' %}" method="POST">
+                        <form id="form_banner_archive_{{content.id}}" action="{% url 'app:archive_banner' pk=content.id %}" method="POST">
                             {% csrf_token %}
-                            <input type="hidden" name="id" value="{{ banner.id }}">
-                            <button type="submit" class="btn btn-sm btn-danger">Archive</button>
+                            <button id="{{ content.id }}" type="button" onclick="archive(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
                         </form>
                     </span>
 
                     {% else %}
 
                     <span class="spanFormat">
-                        <form action="{% url 'app:archive_banner' %}" method="POST">
+                        <form id="form_banner_archive_{{content.id}}" action="{% url 'app:archive_banner' pk=content.id %}" method="POST">
                             {% csrf_token %}
-                            <input type="hidden" name="id" value="{{ banner.id }}">
-                            <button type="submit" class="btn btn-sm btn-danger">Unarchive</button>
+                            <button id="{{ content.id }}" type="button" onclick="unarchive(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
                         </form>
                     </span>
   
@@ -90,6 +88,27 @@
     </div>
 </div>
 
+<div class="modal fade" id="archiveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Archive</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Anda yakin ingin logout?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <a type="button" href="{% url 'app:logout' %}" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="{% static 'js/banner.js' %}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
@@ -104,6 +123,7 @@
             icon: 'success',
             title: 'Berhasil!',
             text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
         })
     {% endif %}
 
@@ -112,6 +132,7 @@
             icon: 'success',
             title: 'Berhasil!',
             text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
         })
     {% endif %}
     
@@ -120,6 +141,7 @@
             icon: 'success',
             title: 'Berhasil!',
             text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
         })
     {% endif %}
     
@@ -128,6 +150,7 @@
             icon: 'success',
             title: 'Berhasil!',
             text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
         })
     {% endif %}
         

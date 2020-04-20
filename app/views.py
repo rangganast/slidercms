@@ -11,14 +11,29 @@ class PageView(View):
     template_name = 'app/page.html'
 
     def get(self, request):
-        apps = Application.objects.all()
-        pages = Page.objects.all()
-        locations = Location.objects.all()
+        apps = Application.objects.all().order_by('pk')
+        pages = Page.objects.all().order_by('pk')
+        locations = Location.objects.all().order_by('pk')
+        installations = Installation.objects.values('location_id', 'is_active').order_by('location_id')
+
+        contents = []
+
+        for i in range(len(locations)):
+            contents.append({'location_id' : locations[i].id, 'location' : locations[i].name, 'is_archived' : locations[i].is_archived, 'is_active': None, 'page_id' : None, 'page': None, 'app' : None})
+            for installation in installations:
+                if locations[i].id==installation['location_id']:
+                    contents[i]['is_active'] = installation['is_active']
+
+            for page in pages:
+                if locations[i].page_id == page.id:
+                    contents[i]['page_id'] = page.id
+                    contents[i]['page'] = page.name
+                    for app in apps:
+                        if page.application_id == app.id:
+                            contents[i]['app'] = app.name
 
         context = {
-            'apps' : apps,
-            'pages' : pages,
-            'locations' : locations,
+            'contents' : contents,
         }
         return render(request, self.template_name, context)
 
@@ -30,7 +45,7 @@ class AddPageView(View):
     }
     
     initial = {'key', 'value'}
-    template_name = 'app/add_page.html'
+    template_name = 'app/add_page_form.html'
 
     def get(self, request):
         form_application = self.form_class['form_application']()
@@ -77,6 +92,8 @@ class AddPageView(View):
                             loc_instance = Location(name=name, width=width, height=height, is_slider=is_slider ,page=page_instance)
                             loc_instance.save()
 
+            messages.add_message(request, messages.INFO, "Data berhasil ditambahkan!", extra_tags="page_added")
+
             return redirect(reverse('app:page'))
 
         else:
@@ -87,12 +104,37 @@ class AddPageView(View):
             return redirect(reverse('app:add_page'))
 
 class UpdatePageView(View):
-    pass
+    form_class = {
+        'form_application' : ApplicationForm,
+        'formset_page' : PageFormSet,
+        'formset_location' : LocationFormSet,
+    }
+    
+    initial = {'key', 'value'}
+    template_name = 'app/update_page_form.html'
 
+    def get(self, request, pk_page, pk_location):
+        page_instance = Page.objects.filter(pk=pk_page)
+        location_instance = Location.objects.filter(pk=pk_location)
+
+        form_application = self.form_class['form_application']()
+        formset_page = self.form_class['formset_page'](prefix='page', queryset=page_instance)
+        formset_location = self.form_class['formset_location'](prefix='location', queryset=location_instance)
+
+        context = {
+            'form_application' : form_application,
+            'formset_page' : formset_page,
+            'formset_location' : formset_location,
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        pass
+    
 class ArchivePageView(View):
-    def post(self, request):
-        id = self.request.POST.get('id')
-        location_instance = Location.objects.get(id=id)
+    def post(self, request, pk):
+        location_instance = Location.objects.get(pk=pk)
 
         if location_instance.is_archived == True:
             location_instance.is_archived = False
@@ -111,10 +153,19 @@ class BannerView(View):
     template_name = 'app/banner.html'
 
     def get(self, request):
-        banners = Banner.objects.all()
+        banners = Banner.objects.all().order_by('pk')
+        installations = Installation.objects.values('banner_id', 'is_active').order_by('banner_id')
+
+        contents = []
+
+        for i in range(len(banners)):
+            contents.append({'id': banners[i].id, 'name': banners[i].name, 'description': banners[i].description, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].height, 'is_archived': banners[i].is_archived, 'is_active': None})
+            for installation in installations:
+                if installation['banner_id'] == banners[i].id:
+                    contents[i]['is_active'] = installation['is_active']
 
         context = {
-            'banners' : banners,
+            'contents': contents,
         }
 
         return render(request, self.template_name, context)
@@ -155,7 +206,7 @@ class AddBannerView(View):
 
             return render(request, self.template_name, context)
         
-        messages.add_message(request, messages.INFO, "Data berhasil ditambahkan!", extra_tags="added_archived")
+        messages.add_message(request, messages.INFO, "Data berhasil ditambahkan!", extra_tags="location_added")
 
         return redirect(reverse('app:banner'))
 
@@ -190,24 +241,37 @@ class UpdateBannerView(View):
             width = form_banner.cleaned_data['width']
             height = form_banner.cleaned_data['height']
 
-            banner_instance.image.delete()
+            if image == None:
+                banner_instance.name = name
+                banner_instance.description = description
+                banner_instance.width = width
+                banner_instance.height = height
+            else:
+                banner_instance.image.delete()
 
-            banner_instance.name = name
-            banner_instance.description = description
-            banner_instance.image = image
-            banner_instance.width = width
-            banner_instance.height = height
+                banner_instance.name = name
+                banner_instance.description = description
+                banner_instance.image = image
+                banner_instance.width = width
+                banner_instance.height = height
 
             banner_instance.save()
+        
+            messages.add_message(request, messages.INFO, "Data berhasil di-update!", extra_tags="banner_updated")
 
-        messages.add_message(request, messages.INFO, "Data berhasil di-update!", extra_tags="banner_updated")
+            return redirect(reverse('app:banner'))
 
-        return redirect(reverse('app:banner'))
+        else:
+
+            context = {
+                'form_banner' : form_banner,
+            }
+
+            return render(request, self.template_name, context)
 
 class ArchiveBannerView(View):
-    def post(self, request):
-        id = self.request.POST.get('id')
-        banner_instance = Banner.objects.get(id=id)
+    def post(self, request, pk):
+        banner_instance = Banner.objects.get(pk=pk)
 
         if banner_instance.is_archived == True:
             banner_instance.is_archived = False
@@ -221,5 +285,3 @@ class ArchiveBannerView(View):
             messages.add_message(request, messages.INFO, "Data berhasil di-archive!", extra_tags="banner_archived")
 
             return redirect(reverse('app:banner'))
-
-        
