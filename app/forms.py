@@ -111,3 +111,9 @@ class InstallationForm(forms.ModelForm):
     class Meta:
         model = Installation
         fields = ['redirect']
+
+class KeywordDateRangeForm(forms.Form):
+    date1 = forms.CharField(label='Tanggal Cari:', widget=forms.DateInput(
+        attrs={'id': 'datepicker1', 'name': 'date1', 'class': 'form-control ml-3', 'placeholder': 'DD/MM/YY', 'autocomplete': 'off', 'required': 'True'}))
+    date2 = forms.CharField(label='s/d', widget=forms.DateInput(
+        attrs={'id': 'datepicker2', 'name':'date2', 'class': 'form-control ml-3', 'placeholder': 'DD/MM/YY', 'autocomplete': 'off', 'required': 'True'}))

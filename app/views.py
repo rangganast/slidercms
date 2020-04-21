@@ -3,7 +3,8 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
-from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, InstallationForm
+from . import services
+from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, InstallationForm, KeywordDateRangeForm
 from .models import Application, Page, Location, Banner, Installation
 
 # Create your views here.
@@ -131,7 +132,7 @@ class UpdatePageView(View):
 
     def post(self, request, pk):
         pass
-    
+
 class ArchivePageView(View):
     def post(self, request, pk):
         location_instance = Location.objects.get(pk=pk)
@@ -159,7 +160,7 @@ class BannerView(View):
         contents = []
 
         for i in range(len(banners)):
-            contents.append({'id': banners[i].id, 'name': banners[i].name, 'description': banners[i].description, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].height, 'is_archived': banners[i].is_archived, 'is_active': None})
+            contents.append({'id': banners[i].id, 'name': banners[i].name, 'description': banners[i].description, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].image, 'is_archived': banners[i].is_archived, 'is_active': None})
             for installation in installations:
                 if installation['banner_id'] == banners[i].id:
                     contents[i]['is_active'] = installation['is_active']
@@ -285,3 +286,34 @@ class ArchiveBannerView(View):
             messages.add_message(request, messages.INFO, "Data berhasil di-archive!", extra_tags="banner_archived")
 
             return redirect(reverse('app:banner'))
+
+class KeywordListPage(View):
+    form_class = {
+        'date' : KeywordDateRangeForm
+    }
+    inital = {'key' : 'value'}
+    template_name = 'app/keyword.html'
+
+    def get(self, request, *args, **kwargs):
+        form_date = self.form_class['date']()
+
+        keywords_list = services.get_keywords()
+        lists = services.get_list()
+        counts = services.get_count_keywords()
+
+        context = {
+            'keywords_list': keywords_list,
+            'lists': lists,
+            'counts': counts,
+            'form_date': form_date
+        }
+
+        if request.GET.get('filter') == '':
+            date1 = request.GET.get("date1", "")
+            date2 = request.GET.get("date2", "")
+
+            counts = services.get_count_keywords_with_params(date1=date1, date2=date2)
+
+            context['counts'] = counts
+            
+        return render(request, self.template_name, context)

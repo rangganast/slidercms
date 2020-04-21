@@ -1,0 +1,131 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<style>
+    .card {
+        border: none;
+    }
+
+    .searchspan {
+        float: left;
+        margin-left: 7px;
+        margin-top: -26px;
+        position: absolute;
+        z-index: 2;
+    }
+
+    .searchinput {
+        padding-left: 30px;
+    }
+
+    .dataTables_wrapper .dataTables_filter {
+    float: right;
+    text-align: right;
+    visibility: hidden;
+    }
+
+    fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow: 0px 0px 0px 0px #000;
+    box-shadow: 0px 0px 0px 0px #000;
+    }
+
+    legend.scheduler-border {
+    font-size: 1.2em !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    width: auto;
+    padding: 0 10px;
+    border-bottom: none;
+    }
+
+</style>
+
+<div class="container mt-5 mb-3">
+    <h3 class="text-center">Keyword Counter</h3>
+</div>
+
+<div class="container mt-3">
+    <fieldset class="scheduler-border">
+        
+        <legend class="scheduler-border">Filter</legend>
+        
+        <form method="GET">
+            <div class="container">
+                <div class="control-group">
+                    <div class="row">
+                        <div class="form-group form-inline">
+                            <label for="datepicker1">Tanggal :</label>
+                            <input name="date1" class="form-control ml-3" id="datepicker1" placeholder="DD/MM/YY"
+                                autocomplete="off" required value="{{tanggal1}}" />
+                            <script>
+                                $('#datepicker1').datepicker({
+                                    uiLibrary: 'bootstrap4',
+                                    format: 'dd/mm/yyyy'
+                                });
+                            </script>
+
+                            <label class="ml-3" for="datepicker2"> s/d </label>
+                            <input name="date2" class="form-control ml-3" id="datepicker2" placeholder="DD/MM/YY"
+                                autocomplete="off" required value="{{tanggal2}}" />
+                            <script>
+                                $('#datepicker2').datepicker({
+                                    uiLibrary: 'bootstrap4',
+                                    format: 'dd/mm/yyyy'
+                                });
+                            </script>
+
+                            <button name="filter" type="submit" class="btn btn-sm btn-primary ml-3">Terapkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+            
+        <div class="control-group">
+            <div class="row">
+                <div class="col input-wrapper">
+                    <input id="myInputTextField" type="text"
+                        class="form-control form-control-borderless searchinput" placeholder="Cari keyword...">
+                    <span class="fas fa-search searchspan"></span>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+</div>
+
+<div class="container">
+    <table id="keywordTable" class="table table-sm table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>                    
+                <th>Keyword</th>
+                <th>Jumlah Pencarian</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in counts %}
+            <tr>
+                <td>{{item.keyword}}</td>
+                <td>{{item.keyword_count}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    oTable = $('#keywordTable').DataTable({
+        bInfo: false,
+        order: [
+            [1, "desc"],
+        ],
+    });
+    $('#myInputTextField').keyup(function(){
+        oTable.search($(this).val()).draw() ;
+    })
+</script>
+
+{% endblock content %}
