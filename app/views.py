@@ -116,7 +116,7 @@ class UpdatePageView(View):
 
     def get(self, request, pk_page, pk_location):
         page_instance = Page.objects.filter(pk=pk_page)
-        location_instance = Location.objects.filter(pk=pk_location)
+        location_instance = Location.objects.filter(page_id__in=page_instance)
 
         form_application = self.form_class['form_application']()
         formset_page = self.form_class['formset_page'](prefix='page', queryset=page_instance)
@@ -207,7 +207,7 @@ class AddBannerView(View):
 
             return render(request, self.template_name, context)
         
-        messages.add_message(request, messages.INFO, "Data berhasil ditambahkan!", extra_tags="location_added")
+        messages.add_message(request, messages.INFO, "Data berhasil ditambahkan!", extra_tags="banner_added")
 
         return redirect(reverse('app:banner'))
 
