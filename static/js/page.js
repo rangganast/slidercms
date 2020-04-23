@@ -5,8 +5,6 @@ $(document).on("click", ".open-imgModal", function () {
 });
 
 table = $('#pageTable').DataTable({
-    ajax: 'https://gyrocode.github.io/files/jquery-datatables/arrays.jso',
-    rowsGroup : [1],
     bInfo : false,
     ordering : [[ 0, "asc" ]],
     responsive : true,

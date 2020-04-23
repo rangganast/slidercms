@@ -79,12 +79,20 @@ WSGI_APPLICATION = 'slidercms.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME' : 'slidercmsDB',
+    #     'USER' : 'postgres',
+    #     'PASSWORD' : 'root',
+    #     'HOST' : 'localhost',
+    # }   
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME' : 'slidercmsDB',
-        'USER' : 'postgres',
-        'PASSWORD' : 'root',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME' : 'slidercmsdbqa',
+        'USER' : 'iamsuperuser',
+        'PASSWORD' : 'amwTxd4qu6',
         'HOST' : 'localhost',
+        'PORT' : '',
     }   
 }
 
