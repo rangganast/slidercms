@@ -309,3 +309,4 @@ function removeLocation(input) {
     $('#id_location-TOTAL_FORMS').val(totalLocation);
 
 }
+

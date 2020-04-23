@@ -58,6 +58,7 @@ class LocationForm(forms.ModelForm):
             'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True'}),
             'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True'}),
         }
+    
 
 LocationFormSet = modelformset_factory(Location, form=LocationForm, extra=1, can_delete=True)
 
@@ -108,7 +109,7 @@ class BannerForm(forms.ModelForm):
         return image
 
 class InstallationForm(forms.ModelForm):
-    banner_choices = tuple(Banner.objects.values_list("id", "name"))
+    banner_choices = tuple(Banner.objects.values_list("id", "name").order_by("id"))
 
     banner_names = forms.ChoiceField(choices=banner_choices, widget=forms.Select(attrs={'class' : 'custom-select'}), label='Nama Banner')
 
@@ -119,8 +120,12 @@ class InstallationForm(forms.ModelForm):
             'redirect' : _('Link Tujuan Banner'),
         }
         widgets = {
-            'redirect' : forms.TextInput(attrs={'class' : 'form-control', 'required' : 'true'}),
+            'redirect' : forms.URLInput(attrs={'class' : 'form-control', 'required' : 'true'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(InstallationForm, self).__init__(*args, **kwargs)
+        self.fields['banner_names'].empty_label = 'Pilih gambar'
 
 InstallationFormSet = modelformset_factory(Installation, form=InstallationForm, extra=1, can_delete=True)
 

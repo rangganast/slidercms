@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.http import HttpResponse
 from . import services
 from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, InstallationFormSet, KeywordDateRangeForm
 from .models import Application, Page, Location, Banner, Installation
@@ -294,17 +295,12 @@ class AddInstallationView(View):
     inital = {'key' : 'value'}
     template_name = 'app/add_installation_form.html'
 
-    def get_page(self, request, queryset=None):
-        pages = Page.objects.filter(application_id=app_id)
-        return pages
-
     def get(self, request):
         formset_installation = self.form_class['formset_installation'](queryset=Installation.objects.none())
 
         context = {
             'formset_installation' : formset_installation,
             'apps' : Application.objects.all(),
-            'pages' : self.load_pages(),
         }
 
         return render(request, self.template_name, context)
@@ -339,3 +335,18 @@ class KeywordListPage(View):
             context['counts'] = counts
             
         return render(request, self.template_name, context)
+
+def load_pages(request):
+    app_id = request.GET.get('app_id')
+    pages = Page.objects.filter(application_id=app_id)
+    return render(request, 'app/pages_dropdown_list_options.html', {'pages': pages})
+
+def load_locations(request):
+    page_id = request.GET.get('page_id')
+    locations = Location.objects.filter(page_id=page_id)
+    return render(request, 'app/locations_dropdown_list_options.html', {'locations': locations})
+
+def load_banner(request):
+    banner_id = request.GET.get('banner_id')
+    banner = Banner.objects.get(pk=banner_id)
+    return HttpResponse(banner.image.url)

@@ -23,6 +23,10 @@ urlpatterns = [
 
     path('installation/add_installation/', login_required(views.AddInstallationView.as_view()), name='add_installation'),
 
+    path('ajax/load-pages/', login_required(views.load_pages), name='ajax_load_pages'),
+    path('ajax/load-locations/', login_required(views.load_locations), name='ajax_load_locations'),
+    path('ajax/load-banner/', login_required(views.load_banner), name='ajax_load_banner'),
+
     path('login/', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('logout/', login_required(auth_views.LogoutView.as_view()), name='logout'),
 ]
