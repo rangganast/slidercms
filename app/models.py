@@ -24,6 +24,7 @@ class Page(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=5)
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='applications')
     name = models.CharField(max_length=100)
+    is_archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -47,7 +48,6 @@ class Location(models.Model):
     name = models.CharField(max_length=100)
     width = models.IntegerField()
     height = models.IntegerField()
-    is_archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

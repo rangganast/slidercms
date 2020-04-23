@@ -19,56 +19,73 @@
         </div>
     </div>
 
-    <table id="pageTable" class="table table-striped mt-3">
+    <table id="pageTable" class="table table-striped table-bordered mt-3">
         <thead class="thead-dark">
             <tr>
                 <th scope="col">No</th>
                 <th scope="col">Nama Aplikasi</th>
                 <th scope="col">Nama Halaman</th>
                 <th scope="col">Nama Lokasi Pemasangan</th>
+                <th scope="col">Ukuran Gambar</th>
                 <th scope="col">Aksi</th>
             </tr>
         </thead>
+
         <tbody>
-            
-            {% for content in contents %}
+        {% for content in contents %}
             <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ content.app }}</td>
-                <td>{{ content.page }}</td>
-                <td>{{ content.location }}</td>
+                <td>{{forloop.counter}}</td>
+                <td>{{content.app}}</td>
+                <td>{{content.page_name}}</td>
+                <td>
+                    <ul>
+                        {% for name in content.location_names %}
+                            <li>{{name}}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        {% for size in content.location_sizes %}
+                            <li>{{size}}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
                 <td>
                     <span class="spanFormat">
-                        <form action="{% url 'app:update_page' pk_page=content.page_id pk_location=content.location_id %}"
-                            method="GET">
-                            <button type="submit" class="btn btn-sm btn-warning" {% if content.is_active %}disabled{% else %}{% endif %}>Update</button>
+                        <form action="{% url 'app:update_page' pk_page=content.page_id %}" method="GET">
+                            <button type="submit" class="btn btn-sm btn-warning"
+                                {% if content.is_active %}disabled{% else %}{% endif %}>Update</button>
                         </form>
                     </span>
 
                     {% if content.is_archived == False %}
 
                     <span class="spanFormat">
-                        <form id="form_page_archive_{{ content.location_id}}" action="{% url 'app:archive_page' pk=content.location_id %}" method="POST">
+                        <form id="form_page_archive_{{content.page_id}}" action="{% url 'app:archive_page' pk=content.page_id %}"
+                            method="POST">
                             {% csrf_token %}
-                            <button id="{{ content.location_id }}" type="button" onclick="archive(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
+                            <button id="{{ content.page_id }}" type="button" onclick="archive(this);" class="btn btn-sm btn-danger"
+                                {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
                         </form>
                     </span>
 
                     {% else %}
 
                     <span class="spanFormat">
-                        <form id="form_page_archive_{{ content.location_id}}" action="{% url 'app:archive_page' pk=content.location_id %}" method="POST">
+                        <form id="form_page_archive_{{content.page_id}}" action="{% url 'app:archive_page' pk=content.page_id %}"
+                            method="POST">
                             {% csrf_token %}
-                            <button id="{{ content.location_id }}" type="button" onclick="unarchive(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
+                            <button id="{{ content.page_id }}" type="button" onclick="unarchive(this);" class="btn btn-sm btn-danger"
+                                {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
                         </form>
                     </span>
 
                     {% endif %}
                 </td>
             </tr>
-            {% endfor %}
-
-        </tbody>
+        {% endfor %}
+        </tbody>     
     </table>
 
 </div>

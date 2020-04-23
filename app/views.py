@@ -15,23 +15,19 @@ class PageView(View):
         apps = Application.objects.all().order_by('pk')
         pages = Page.objects.all().order_by('pk')
         locations = Location.objects.all().order_by('pk')
-        installations = Installation.objects.values('location_id', 'is_active').order_by('location_id')
 
         contents = []
 
-        for i in range(len(locations)):
-            contents.append({'location_id' : locations[i].id, 'location' : locations[i].name, 'is_archived' : locations[i].is_archived, 'is_active': None, 'page_id' : None, 'page': None, 'app' : None})
-            for installation in installations:
-                if locations[i].id==installation['location_id']:
-                    contents[i]['is_active'] = installation['is_active']
-
-            for page in pages:
-                if locations[i].page_id == page.id:
-                    contents[i]['page_id'] = page.id
-                    contents[i]['page'] = page.name
-                    for app in apps:
-                        if page.application_id == app.id:
-                            contents[i]['app'] = app.name
+        for i in range(len(pages)):
+            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_names' : [], 'location_sizes' : []})
+            for app in apps:
+                if pages[i].application_id == app.id:
+                    contents[i]['app'] = app.name
+            
+            for location in locations:
+                if location.page_id == pages[i].id:
+                    contents[i]['location_names'].append(location.name)
+                    contents[i]['location_sizes'].append(str(location.width) + " x " + str(location.height))
 
         context = {
             'contents' : contents,
@@ -114,7 +110,7 @@ class UpdatePageView(View):
     initial = {'key', 'value'}
     template_name = 'app/update_page_form.html'
 
-    def get(self, request, pk_page, pk_location):
+    def get(self, request, pk_page):
         page_instance = Page.objects.filter(pk=pk_page)
         location_instance = Location.objects.filter(page_id__in=page_instance)
 
@@ -135,18 +131,18 @@ class UpdatePageView(View):
 
 class ArchivePageView(View):
     def post(self, request, pk):
-        location_instance = Location.objects.get(pk=pk)
+        page_instance = Page.objects.get(pk=pk)
 
-        if location_instance.is_archived == True:
-            location_instance.is_archived = False
-            location_instance.save()
-            messages.add_message(request, messages.INFO, "Data berhasil di-unarchive!", extra_tags="location_unarchived")
+        if page_instance.is_archived == True:
+            page_instance.is_archived = False
+            page_instance.save()
+            messages.add_message(request, messages.INFO, "Halaman berhasil di-unarchive!", extra_tags="location_unarchived")
 
             return redirect(reverse('app:page'))
         else:
-            location_instance.is_archived = True
-            location_instance.save()
-            messages.add_message(request, messages.INFO, "Data berhasil di-archive!", extra_tags="location_archived")
+            page_instance.is_archived = True
+            page_instance.save()
+            messages.add_message(request, messages.INFO, "Halaman berhasil di-archive!", extra_tags="location_archived")
 
             return redirect(reverse('app:page'))
 

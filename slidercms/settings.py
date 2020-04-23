@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
-    'app',
+    'app'
 ]
 
 MIDDLEWARE = [
@@ -81,11 +81,10 @@ WSGI_APPLICATION = 'slidercms.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME' : 'slidercmsdbqa',
-        'USER' : 'iamsuperuser',
-        'PASSWORD' : 'amwTxd4qu6',
+        'NAME' : 'slidercmsDB',
+        'USER' : 'postgres',
+        'PASSWORD' : 'root',
         'HOST' : 'localhost',
-        'PORT' : '',
     }   
 }
 
@@ -130,14 +129,14 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIAFILES_DIRS = [os.path.join(BASE_DIR, 'media')]
 
 LOGIN_URL = 'app:login'
-LOGIN_REDIRECT_URL = 'app:banner'
+LOGIN_REDIRECT_URL = 'app:page'
 LOGOUT_REDIRECT_URL = 'app:login'
 
 REST_FRAMEWORK = {
