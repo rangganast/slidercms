@@ -1,0 +1,126 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/add_page.css' %}">
+
+<div class="container mt-5 mb-5">
+    <form id="" method="POST">
+        {% csrf_token %}
+
+        {{ formset_installation.management_form }}
+
+        <div id="card-field" class="container-fluid mt-3">
+
+            <h3 class="text-center mb-2">Form Tambah Pemasangan Banner
+                <span class="btn-group float-right">
+                    <a href="">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </a>
+                </span>
+                <span class="btn-group float-right">
+                    <a href="" style="color: white; text-decoration: none;">
+                        <button type="button" class="btn btn-secondary mr-2">
+                            Batal
+                        </button>
+                    </a>
+                </span>
+            </h3>
+
+            <hr>
+
+            <div class="container-fluid mt-5">
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="#app_select">Nama Aplikasi</label>
+                    <div class="col-sm-10">
+                        <select id="app_select" class="custom-select">
+                        {% for app in apps %}
+                            <option value="{{ app.id }}">{{ app.name }}
+                        {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid mb-3">
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="#app_select">Nama Halaman</label>
+                    <div class="col-sm-10">        
+                        <select id="page_select" class="custom-select">
+                        {% for page in pages %}
+                            <option value="{{ page.id }}">{{ page.name }}
+                        {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid mb-5">
+
+                {% for installation in formset_installation %}
+                <fieldset id="id_page-0-fieldset" class="page-border fieldset">
+
+                    <legend class="page-border">Halaman ke-1</legend>
+
+                    <div class="container">
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label"
+                                for="{{ installation.banner_names.id_for_label }}">{{ installation.banner_names.label }}</label>
+                            <div class="col-sm-9">{{ installation.banner_names }}</div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label"
+                                for="{{ installation.redirect.id_for_label }}">{{ installation.redirect.label }}</label>
+                            <div class="col-sm-9">{{ installation.redirect }}</div>
+                        </div>
+
+                        <button id="id_location-add-0" type="button" class="btn btn-sm btn-primary float-right"
+                            onclick="cloneLocation(this);">Tambah Banner</button>
+                        <button id="id_location-delete-0" type="button" class="btn btn-sm btn-danger float-right mr-2"
+                            onclick="removeLocation(this);" style="display: none;">Hapus Banner</button>
+                        
+                    </div>
+                    
+                </fieldset>
+                {% endfor %}
+                
+                <div class="container mb-5">
+                    <div class="form-group row float-right">
+                        <button id="id_page-delete-button" type="button" class="btn btn-danger float-right mr-2"
+                            onclick="removePage('fieldset.page-border:last');" style="display: none;">Hapus Halaman</button>
+                        <button id="id_page-add-button" type="button" class="btn btn-primary float-right"
+                            onclick="clonePage('fieldset.page-border:last');">Tambah Halaman</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </form>
+
+</div>
+
+<div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <img id="previewImg" src="" style="width: 100%; max-width: 800px;">
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/add_installation.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<script>
+    $('#app_select').change(function () {
+        var app_id = $(this).val();
+    });
+</script>
+
+{% endblock content %}  

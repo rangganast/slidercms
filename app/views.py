@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
 from . import services
-from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, InstallationForm, KeywordDateRangeForm
+from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, InstallationFormSet, KeywordDateRangeForm
 from .models import Application, Page, Location, Banner, Installation
 
 # Create your views here.
@@ -282,6 +282,32 @@ class ArchiveBannerView(View):
             messages.add_message(request, messages.INFO, "Data berhasil di-archive!", extra_tags="banner_archived")
 
             return redirect(reverse('app:banner'))
+
+class InstallationView(View):
+    pass
+
+class AddInstallationView(View):
+    form_class = {
+        'formset_installation' : InstallationFormSet,
+    }
+
+    inital = {'key' : 'value'}
+    template_name = 'app/add_installation_form.html'
+
+    def get_page(self, request, queryset=None):
+        pages = Page.objects.filter(application_id=app_id)
+        return pages
+
+    def get(self, request):
+        formset_installation = self.form_class['formset_installation'](queryset=Installation.objects.none())
+
+        context = {
+            'formset_installation' : formset_installation,
+            'apps' : Application.objects.all(),
+            'pages' : self.load_pages(),
+        }
+
+        return render(request, self.template_name, context)
 
 class KeywordListPage(View):
     form_class = {

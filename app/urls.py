@@ -21,6 +21,8 @@ urlpatterns = [
     path('banner/update_banner/<str:pk>/', login_required(views.UpdateBannerView.as_view()), name='update_banner'),
     path('banner/archive_banner/<str:pk>/', login_required(views.ArchiveBannerView.as_view()), name='archive_banner'),
 
+    path('installation/add_installation/', login_required(views.AddInstallationView.as_view()), name='add_installation'),
+
     path('login/', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('logout/', login_required(auth_views.LogoutView.as_view()), name='logout'),
 ]

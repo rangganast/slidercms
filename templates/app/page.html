@@ -108,7 +108,7 @@
     {% if messages %}
     {% for message in messages %}
     
-    {% if 'location_added' in message.tags %}
+    {% if 'page_added' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
@@ -117,7 +117,7 @@
         })
     {% endif %}
 
-    {% if 'banner_updated' in message.tags %}
+    {% if 'page_updated' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
@@ -126,7 +126,7 @@
         })
     {% endif %}
     
-    {% if 'location_archived' in message.tags %}
+    {% if 'page_archived' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
@@ -135,7 +135,7 @@
         })
     {% endif %}
     
-    {% if 'location_unarchived' in message.tags %}
+    {% if 'page_unarchived' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',

@@ -43,7 +43,7 @@ class LocationForm(forms.ModelForm):
         (False, 'Tidak')
     ]
 
-    is_slider = forms.CharField(label='Apakah lokasi pemasangan banner berupa "Slider"?', widget=forms.RadioSelect(choices=choices, attrs={'class' : 'ml-2'}))
+    is_slider = forms.CharField(label='Apakah lokasi pemasangan banner berupa "Slider"?', widget=forms.RadioSelect(choices=choices, attrs={'class' : 'ml-2', 'required' : True}))
 
     class Meta:
         model = Location
@@ -108,9 +108,21 @@ class BannerForm(forms.ModelForm):
         return image
 
 class InstallationForm(forms.ModelForm):
+    banner_choices = tuple(Banner.objects.values_list("id", "name"))
+
+    banner_names = forms.ChoiceField(choices=banner_choices, widget=forms.Select(attrs={'class' : 'custom-select'}), label='Nama Banner')
+
     class Meta:
         model = Installation
-        fields = ['redirect']
+        fields = ['banner_names', 'redirect']
+        labels = {
+            'redirect' : _('Link Tujuan Banner'),
+        }
+        widgets = {
+            'redirect' : forms.TextInput(attrs={'class' : 'form-control', 'required' : 'true'}),
+        }
+
+InstallationFormSet = modelformset_factory(Installation, form=InstallationForm, extra=1, can_delete=True)
 
 class KeywordDateRangeForm(forms.Form):
     date1 = forms.CharField(label='Tanggal Cari:', widget=forms.DateInput(
