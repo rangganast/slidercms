@@ -1,312 +1,343 @@
-function clonePage(selector){
+function cloneInstall(selector){
 
     var newElement = $(selector).clone(true, true);
-    var totalPage = $('#id_page-TOTAL_FORMS').val();
-    var totalPage = Number(totalPage);
+    var totalInstall = $('fieldset').length;
     
-    newElement.attr('id', 'id_page-' + totalPage + '-fieldset');
+    newElement.attr('id', 'id_install-' + totalInstall + '-fieldset');
 
-    newElement.find('legend').html('Halaman ke-' + (totalPage + 1));
-
-    newElement.find('#id_page-' + (totalPage - 1) + '-name').attr('id', 'id_page-' + totalPage + '-name');
-    newElement.find('#id_page-' + totalPage + '-name').attr('name', 'page-' + totalPage + '-name');
-
-    var forLabel = 'id_page-' + (totalPage - 1) + '-name'
-    newElement.find('label[for="' + forLabel + '"]').attr('for', 'id_page-' + totalPage + '-name');
+    newElement.find('legend').html('Lokasi Pemasangan ke-' + (totalInstall + 1));
     
-    newElement.find('#id_page-' + (totalPage - 1) + '-min').attr('id', 'id_page-' + totalPage + '-min');
-    newElement.find('#id_page-' + totalPage + '-min').attr('name', 'page-' + totalPage + '-min');
+    newElement.find('#id_location-select-' + (totalInstall - 1)).attr('id', 'id_location-select-' + totalInstall)
+    newElement.find('#id_location-select-' + totalInstall).attr('name', 'location-select-' + totalInstall)
 
-    newElement.find('#id_page-' + (totalPage - 1) + '-max').attr('id', 'id_page-' + totalPage + '-max');
-    newElement.find('#id_page-' + totalPage + '-max').attr('name', 'page-' + totalPage + '-max');
+    newElement.find('#id_location-size-' + (totalInstall - 1)).attr('id', 'id_location-size-' + totalInstall)
     
-    newElement.find('#id_location-add-' + (totalPage - 1)).attr('id', 'id_location-add-' + totalPage);
-    newElement.find('#id_location-delete-' + (totalPage - 1)).attr('id', 'id_location-delete-' + totalPage).hide();
+    var forLabel = 'id_location-select-' + (totalInstall - 1)
+    newElement.find('label[for="' + forLabel + '"]').attr('for', 'id_location-select-' + totalInstall);
 
-    newElement.find('.location-div').not(':first').remove();
+    newElement.find('#id_banner-' + (totalInstall - 1) + '-min').attr('id', 'id_banner-' + totalInstall + '-min');
+    newElement.find('#id_banner-' + totalInstall + '-min').attr('name', 'banner-' + totalInstall + '-min');
+
+    newElement.find('#id_banner-' + (totalInstall - 1) + '-max').attr('id', 'id_banner-' + totalInstall + '-max');
+    newElement.find('#id_banner-' + totalInstall + '-max').attr('name', 'banner-' + totalInstall + '-max');
+    
+    newElement.find('#id_banner-add-' + (totalInstall - 1)).attr('id', 'id_banner-add-' + totalInstall);
+    newElement.find('#id_banner-delete-' + (totalInstall - 1)).attr('id', 'id_banner-delete-' + totalInstall).hide();
+
+    newElement.find('img').attr('src', '');
+
+    newElement.find('small').html('');
+
+    newElement.find('.banner-div').not(':first').remove();
 
     $(selector).after(newElement);
 
-    $('.location-slider').find('input:first').each(function (index) {
-       $(this).attr("id", "id_location-" + index + "-is_slider_0");
-       $(this).attr("name", "location-" + index + "-is_slider");
+    $('.banner-name').find('select').each(function (index) {
+        $(this).attr("id", "id_installation-" + index + "-banner_names");
+        $(this).attr("name", "installation-" + index + "-banner_names");
+    });
+
+    $('.banner-name').find('label').each(function (index) {
+        $(this).attr("for", "id_installation-" + index + "-banner_names");
+    });
+
+
+
+    $('.banner-preview').find('img').each(function (index) {
+        $(this).attr("id", "img-" + index);
+    });
+
+    $('.banner-preview').find('label').each(function (index) {
+        $(this).attr("for", "img-" + index + "-banner_names");
+    });
+
+
+
+    $('.banner-url').find('input').each(function (index) {
+        $(this).attr("id", "id_installation-" + index + "-redirect");
+        $(this).attr("name", "installation-" + index + "-redirect");
+    });
+
+    $('.banner-url').find('label').each(function (index) {
+        $(this).attr("for", "id_installation-" + index + "-redirect");
+    });
+
+
+
+    $('.redirect-toggle').find('input:first').each(function (index) {
+        $(this).attr("id", "id_banner-" + index + "-is_redirect_0");
+        $(this).attr("name", "banner-" + index + "-is_redirect");
+    });
+
+    $('.redirect-toggle').find('label:first').each(function (index) {
+        $(this).attr("for", "id_banner-" + index + "-is_redirect_0");
     });
     
-    $('.location-slider').find('label:first').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-is_slider_0");
+    $('.redirect-toggle').find('label:nth-child(2)').each(function (index) {
+        $(this).find('label').attr("for", "id_banner-" + index + "-is_redirect_0");
     });
 
-    $('.location-slider').find('label:nth-child(2)').each(function (index) {
-        $(this).find('label').attr("for", "id_location-" + index + "-is_slider_0");
+    $('.redirect-toggle').find('input:last').each(function (index) {
+        $(this).attr("id", "id_banner-" + index + "-is_redirect_1");
+        $(this).attr("name", "banner-" + index + "-is_redirect");
     });
 
-    $('.location-slider').find('input:last').each(function (index) {
-       $(this).attr("id", "id_location-" + index + "-is_slider_1");
-       $(this).attr("name", "location-" + index + "-is_slider");
-    });
-
-    $('.location-slider').find('label:last').each(function (index) {
-       $(this).attr("for", "id_location-" + index + "-is_slider_1");
+    $('.redirect-toggle').find('label:last').each(function (index) {
+        $(this).attr("for", "id_banner-" + index + "-is_redirect_1");
     });
 
 
-    
-    $('.location-name input').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-name");
-        $(this).attr("name", "location-" + index + "-name");
-    });
-
-    $('.location-name').find('label').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-name");
-    });
-
-
-    
-    $('.location-size').find('input:first').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-width");
-        $(this).attr("name", "location-" + index + "-width");
-    });
-
-    $('.location-size').find('label:first').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-width");
-    });
-    
-    $('.location-size').find('input:last').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-height");
-        $(this).attr("name", "location-" + index + "-height");
-    });
-    
-    $('.location-size').find('label:last').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-height");
-    });
-
-     
 
     $('fieldset').each(function (index) {
-        var min_child = $(this).find('.location-name:first input').attr("name").slice(9, 11);
+        var min_child = $(this).find('.banner-url:first input').attr("name").slice(13, 15);
 
         if (min_child.includes('-')) {
-            var min_child = $(this).find('.location-name:first input').attr("name").slice(9, 10);
+            var min_child = $(this).find('.banner-url:first input').attr("name").slice(13, 14);
         }
 
-        $(this).find('#id_page-' + index + '-min').val(min_child);
+        $(this).find('#id_banner-' + index + '-min').val(min_child);
 
-        var max_child = $(this).find('.location-name:last input').attr("name").slice(9, 11);
+        var max_child = $(this).find('.banner-url:last input').attr("name").slice(13, 15);
         if (max_child.includes('-')) {
-            var max_child = $(this).find('.location-name:last input').attr("name").slice(9, 10);
+            var max_child = $(this).find('.banner-url:last input').attr("name").slice(13, 14);
         }
 
-        $(this).find('#id_page-' + index + '-max').val(max_child);
+        $(this).find('#id_banner-' + index + '-max').val(max_child);
     });
-
-    var totalLocation = $('.location-div').length;
-    $('#id_location-TOTAL_FORMS').val(totalLocation);
-
-    totalPage = $('fieldset').length;
     
-    if (totalPage > 1) {
-        $('#id_page-delete-button').show();
+    totalInstall = $('.banner-div').length;
+    
+    if (totalInstall > 1) {
+        $('#id_install-delete-button').show();
     }
 
-    $('#id_page-TOTAL_FORMS').val(totalPage);
+    $('#id_installation-TOTAL_FORMS').val(totalInstall);
+
+    $('#id_installation-TOTAL_FIELDSETS').val($('fieldset').length);
 
 }
 
-function removePage(selector) {
+function removeInstall(selector) {
 
     $(selector).remove();
 
     if ($('fieldset').length == 1) {
-        $('#id_page-delete-button').hide();
+        $('#id_install-delete-button').hide();
     }
 
-    var totalPage = $('fieldset').length;
-    $('#id_page-TOTAL_FORMS').val(totalPage);
+    var totalInstall = $('.banner-div').length;
+    $('#id_installation-TOTAL_FORMS').val(totalInstall);
+
+    $('#id_installation-TOTAL_FIELDSETS').val($('fieldset').length);
 
 }
 
-function cloneLocation(input) {
+function cloneBanner(input) {
 
     var id = $(input).attr("id");
     var id = id.slice(-1);
 
-    var selector = '#id_page-' + id + '-fieldset .location-div:last';
+    var selector = '#id_install-' + id + '-fieldset .banner-div:last';
 
     newElement = $(selector).clone(true, true);
+
+    newElement.find('img').attr('src', '')
+
     $(selector).after(newElement);
 
-    $('.location-slider').find('input:first').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-is_slider_0");
-        $(this).attr("name", "location-" + index + "-is_slider");
+    $('.banner-name').find('select').each(function (index) {
+        $(this).attr("id", "id_installation-" + index + "-banner_names");
+        $(this).attr("name", "installation-" + index + "-banner_names");
     });
 
-    $('.location-slider').find('label:first').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-is_slider_0");
-    });
-
-    $('.location-slider').find('label:nth-child(2)').each(function (index) {
-        $(this).find('label').attr("for", "id_location-" + index + "-is_slider_0");
-    });
-
-    $('.location-slider').find('input:last').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-is_slider_1");
-        $(this).attr("name", "location-" + index + "-is_slider");
-    });
-
-    $('.location-slider').find('label:last').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-is_slider_1");
+    $('.banner-name').find('label').each(function (index) {
+        $(this).attr("for", "id_installation-" + index + "-banner_names");
     });
 
 
 
-    $('.location-name input').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-name");
-        $(this).attr("name", "location-" + index + "-name");
+    $('.banner-preview').find('img').each(function (index) {
+        $(this).attr("id", "img-" + index);
     });
 
-    $('.location-name').find('label').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-name");
-    });
-
-
-
-    $('.location-size').find('input:first').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-width");
-        $(this).attr("name", "location-" + index + "-width");
-    });
-
-    $('.location-size').find('label:first').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-width");
-    });
-
-    $('.location-size').find('input:last').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-height");
-        $(this).attr("name", "location-" + index + "-height");
-    });
-
-    $('.location-size').find('label:last').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-height");
+    $('.banner-preview').find('label').each(function (index) {
+        $(this).attr("for", "img-" + index + "-banner_names");
     });
 
 
+
+    $('.banner-url').find('input').each(function (index) {
+        $(this).attr("id", "id_installation-" + index + "-redirect");
+        $(this).attr("name", "installation-" + index + "-redirect");
+    });
+
+    $('.banner-url').find('label').each(function (index) {
+        $(this).attr("for", "id_installation-" + index + "-redirect");
+    });
+
+
+
+    $('.redirect-toggle').find('input:first').each(function (index) {
+        $(this).attr("id", "id_banner-" + index + "-is_redirect_0");
+        $(this).attr("name", "banner-" + index + "-is_redirect");
+    });
+
+    $('.redirect-toggle').find('label:first').each(function (index) {
+        $(this).attr("for", "id_banner-" + index + "-is_redirect_0");
+    });
+
+    $('.redirect-toggle').find('label:nth-child(2)').each(function (index) {
+        $(this).find('label').attr("for", "id_banner-" + index + "-is_redirect_0");
+    });
+
+    $('.redirect-toggle').find('input:last').each(function (index) {
+        $(this).attr("id", "id_banner-" + index + "-is_redirect_1");
+        $(this).attr("name", "banner-" + index + "-is_redirect");
+    });
+
+    $('.redirect-toggle').find('label:last').each(function (index) {
+        $(this).attr("for", "id_banner-" + index + "-is_redirect_1");
+    });
 
     $('fieldset').each(function (index) {
-        var min_child = $(this).find('.location-name:first input').attr("name").slice(9, 11);
-        
+        var min_child = $(this).find('.banner-url:first input').attr("name").slice(13, 15);
+
         if (min_child.includes('-')) {
-            var min_child = $(this).find('.location-name:first input').attr("name").slice(9, 10);
-            console.log(min_child)
+            var min_child = $(this).find('.banner-url:first input').attr("name").slice(13, 14);
         }
 
-        $(this).find('#id_page-' + index + '-min').val(min_child);
+        $(this).find('#id_banner-' + index + '-min').val(min_child);
 
-        var max_child = $(this).find('.location-name:last input').attr("name").slice(9, 11);
+        var max_child = $(this).find('.banner-url:last input').attr("name").slice(13, 15);
         if (max_child.includes('-')) {
-            var max_child = $(this).find('.location-name:last input').attr("name").slice(9, 10);
+            var max_child = $(this).find('.banner-url:last input').attr("name").slice(13, 14);
         }
 
-        $(this).find('#id_page-' + index + '-max').val(max_child);
+        $(this).find('#id_banner-' + index + '-max').val(max_child);
     });
 
-    var totalLocationFieldset = $('#id_page-' + id + '-fieldset .location-div').length;
+    var totalBannerFieldset = $('#id_install-' + id + '-fieldset .banner-div').length;
 
-    if (totalLocationFieldset > 1) {
-        $('#id_location-delete-' + id).show();
+    if (totalBannerFieldset > 1) {
+        $('#id_banner-delete-' + id).show();
     }
 
-    var totalLocation = $('.location-div').length;
+    totalInstall = $('.banner-div').length;
 
-    $('#id_location-TOTAL_FORMS').val(totalLocation);
-
+    $('#id_installation-TOTAL_FORMS').val(totalInstall);
 }
 
-function removeLocation(input) {
+function removeBanner(input) {
     
     var id = $(input).attr("id");
     var id = id.slice(-1);
 
-    var selector = '#id_page-' + id + '-fieldset .location-div:last';
+    var selector = '#id_install-' + id + '-fieldset .banner-div:last';
     $(selector).remove();
 
-    $('.location-slider').find('input:first').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-is_slider_0");
-        $(this).attr("name", "location-" + index + "-is_slider");
+    $('.banner-name').find('select').each(function (index) {
+        $(this).attr("id", "id_installation-" + index + "-banner_names");
+        $(this).attr("name", "installation-" + index + "-banner_names");
     });
 
-    $('.location-slider').find('label:first').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-is_slider_0");
-    });
-
-    $('.location-slider').find('label:nth-child(2)').each(function (index) {
-        $(this).find('label').attr("for", "id_location-" + index + "-is_slider_0");
-    });
-
-    $('.location-slider').find('input:last').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-is_slider_1");
-        $(this).attr("name", "location-" + index + "-is_slider");
-    });
-
-    $('.location-slider').find('label:last').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-is_slider_1");
+    $('.banner-name').find('label').each(function (index) {
+        $(this).attr("for", "id_installation-" + index + "-banner_names");
     });
 
 
 
-    $('.location-name input').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-name");
-        $(this).attr("name", "location-" + index + "-name");
+    $('.banner-preview').find('img').each(function (index) {
+        $(this).attr("id", "img-" + index);
     });
 
-    $('.location-name').find('label').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-name");
-    });
-
-
-
-    $('.location-size').find('input:first').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-width");
-        $(this).attr("name", "location-" + index + "-width");
-    });
-
-    $('.location-size').find('label:first').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-width");
-    });
-
-    $('.location-size').find('input:last').each(function (index) {
-        $(this).attr("id", "id_location-" + index + "-height");
-        $(this).attr("name", "location-" + index + "-height");
-    });
-
-    $('.location-size').find('label:last').each(function (index) {
-        $(this).attr("for", "id_location-" + index + "-height");
+    $('.banner-preview').find('label').each(function (index) {
+        $(this).attr("for", "img-" + index + "-banner_names");
     });
 
 
+
+    $('.banner-url').find('input').each(function (index) {
+        $(this).attr("id", "id_installation-" + index + "-redirect");
+        $(this).attr("name", "installation-" + index + "-redirect");
+    });
+
+    $('.banner-url').find('label').each(function (index) {
+        $(this).attr("for", "id_installation-" + index + "-redirect");
+    });
+    
+
+
+    $('.redirect-toggle').find('input:first').each(function (index) {
+        $(this).attr("id", "id_banner-" + index + "-is_redirect_0");
+        $(this).attr("name", "banner-" + index + "-is_redirect");
+    });
+
+    $('.redirect-toggle').find('label:first').each(function (index) {
+        $(this).attr("for", "id_banner-" + index + "-is_redirect_0");
+    });
+
+    $('.redirect-toggle').find('label:nth-child(2)').each(function (index) {
+        $(this).find('label').attr("for", "id_banner-" + index + "-is_redirect_0");
+    });
+
+    $('.redirect-toggle').find('input:last').each(function (index) {
+        $(this).attr("id", "id_banner-" + index + "-is_redirect_1");
+        $(this).attr("name", "banner-" + index + "-is_redirect");
+    });
+
+    $('.redirect-toggle').find('label:last').each(function (index) {
+        $(this).attr("for", "id_banner-" + index + "-is_redirect_1");
+    });
     
     $('fieldset').each(function (index) {
-        var min_child = $(this).find('.location-name:first input').attr("name").slice(9, 11);
+        var min_child = $(this).find('.banner-url:first input').attr("name").slice(13, 15);
 
         if (min_child.includes('-')) {
-            var min_child = $(this).find('.location-name:first input').attr("name").slice(9, 10);
+            var min_child = $(this).find('.banner-url:first input').attr("name").slice(13, 14);
         }
 
-        $(this).find('#id_page-' + index + '-min').val(min_child);
+        $(this).find('#id_banner-' + index + '-min').val(min_child);
 
-        var max_child = $(this).find('.location-name:last input').attr("name").slice(9, 11);
+        var max_child = $(this).find('.banner-url:last input').attr("name").slice(13, 15);
         if (max_child.includes('-')) {
-            var max_child = $(this).find('.location-name:last input').attr("name").slice(9, 10);
+            var max_child = $(this).find('.banner-url:last input').attr("name").slice(13, 14);
         }
 
-        $(this).find('#id_page-' + index + '-max').val(max_child);
+        $(this).find('#id_banner-' + index + '-max').val(max_child);
     });
 
-    if ($('#id_page-' + id + '-fieldset').find('.location-div').length == 1) {
-        $('#id_location-delete-' + id).hide();
+    if ($('#id_install-' + id + '-fieldset').find('.banner-div').length == 1) {
+        $('#id_banner-delete-' + id).hide();
     }
 
-    var totalLocation = $('.location-div').length;
+    totalInstall = $('.banner-div').length;
 
-    $('#id_location-TOTAL_FORMS').val(totalLocation);
+    $('#id_installation-TOTAL_FORMS').val(totalInstall);
 
 }
 
+function showRedirect(selector, input) {
+    var inputId = $(input).attr('id');
+    var id = inputId.slice(10, 12);
+
+    if (id.includes('-')) {
+        var id = inputId.slice(10, 11);
+    }
+
+    $('#id_install-' + selector.toString() + '-fieldset .banner-div .banner-url').show();
+    $('#id_install-' + selector.toString() + '-fieldset .banner-div .banner-url input').prop('required', true);
+
+}
+
+function hideRedirect(selector, input) {
+    var inputId = $(input).attr('id');
+    var id = inputId.slice(10, 12);
+
+    if (id.includes('-')) {
+        var id = inputId.slice(10, 11);
+    }
+
+    $('#id_install-' + id + '-fieldset .banner-div .banner-url').hide();
+    $('#id_install-' + id + '-fieldset .banner-div .banner-url input').prop('required', false);
+
+}

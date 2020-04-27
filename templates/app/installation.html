@@ -1,0 +1,119 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/installation.css' %}">
+
+<div class="container mt-5 mb-5">
+    <h3 class="mt-3 mb-3">Manajemen Halaman</h3>
+
+    <div class="control-group mb-3">
+        <div class="row">
+            <div class="col input-wrapper">
+                <input id="myInputTextField" type="text"
+                    class="form-control form-control-borderless searchinput" placeholder="Cari...">
+                <span class="fas fa-search searchspan"></span>
+            </div>
+        </div>
+    </div>
+
+    <table id="pageTable" class="table table-striped table-bordered mt-3">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">No</th>
+                <th scope="col">Nama Aplikasi</th>
+                <th scope="col">Nama Halaman</th>
+                <th scope="col">Lokasi Pemasangan</th>
+                <th scope="col">Nama Banner</th>
+                <th scope="col">Aktif/Non-Aktif</th>
+                <th scope="col">Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            
+            {% for content in contents %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{content.app}}</td>
+                <td>{{content.page}}</td>
+                <td>{{content.location}}</td>
+                <td>
+                    <ul>
+                        {% for banner in content.banners %}
+                        <li>{{banner}}</li>
+                        {% endfor %}  
+                    </ul>
+                </td>
+                <td>{{content.is_active}}</td>
+                <td>{{content.app}}</td>
+            </tr>
+            {% endfor %}
+                
+        </tbody>     
+    </table>
+
+</div>
+
+<div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <img id="previewImg" src="" style="width: 100%; max-width: 800px;">
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/installation.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<script type="text/javascript">
+
+    {% if messages %}
+    {% for message in messages %}
+    
+    {% if 'page_added' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+
+    {% if 'page_updated' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'page_archived' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'page_unarchived' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+        
+    {% endfor %}
+    {% endif %}
+        
+</script>
+
+{% endblock content %}  

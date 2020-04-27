@@ -21,11 +21,13 @@ urlpatterns = [
     path('banner/update_banner/<str:pk>/', login_required(views.UpdateBannerView.as_view()), name='update_banner'),
     path('banner/archive_banner/<str:pk>/', login_required(views.ArchiveBannerView.as_view()), name='archive_banner'),
 
-    path('installation/add_installation/', login_required(views.AddInstallationView.as_view()), name='add_installation'),
+    path('installation/', login_required(views.InstallationView.as_view()), name='install'),
+    path('installation/add_installation/', login_required(views.AddInstallationView.as_view()), name='add_install'),
 
     path('ajax/load-pages/', login_required(views.load_pages), name='ajax_load_pages'),
     path('ajax/load-locations/', login_required(views.load_locations), name='ajax_load_locations'),
     path('ajax/load-banner/', login_required(views.load_banner), name='ajax_load_banner'),
+    path('ajax/load-location-size/', login_required(views.load_location_size), name='ajax_load_location_size'),
 
     path('login/', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('logout/', login_required(auth_views.LogoutView.as_view()), name='logout'),

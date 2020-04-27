@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from . import services
 from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, InstallationFormSet, KeywordDateRangeForm
 from .models import Application, Page, Location, Banner, Installation
@@ -13,7 +13,7 @@ class PageView(View):
     template_name = 'app/page.html'
 
     def get(self, request):
-        apps = Application.objects.all().order_by('pk')
+        apps = Application.objects.all().order_by('name')
         pages = Page.objects.all().order_by('pk')
         locations = Location.objects.all().order_by('pk')
 
@@ -285,7 +285,37 @@ class ArchiveBannerView(View):
             return redirect(reverse('app:banner'))
 
 class InstallationView(View):
-    pass
+    template_name = 'app/installation.html'
+
+    def get(self, request):
+        apps = Application.objects.all().order_by('pk')
+        pages = Page.objects.all().order_by('pk')
+        locations = Location.objects.all().order_by('pk')
+        banners = Banner.objects.all().order_by('pk')
+        installations = Installation.objects.all().order_by('pk')
+
+        contents = []
+
+        for i in range(len(locations)):
+            if Installation.objects.filter(location_id=locations[i].id).exists():
+                contents.append({'loc_id' : locations[i].id, 'page_id' : locations[i].page_id, 'app' : None, 'app_id' : None, 'page' : None, 'location' : locations[i].name, 'banners' : [], 'is_active' : locations[i].is_active})
+
+                for page in pages:
+                    for i in range(len(contents)):
+                        if contents[i]['page_id'] == page.id:
+                            contents[i]['page'] = page.name
+                            contents[i]['app_id'] = page.application_id
+
+                for app in apps:
+                    for i in range(len(contents)):
+                        if contents[i]['app_id'] == app.id:
+                            contents[i]['app'] = app.name
+
+        context = {
+            'contents' : contents,
+        }
+
+        return render(request, self.template_name, context)
 
 class AddInstallationView(View):
     form_class = {
@@ -296,7 +326,7 @@ class AddInstallationView(View):
     template_name = 'app/add_installation_form.html'
 
     def get(self, request):
-        formset_installation = self.form_class['formset_installation'](queryset=Installation.objects.none())
+        formset_installation = self.form_class['formset_installation'](prefix='installation', queryset=Installation.objects.none())
 
         context = {
             'formset_installation' : formset_installation,
@@ -304,6 +334,36 @@ class AddInstallationView(View):
         }
 
         return render(request, self.template_name, context)
+
+    def post(self, request):
+        formset_installation = self.form_class['formset_installation'](request.POST or None, prefix='installation', queryset=Installation.objects.none())
+
+        fieldsets = request.POST.get('installation-TOTAL_FIELDSETS', '')
+
+        if formset_installation.is_valid():
+            for i in range(int(fieldsets)):
+                location = request.POST.get('location-select-' + str(i), '')
+                min_banner = request.POST.get('banner-' + str(i) + '-min', '')
+                max_banner = request.POST.get('banner-' + str(i) + '-max', '')
+
+                location_instance = Location(pk=location)
+
+                installation = formset_installation.cleaned_data
+
+                for j in range(int(min_banner), int(max_banner)+1):
+                    if installation[j]:
+                        banner = installation[j]['banner_names']
+                        banner_instance = Banner.objects.get(pk=banner)
+                        redirect = installation[j]['redirect']
+
+                        installation_instance = Installation(location=location_instance, banner=banner_instance, redirect=redirect)
+                        installation_instance.save()
+
+            return HttpResponseRedirect(reverse('app:install'))
+        else:
+            print(formset_installation.errors)
+            
+            return HttpResponseRedirect(reverse('app:install'))
 
 class KeywordListPage(View):
     form_class = {
@@ -345,6 +405,12 @@ def load_locations(request):
     page_id = request.GET.get('page_id')
     locations = Location.objects.filter(page_id=page_id)
     return render(request, 'app/locations_dropdown_list_options.html', {'locations': locations})
+
+def load_location_size(request):
+    location_id = request.GET.get('location_id')
+    location = Location.objects.get(pk=location_id)
+    location_size = str(location.width) + " x " + str(location.height)
+    return HttpResponse(location_size)
 
 def load_banner(request):
     banner_id = request.GET.get('banner_id')

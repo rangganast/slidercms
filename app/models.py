@@ -44,7 +44,8 @@ class Page(models.Model):
 class Location(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='pages')
-    is_slider = models.BooleanField()
+    is_slider = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     name = models.CharField(max_length=100)
     width = models.IntegerField()
     height = models.IntegerField()
@@ -97,8 +98,7 @@ class Installation(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='locations')
     banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='banners')
-    is_active = models.BooleanField()
-    redirect = models.URLField(null=True)
+    redirect = models.URLField(null=True, blank=True)
 
     def save(self, **kwargs):
         if not self.id:
