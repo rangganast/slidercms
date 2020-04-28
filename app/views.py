@@ -300,16 +300,20 @@ class InstallationView(View):
             if Installation.objects.filter(location_id=locations[i].id).exists():
                 contents.append({'loc_id' : locations[i].id, 'page_id' : locations[i].page_id, 'app' : None, 'app_id' : None, 'page' : None, 'location' : locations[i].name, 'banners' : [], 'is_active' : locations[i].is_active})
 
+                installs = Installation.objects.filter(location_id=contents[-1]['loc_id'])
+                for install in installs:
+                    contents[-1]['banners'].append(Banner.objects.get(pk=install.banner_id))
+
                 for page in pages:
-                    for i in range(len(contents)):
-                        if contents[i]['page_id'] == page.id:
-                            contents[i]['page'] = page.name
-                            contents[i]['app_id'] = page.application_id
+                    for j in range(len(contents)):
+                        if contents[j]['page_id'] == page.id:
+                            contents[j]['page'] = page.name
+                            contents[j]['app_id'] = page.application_id
 
                 for app in apps:
-                    for i in range(len(contents)):
-                        if contents[i]['app_id'] == app.id:
-                            contents[i]['app'] = app.name
+                    for j in range(len(contents)):
+                        if contents[j]['app_id'] == app.id:
+                            contents[j]['app'] = app.name
 
         context = {
             'contents' : contents,

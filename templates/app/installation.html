@@ -47,8 +47,21 @@
                         {% endfor %}  
                     </ul>
                 </td>
-                <td>{{content.is_active}}</td>
-                <td>{{content.app}}</td>
+                <td></td>
+                <td>
+                    <span class="spanFormat">
+                        <form action="" method="GET">
+                            <button type="button" class="btn btn-sm btn-primary"
+                                {% if content.is_active %}disabled{% else %}{% endif %}>Detail</button>
+                        </form>
+                    </span>
+                    <span class="spanFormat">
+                        <form action="" method="GET">
+                            <button type="button" class="btn btn-sm btn-warning"
+                                {% if content.is_active %}disabled{% else %}{% endif %}>Update</button>
+                        </form>
+                    </span>
+                </td>
             </tr>
             {% endfor %}
                 

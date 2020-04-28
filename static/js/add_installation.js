@@ -200,6 +200,11 @@ function cloneBanner(input) {
     });
 
     $('fieldset').each(function (index) {
+
+        $(this).find('.banner-div').each(function (index) {
+            $(this).attr('id', 'banner-div-' + index);
+        });
+
         var min_child = $(this).find('.banner-url:first input').attr("name").slice(13, 15);
 
         if (min_child.includes('-')) {
@@ -290,6 +295,8 @@ function removeBanner(input) {
     });
     
     $('fieldset').each(function (index) {
+        
+
         var min_child = $(this).find('.banner-url:first input').attr("name").slice(13, 15);
 
         if (min_child.includes('-')) {
@@ -316,28 +323,30 @@ function removeBanner(input) {
 
 }
 
-function showRedirect(selector, input) {
-    var inputId = $(input).attr('id');
-    var id = inputId.slice(10, 12);
+function showRedirect(input) {
+    var fieldset = $(input).parent().parent().parent().parent().parent().parent().parent().attr('id');
+    var bannerDiv = $(input).parent().parent().parent().parent().parent().attr('id');
 
-    if (id.includes('-')) {
-        var id = inputId.slice(10, 11);
+    var bannerDivSliced = bannerDiv.slice(-2);
+    if (bannerDivSliced.includes('-')) {
+        var bannerDivSliced = bannerDiv.slice(-1)
     }
 
-    $('#id_install-' + selector.toString() + '-fieldset .banner-div .banner-url').show();
-    $('#id_install-' + selector.toString() + '-fieldset .banner-div .banner-url input').prop('required', true);
+    $('#' + fieldset + ' #banner-div-' + bannerDivSliced + ' .banner-url').show();
+    $('#' + fieldset + ' #banner-div-' + bannerDivSliced + ' .banner-url input').prop('required', true);
 
 }
 
-function hideRedirect(selector, input) {
-    var inputId = $(input).attr('id');
-    var id = inputId.slice(10, 12);
+function hideRedirect(input) {
+    var fieldset = $(input).parent().parent().parent().parent().parent().parent().parent().attr('id');
+    var bannerDiv = $(input).parent().parent().parent().parent().parent().attr('id');
 
-    if (id.includes('-')) {
-        var id = inputId.slice(10, 11);
+    var bannerDivSliced = bannerDiv.slice(-2);
+    if (bannerDivSliced.includes('-')) {
+        var bannerDivSliced = bannerDiv.slice(-1)
     }
 
-    $('#id_install-' + id + '-fieldset .banner-div .banner-url').hide();
-    $('#id_install-' + id + '-fieldset .banner-div .banner-url input').prop('required', false);
+    $('#' + fieldset + ' #banner-div-' + bannerDivSliced + ' .banner-url').hide();
+    $('#' + fieldset + ' #banner-div-' + bannerDivSliced + ' .banner-url input').prop('required', false);
 
 }
