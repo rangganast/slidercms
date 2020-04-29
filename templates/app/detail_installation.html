@@ -1,0 +1,121 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/detail_installation.css' %}">
+
+<div class="container mt-5 mb-5">
+
+    <div id="card-field" class="container-fluid mt-3">
+
+        <h3 class="text-center mb-2">Detail Pemasangan Banner
+            <span class="btn-group float-right">
+                <a href="{% url 'app:install' %}" style="color: white; text-decoration: none;">
+                    <button type="button" class="btn btn-secondary mr-2">
+                        Kembali
+                    </button>
+                </a>
+            </span>
+        </h3>
+
+        <hr>
+
+        <div class="container-fluid mt-5">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="app-name">
+                    <strong>
+                        Nama Aplikasi:
+                    </strong>
+                </label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control no-border" value="{{app.name}}" disabled>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="page-name">
+                    <strong>
+                        Nama Halaman:
+                    </strong>
+                </label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control no-border" value="{{page.name}}" disabled>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid mb-5">
+
+            <fieldset id="id_install-0-fieldset" class="page-border fieldset">
+                
+                <legend class="page-border">Lokasi Pemasangan ke-</legend>
+                
+                <div class="container">
+                    
+                    <div class="form-group row mt-2">
+                        <label class="col-sm-3 col-form-label" for="">
+                            <strong>Nama Lokasi Pemasangan: </strong>
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control no-border" value="{{location.name}}" disabled>
+                        </div>
+                    </div>
+                    
+                    {% for installation in installations %}
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="">
+                            <strong>Detail Banner</strong>
+                        </label>
+                    </div>
+
+                    {% for banner in banners %}
+                    {% if banner.id == installation.banner_id %}
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="">Nama Banner:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control no-border" value="{{banner.name}}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Gambar Banner:</label>
+                        <div class="col-sm-10">
+                            <img src="http://127.0.0.1:8000/media/{{banner.image}}" alt="" width="400">
+                        </div>
+                    </div>
+                    
+                    {% endif %}
+                    {% endfor %}
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="">
+                            <strong>Link Tujuan Banner:</strong>
+                        </label>
+                        <div class="col-sm-10">
+                            {% if installation.redirect == None %}
+                            <input type="text" class="form-control no-border" value="" disabled>
+                            {% else %}
+                            <input type="text" class="form-control no-border" value="{{installation.redirect}}" disabled>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    {% endfor %}
+                    
+                </div>
+                
+            </fieldset>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock content %}  

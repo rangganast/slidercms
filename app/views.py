@@ -20,7 +20,7 @@ class PageView(View):
         contents = []
 
         for i in range(len(pages)):
-            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_names' : [], 'location_sizes' : []})
+            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_names' : [], 'location_sizes' : [], 'is_active': None})
             for app in apps:
                 if pages[i].application_id == app.id:
                     contents[i]['app'] = app.name
@@ -29,6 +29,7 @@ class PageView(View):
                 if location.page_id == pages[i].id:
                     contents[i]['location_names'].append(location.name)
                     contents[i]['location_sizes'].append(str(location.width) + " x " + str(location.height))
+                    contents[i]['is_active'] = location.is_active
 
         context = {
             'contents' : contents,
@@ -152,7 +153,7 @@ class BannerView(View):
 
     def get(self, request):
         banners = Banner.objects.all().order_by('pk')
-        installations = Installation.objects.values('banner_id', 'is_active').order_by('banner_id')
+        installations = Installation.objects.values('banner_id', 'location_id').order_by('banner_id')
 
         contents = []
 
@@ -160,7 +161,8 @@ class BannerView(View):
             contents.append({'id': banners[i].id, 'name': banners[i].name, 'description': banners[i].description, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].image, 'is_archived': banners[i].is_archived, 'is_active': None})
             for installation in installations:
                 if installation['banner_id'] == banners[i].id:
-                    contents[i]['is_active'] = installation['is_active']
+                    location = Location.objects.get(pk=installation['location_id'])
+                    contents[i]['is_active'] = location.is_active
 
         context = {
             'contents': contents,
@@ -367,6 +369,53 @@ class AddInstallationView(View):
         else:
             print(formset_installation.errors)
             
+            return HttpResponseRedirect(reverse('app:install'))
+
+class UpdateInstallationView(View):
+    form_class = {
+        'formset_installation' : InstallationFormSet,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/udpate_installation_form.html'
+
+    def get(self, request, pk):
+        pass
+
+class DetailInstallationView(View):
+    template_name = 'app/detail_installation.html'
+
+    def get(self, request, pk):
+        installation_instance = Installation.objects.filter(location_id=pk)
+        location_instance = Location.objects.get(pk=pk)
+        page_instance = Page.objects.get(pk=location_instance.page_id)
+        app_instance = Application.objects.get(pk=page_instance.application_id)
+        banner_instance = Banner.objects.all()
+
+        context = {
+            'installations' : installation_instance,
+            'location' : location_instance,
+            'page' : page_instance,
+            'app' : app_instance,
+            'banners' : banner_instance,
+        }
+        
+        return render(request, self.template_name, context)
+
+class ActiveInstallationView(View):
+    def post(self, request, pk):
+        print(pk)
+        location_instance = Location.objects.get(pk=pk)
+
+        if location_instance.is_active == True:
+            location_instance.is_active = False
+            location_instance.save()
+
+            return HttpResponseRedirect(reverse('app:install'))
+        else:
+            location_instance.is_active = True
+            location_instance.save()
+
             return HttpResponseRedirect(reverse('app:install'))
 
 class KeywordListPage(View):

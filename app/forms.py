@@ -16,13 +16,14 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.TextInput(attrs={'type': 'password', 'id': 'inputPassword', 'class': 'form-control', 'name': 'password', 'placeholder': 'Password', 'required': 'True',}))
 
 class ApplicationForm(forms.ModelForm):
-    choices = tuple(Application.objects.defer("name").values_list())
+    # choices = tuple(Application.objects.defer("name").values_list())
 
-    names = forms.ChoiceField(choices=choices, widget=forms.Select(attrs={'class' : 'custom-select'}), label='Nama Aplikasi')
+    # names = forms.ChoiceField(choices=choices, widget=forms.Select(attrs={'class' : 'custom-select'}), label='Nama Aplikasi')
 
     class Meta:
         model = Application
-        fields = ['names']
+        fields = ['name']
+        # fields = ['names']
 
 class PageForm(forms.ModelForm):
     class Meta:

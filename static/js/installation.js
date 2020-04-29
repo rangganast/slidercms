@@ -17,45 +17,61 @@ $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
 })
 
-function archive(input) {
+function active(input) {
     var pk = $(input).attr('id');
-    console.log(pk);
-    Swal.fire({
-        title: 'Archive',
-        icon: 'info',
-        html: 'Anda yakin ingin meng-archive location ini?',
-        showCancelButton: true,
-        showCloseButton: true,
-        focusConfirm: false,
-        cancelButtonText: 'Batal',
-        cancelButtonClass: 'btn btn-secondary',
-        confirmButtonText: 'Archive',
-        confirmButtonClass: 'btn btn-danger',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.value) {
-            $('#form_page_archive_' + pk).submit();
-        };
-    });
-};
+    var pk = pk.slice(-1);
+    var value = $(input).attr('value');
 
-function unarchive(input) {
-    var pk = $(input).attr('id');
-    Swal.fire({
-        title: 'Unarchive',
-        icon: 'info',
-        html: 'Anda yakin ingin meng-unarchive location ini?',
-        showCancelButton: true,
-        showCloseButton: true,
-        focusConfirm: false,
-        cancelButtonText: 'Batal',
-        cancelButtonClass: 'btn btn-secondary',
-        confirmButtonText: 'Unarchive',
-        confirmButtonClass: 'btn btn-danger',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.value) {
-            $('#form_page_archive_' + pk).submit();
-        };
-    });
+    if (value == 'True') {
+        Swal.fire({
+            title: 'Nonaktivasi Pemasangan Banner',
+            icon: 'info',
+            html: 'Anda yakin ingin menonaktifkan pemasangan banner ini?',
+            showCancelButton: true,
+            showCloseButton: true,
+            focusConfirm: false,
+            cancelButtonText: 'Tidak',
+            cancelButtonClass: 'btn btn-secondary',
+            confirmButtonText: 'Ya',
+            confirmButtonClass: 'btn btn-danger',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                $('#switch-form-' + pk).submit();
+            }else{
+                if ($('#switch-' + pk + ':checked').length > 0) {
+                    $('#switch-' + pk).prop('checked', false)
+                }else{
+                    $('#switch-' + pk).prop('checked', true)
+                }
+            }
+        });
+        
+    }else{
+        Swal.fire({
+            title: 'Aktivasi Pemasangan Banner',
+            icon: 'info',
+            html: 'Anda yakin ingin mengaktifkan pemasangan banner ini?',
+            showCancelButton: true,
+            showCloseButton: true,
+            focusConfirm: false,
+            cancelButtonText: 'Tidak',
+            cancelButtonClass: 'btn btn-secondary',
+            confirmButtonText: 'Ya',
+            confirmButtonClass: 'btn btn-danger',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                $('#switch-form-' + pk).submit();
+            }else{
+                if ($('#switch-' + pk + ':checked').length > 0) {
+                    $('#switch-' + pk).prop('checked', false)
+                }else{
+                    $('#switch-' + pk).prop('checked', true)
+                }
+            }
+        });
+
+    }
+
 };
