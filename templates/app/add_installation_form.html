@@ -233,7 +233,8 @@
                 'banner_id' : banner_id
             },
             success: function(data) {
-                var imageUrl = 'http://127.0.0.1:8000' + data;
+                // var imageUrl = 'http://127.0.0.1:8000' + data;
+                var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
                 $('#img-' + id).attr('src', imageUrl);
             }
         });
