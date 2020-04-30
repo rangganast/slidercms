@@ -25,6 +25,7 @@ urlpatterns = [
     path('installation/add_installation/', login_required(views.AddInstallationView.as_view()), name='add_install'),
     path('installation/active_installation/<str:pk>/', login_required(views.ActiveInstallationView.as_view()), name='active_install'),
     path('installation/detail_installation/<str:pk>/', login_required(views.DetailInstallationView.as_view()), name='detail_install'),
+    path('installation/update_installation/<str:pk>/', login_required(views.UpdateInstallationView.as_view()), name='update_install'),
 
     path('ajax/load-pages/', login_required(views.load_pages), name='ajax_load_pages'),
     path('ajax/load-locations/', login_required(views.load_locations), name='ajax_load_locations'),

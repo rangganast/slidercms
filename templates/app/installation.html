@@ -75,9 +75,8 @@
                         </form>
                     </span>
                     <span class="spanFormat">
-                        <form action="" method="GET">
-                            <button type="button" class="btn btn-sm btn-warning"
-                                {% if content.is_active %}disabled{% else %}{% endif %}>Update</button>
+                        <form action="{% url 'app:update_install' pk=content.loc_id %}" method="GET">
+                            <button type="submit" class="btn btn-sm btn-warning">Update</button>
                         </form>
                     </span>
                 </td>
@@ -89,15 +88,6 @@
 
 </div>
 
-<div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="imgModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <img id="previewImg" src="" style="width: 100%; max-width: 800px;">
-        </div>
-    </div>
-</div>
-
 <script src="{% static 'js/installation.js' %}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
@@ -107,7 +97,7 @@
     {% if messages %}
     {% for message in messages %}
     
-    {% if 'page_added' in message.tags %}
+    {% if 'install_added' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
@@ -116,7 +106,7 @@
         })
     {% endif %}
 
-    {% if 'page_updated' in message.tags %}
+    {% if 'install_updated' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
@@ -125,7 +115,7 @@
         })
     {% endif %}
     
-    {% if 'page_archived' in message.tags %}
+    {% if 'install_activated' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
@@ -134,7 +124,7 @@
         })
     {% endif %}
     
-    {% if 'page_unarchived' in message.tags %}
+    {% if 'install_unactivated' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',

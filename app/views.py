@@ -65,7 +65,7 @@ class AddPageView(View):
         formset_location = self.form_class['formset_location'](request.POST or None, prefix='location', queryset=Location.objects.none())
 
         if form_application.is_valid() and formset_page.is_valid() and formset_location.is_valid():
-            app_instance = Application.objects.get(pk=form_application.cleaned_data['names'])
+            app_instance = Application.objects.get(pk=form_application.cleaned_data['names'].id)
 
             pageform = formset_page.cleaned_data
 
@@ -358,12 +358,14 @@ class AddInstallationView(View):
 
                 for j in range(int(min_banner), int(max_banner)+1):
                     if installation[j]:
-                        banner = installation[j]['banner_names']
+                        banner = installation[j]['banner_names'].id
                         banner_instance = Banner.objects.get(pk=banner)
                         redirect = installation[j]['redirect']
 
                         installation_instance = Installation(location=location_instance, banner=banner_instance, redirect=redirect)
                         installation_instance.save()
+                        
+            messages.add_message(request, messages.INFO, "Pemasangan berhasil ditambahkan!", extra_tags="install_added")
 
             return HttpResponseRedirect(reverse('app:install'))
         else:
@@ -377,10 +379,65 @@ class UpdateInstallationView(View):
     }
 
     initial = {'key', 'value'}
-    template_name = 'app/udpate_installation_form.html'
+    template_name = 'app/update_installation_form.html'
 
     def get(self, request, pk):
-        pass
+        location_instance = Location.objects.get(pk=pk)
+        page_instance = Page.objects.get(pk=location_instance.page_id)
+        app_instance = Application.objects.get(pk=page_instance.application_id)
+        installation_instance = Installation.objects.filter(location_id=location_instance.pk)
+
+        initial_list = []
+        banners = []
+
+        for installation in installation_instance:
+            initial_list.append({'id' : installation.id, 'banner_names' : installation.banner_id, 'redirect' : installation.redirect})
+            banners.append(Banner.objects.get(pk=installation.banner_id))
+
+
+        formset_installation = self.form_class['formset_installation'](queryset=Installation.objects.none(), initial=initial_list, prefix='installation')
+        formset_installation.extra = len(installation_instance)
+
+        context = {
+            'location' : location_instance,
+            'page' : page_instance,
+            'app' : app_instance,
+            'formset_installation' : formset_installation,
+            'banners' : banners,
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        formset_installation = self.form_class['formset_installation'](request.POST or None, prefix='installation')
+
+        if formset_installation.is_valid():
+            deleted_installations = formset_installation.deleted_forms
+
+            for i in range(len(formset_installation)):
+                if formset_installation[i]['id'].value() not in [deleted['id'].value() for deleted in deleted_installations]:
+                    install_id = formset_installation[i].cleaned_data['id']
+                    banner = formset_installation[i].cleaned_data['banner_names'].id
+                    redirect = formset_installation[i].cleaned_data['redirect']
+
+                    if install_id != None:
+                        installation_instance = install_id
+                        installation_instance.banner_id = banner
+                        installation_instance.redirect = redirect
+
+                        installation_instance.save()
+
+                    else:
+                        installation_instance = Installation(banner_id=banner, location_id=pk, redirect=redirect)
+                        installation_instance.save()
+
+            for deleted in deleted_installations:
+                installation_instance = Installation.objects.get(pk=deleted['id'].value())
+                installation_instance.delete()
+
+            messages.add_message(request, messages.INFO, "Pemasangan Banner berhasil di-update!", extra_tags="install_updated")
+
+            return HttpResponseRedirect(reverse('app:install'))
 
 class DetailInstallationView(View):
     template_name = 'app/detail_installation.html'
@@ -411,10 +468,14 @@ class ActiveInstallationView(View):
             location_instance.is_active = False
             location_instance.save()
 
+            messages.add_message(request, messages.INFO, "Pemasangan berhasil dinonaktifkan!", extra_tags="install_activated")
+
             return HttpResponseRedirect(reverse('app:install'))
         else:
             location_instance.is_active = True
             location_instance.save()
+
+            messages.add_message(request, messages.INFO, "Pemasangan berhasil diaktifkan!", extra_tags="install_unactivated")
 
             return HttpResponseRedirect(reverse('app:install'))
 

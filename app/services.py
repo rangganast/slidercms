@@ -37,10 +37,3 @@ def get_count_keywords_with_params(date1=None, date2=None):
 
     count_list = r.json()
     return count_list
-
-def post_keyword(keyword):
-    url = 'https://keywords-log-qa.holahalo.dev/api/v1/keyword/search'
-    
-    data = {"keyword" : keyword}
-    return requests.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json',
-                                                  'Authorization': 'Token {}'.format(token)})

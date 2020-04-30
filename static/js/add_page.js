@@ -1,4 +1,5 @@
 function clonePage(selector){
+    var originalRadio = $(selector).find('input:checked');
 
     var newElement = $(selector).clone(true, true);
     var totalPage = $('#id_page-TOTAL_FORMS').val();
@@ -7,6 +8,8 @@ function clonePage(selector){
     newElement.attr('id', 'id_page-' + totalPage + '-fieldset');
 
     newElement.find('legend').html('Halaman ke-' + (totalPage + 1));
+
+    newElement.find('input:checked').prop('checked', false);
 
     newElement.find('#id_page-' + (totalPage - 1) + '-name').attr('id', 'id_page-' + totalPage + '-name');
     newElement.find('#id_page-' + totalPage + '-name').attr('name', 'page-' + totalPage + '-name');
@@ -99,6 +102,10 @@ function clonePage(selector){
         $(this).find('#id_page-' + index + '-max').val(max_child);
     });
 
+    if (originalRadio.length == 1) {
+        originalRadio.prop('checked', true)
+    }
+
     var totalLocation = $('.location-div').length;
     $('#id_location-TOTAL_FORMS').val(totalLocation);
 
@@ -132,7 +139,12 @@ function cloneLocation(input) {
 
     var selector = '#id_page-' + id + '-fieldset .location-div:last';
 
+    var originalRadio = $(selector).find('input:checked');
+
     newElement = $(selector).clone(true, true);
+
+    newElement.find('input:checked').prop('checked', false);
+
     $(selector).after(newElement);
 
     $('.location-slider').find('input:first').each(function (index) {
@@ -207,6 +219,10 @@ function cloneLocation(input) {
 
         $(this).find('#id_page-' + index + '-max').val(max_child);
     });
+
+    if (originalRadio.length == 1) {
+        originalRadio.prop('checked', true)
+    }
 
     var totalLocationFieldset = $('#id_page-' + id + '-fieldset .location-div').length;
 

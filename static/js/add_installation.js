@@ -1,4 +1,5 @@
 function cloneInstall(selector){
+    var originalRadio = $(selector).find('input:checked');
 
     var newElement = $(selector).clone(true, true);
     var totalInstall = $('fieldset').length;
@@ -104,6 +105,10 @@ function cloneInstall(selector){
 
         $(this).find('#id_banner-' + index + '-max').val(max_child);
     });
+
+    if (originalRadio.length == 1) {
+        originalRadio.prop('checked', true)
+    }
     
     totalInstall = $('.banner-div').length;
     
@@ -139,6 +144,8 @@ function cloneBanner(input) {
 
     var selector = '#id_install-' + id + '-fieldset .banner-div:last';
 
+    var originalRadio = $(selector).find('input:checked');
+    
     newElement = $(selector).clone(true, true);
 
     newElement.find('img').attr('src', '')
@@ -220,6 +227,10 @@ function cloneBanner(input) {
 
         $(this).find('#id_banner-' + index + '-max').val(max_child);
     });
+
+    if (originalRadio.length == 1) {
+        originalRadio.prop('checked', true)
+    }
 
     var totalBannerFieldset = $('#id_install-' + id + '-fieldset .banner-div').length;
 
@@ -348,5 +359,6 @@ function hideRedirect(input) {
 
     $('#' + fieldset + ' #banner-div-' + bannerDivSliced + ' .banner-url').hide();
     $('#' + fieldset + ' #banner-div-' + bannerDivSliced + ' .banner-url input').prop('required', false);
+    $('#' + fieldset + ' #banner-div-' + bannerDivSliced + ' .banner-url input').val('');
 
 }

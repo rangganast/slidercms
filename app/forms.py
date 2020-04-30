@@ -16,14 +16,11 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.TextInput(attrs={'type': 'password', 'id': 'inputPassword', 'class': 'form-control', 'name': 'password', 'placeholder': 'Password', 'required': 'True',}))
 
 class ApplicationForm(forms.ModelForm):
-    # choices = tuple(Application.objects.defer("name").values_list())
-
-    # names = forms.ChoiceField(choices=choices, widget=forms.Select(attrs={'class' : 'custom-select'}), label='Nama Aplikasi')
+    names = forms.ModelChoiceField(queryset=Application.objects.all(), widget=forms.Select(attrs={'class' : 'custom-select'}), label='Nama Aplikasi', empty_label='Pilih Aplikasi')
 
     class Meta:
         model = Application
-        fields = ['name']
-        # fields = ['names']
+        fields = ['names']
 
 class PageForm(forms.ModelForm):
     class Meta:
@@ -56,8 +53,8 @@ class LocationForm(forms.ModelForm):
         }
         widgets = {
             'name' : forms.TextInput(attrs={'class' : 'form-control','required': 'True'}),
-            'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True'}),
-            'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True'}),
+            'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True', 'min' : '1'}),
+            'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True', 'min' : '1'}),
         }
     
 
@@ -110,11 +107,7 @@ class BannerForm(forms.ModelForm):
         return image
 
 class InstallationForm(forms.ModelForm):
-    banner_choices = list(Banner.objects.values_list("id", "name").order_by("id"))
-    banner_choices.insert(0, ('', 'Pilih banner'))
-    banner_choices = tuple(banner_choices)
-
-    banner_names = forms.ChoiceField(choices=banner_choices, widget=forms.Select(attrs={'class' : 'custom-select', 'onchange' : 'load_banner(this);', 'required' : True}), label='Nama Banner')
+    banner_names = forms.ModelChoiceField(queryset=Banner.objects.all(), widget=forms.Select(attrs={'class' : 'custom-select', 'onchange' : 'load_banner(this);', 'required' : True}), label='Nama Banner', empty_label='Pilih Banner')
     class Meta:
         model = Installation
         fields = ['banner_names', 'redirect']
