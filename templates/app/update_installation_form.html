@@ -17,9 +17,7 @@
 
             <h3 class="text-center mb-2">Form Update Pemasangan Banner
                 <span class="btn-group float-right">
-                    <a href="{% url 'app:add_install' %}">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </a>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 </span>
                 <span class="btn-group float-right">
                     <a href="{% url 'app:install' %}" style="color: white; text-decoration: none;">
@@ -173,8 +171,6 @@
         var url = $('#installationForm').attr("data-banner-url");
         var banner_id = $(input).val();
         var id = $(input).attr('id').slice(16, 18);
-
-        console.log(banner_id);
 
         if(id.includes('-')) {
             var id = $(input).attr('id').slice(16, 17);

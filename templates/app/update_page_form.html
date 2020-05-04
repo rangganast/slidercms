@@ -4,10 +4,10 @@
 
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/add_page.css' %}">
+<link rel="stylesheet" href="{% static 'css/update_page.css' %}">
 
 <div class="container mt-5 mb-5">
-    <form method="POST">
+    <form method="POST" action="{% url 'app:update_page' pk=page.id %}">
         {% csrf_token %}
 
         {{ formset_page.management_form }}
@@ -17,9 +17,7 @@
 
             <h3 class="text-center mb-2">Form Update Halaman
                 <span class="btn-group float-right">
-                    <a href="{% url 'app:add_page' %}">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </a>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 </span>
                 <span class="btn-group float-right">
                     <a href="{% url 'app:page' %}" style="color: white; text-decoration: none;">
@@ -40,23 +38,34 @@
                         {{ form_application.names }}
                     </div>
                 </div>
-                
-                {% for page in formset_page %}
-                <fieldset id="id_page-0-fieldset" class="page-border fieldset">
 
-                    <legend class="page-border">Halaman ke-1</legend>
+                {% for page in formset_page %}
+                <div class="form-group row page-div">
+                    <label class="col-sm-2 col-form-label" for="{{ page.name.id_for_label }}">{{ page.name.label }}</label>
+                    <div class="col-sm-4">
+                        {{ page.id }}
+                        {{ page.name }}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="form-group">
+                    <h4>Daftar Lokasi Pemasangan:
+                        <span class="btn-group float-right">
+                            <button id="id_location-add" type="button" class="btn btn-primary float-right" onclick="cloneLocation();">Tambah Lokasi</button>
+                        </span>
+                    </h4>
+                </div>
+                
+                {% for location in formset_location %}
+                <fieldset id="id_location-{{ forloop.counter0 }}-fieldset" class="location-border fieldset">
+                    {{ location.DELETE }}
+                    {{ location.id }}
+                    
+                    <legend class="location-border">Lokasi ke-{{ forloop.counter }}</legend>
 
                     <div class="container">
 
-                        <div class="form-group row mb-4">
-                            <label class="col-sm-2 col-form-label"
-                                for="{{ page.name.id_for_label }}">{{ page.name.label }}</label>
-                            <div class="col-sm-10">{{ page.name }}</div>
-                            <input id="id_page-0-min" type="hidden" name="page-0-min" value="0">
-                            <input id="id_page-0-max" type="hidden" name="page-0-max" value="0">
-                        </div>
-
-                        {% for location in formset_location %}
                         <div class="location-div ml-5">
 
                             <div class="form-group row mb-0 location-slider">
@@ -86,26 +95,14 @@
                             </div>     
 
                         </div>
-                        {% endfor %}
 
-                        <button id="id_location-add-0" type="button" class="btn btn-sm btn-primary float-right"
-                            onclick="cloneLocation(this);">Tambah Lokasi</button>
-                        <button id="id_location-delete-0" type="button" class="btn btn-sm btn-danger float-right mr-2"
-                            onclick="removeLocation(this);" style="display: none;">Hapus Lokasi</button>
+                        <button id="id_location-delete-{{ forloop.counter0 }}" type="button" class="btn btn-sm btn-danger float-right delete-btn"
+                            onclick="removeLocation(this);">Hapus Lokasi</button>
                         
                     </div>
                     
                 </fieldset>
                 {% endfor %}
-                
-                <div class="container mb-5">
-                    <div class="form-group row float-right">
-                        <button id="id_page-delete-button" type="button" class="btn btn-danger float-right mr-2"
-                            onclick="removePage('fieldset.page-border:last');" style="display: none;">Hapus Halaman</button>
-                        <button id="id_page-add-button" type="button" class="btn btn-primary float-right"
-                            onclick="clonePage('fieldset.page-border:last');">Tambah Halaman</button>
-                    </div>
-                </div>
 
             </div>
 
@@ -117,5 +114,23 @@
 <script src="{% static 'js/update_page.js' %}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<script>
+    $(document).ready(function () {
+        $('fieldset:last').remove();
+        $('.page-div:last').remove();
+    
+        if ($('fieldset').length == 1) {
+            $('#id_location-delete-0').hide();
+        }
+        
+        $('#id_page-TOTAL_FORMS').val(1);
+        var totalLocation = $('#id_location-TOTAL_FORMS').val();
+        var totalLocation = Number(totalLocation);
+        var totalLocation = totalLocation - 1;
+    
+        $('#id_location-TOTAL_FORMS').val(totalLocation);
+    })
+</script>
 
 {% endblock content %}  

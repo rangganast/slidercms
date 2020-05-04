@@ -112,15 +112,18 @@ class UpdatePageView(View):
     initial = {'key', 'value'}
     template_name = 'app/update_page_form.html'
 
-    def get(self, request, pk_page):
-        page_instance = Page.objects.filter(pk=pk_page)
+    def get(self, request, pk):
+        page_instance = Page.objects.filter(pk=pk)
         location_instance = Location.objects.filter(page_id__in=page_instance)
+        page = Page.objects.get(pk=pk)
+        app_instance = Application.objects.get(pk=page.application_id)
 
-        form_application = self.form_class['form_application']()
+        form_application = self.form_class['form_application'](initial={'names' : app_instance.id})
         formset_page = self.form_class['formset_page'](prefix='page', queryset=page_instance)
         formset_location = self.form_class['formset_location'](prefix='location', queryset=location_instance)
 
         context = {
+            'page' : page,
             'form_application' : form_application,
             'formset_page' : formset_page,
             'formset_location' : formset_location,
@@ -129,7 +132,59 @@ class UpdatePageView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, pk):
-        pass
+        form_application = self.form_class['form_application'](request.POST or None)
+        formset_page = self.form_class['formset_page'](request.POST or None, prefix='page')
+        formset_location = self.form_class['formset_location'](request.POST or None, prefix='location')
+
+        if form_application.is_valid() and formset_page.is_valid() and formset_location.is_valid():
+            app_id = form_application.cleaned_data['names'].id
+            app_instance = Application.objects.get(pk=app_id)
+
+            for i in range(len(formset_page)):
+                page_id = formset_page[i].cleaned_data['id']
+                name = formset_page[i].cleaned_data['name']
+
+                page_instance = page_id
+                page_instance.name = name
+                page_instance.application_id = app_instance
+
+                page_instance.save()
+
+                deleted_locations = formset_location.deleted_forms
+
+                for location in formset_location:
+                    if location['id'].value() not in [deleted['id'].value() for deleted in deleted_locations]:
+                        loc_id = location.cleaned_data['id']
+                        is_slider = location.cleaned_data['is_slider']
+                        name = location.cleaned_data['name']
+                        width = location.cleaned_data['width']
+                        height = location.cleaned_data['height']
+
+                        if loc_id != None:
+                            loc_instance = loc_id
+                            loc_instance.is_slider = is_slider
+                            loc_instance.name = name
+                            loc_instance.width = width
+                            loc_instance.height = height
+
+                            loc_instance.save()
+                        else:
+                            loc_instance = Location(is_slider=is_slider, name=name, width=width, height=height, page_id=page_instance.id)
+                            loc_instance.save()
+            
+            for deleted in deleted_locations:
+                location_instance = Location.objects.get(pk=deleted['id'].value())
+                location_instance.delete()
+
+            messages.add_message(request, messages.INFO, "Halaman berhasil di-update!", extra_tags="page_updated")
+
+            return redirect(reverse('app:page'))
+
+        else:
+            print('error dari app: ' + str(form_application.errors))
+            print('error dari page: ' + str(formset_page.errors))
+            print('error dari location: ' + str(formset_location.errors))
+            return redirect(reverse('app:page'))
 
 class ArchivePageView(View):
     def post(self, request, pk):
@@ -138,13 +193,13 @@ class ArchivePageView(View):
         if page_instance.is_archived == True:
             page_instance.is_archived = False
             page_instance.save()
-            messages.add_message(request, messages.INFO, "Halaman berhasil di-unarchive!", extra_tags="location_unarchived")
+            messages.add_message(request, messages.INFO, "Halaman berhasil di-unarchive!", extra_tags="page_unarchived")
 
             return redirect(reverse('app:page'))
         else:
             page_instance.is_archived = True
             page_instance.save()
-            messages.add_message(request, messages.INFO, "Halaman berhasil di-archive!", extra_tags="location_archived")
+            messages.add_message(request, messages.INFO, "Halaman berhasil di-archive!", extra_tags="page_archived")
 
             return redirect(reverse('app:page'))
 
@@ -365,7 +420,7 @@ class AddInstallationView(View):
                         installation_instance = Installation(location=location_instance, banner=banner_instance, redirect=redirect)
                         installation_instance.save()
                         
-            messages.add_message(request, messages.INFO, "Pemasangan berhasil ditambahkan!", extra_tags="install_added")
+            messages.add_message(request, messages.INFO, "Pemasangan Banner berhasil ditambahkan!", extra_tags="install_added")
 
             return HttpResponseRedirect(reverse('app:install'))
         else:
@@ -419,6 +474,8 @@ class UpdateInstallationView(View):
                     install_id = formset_installation[i].cleaned_data['id']
                     banner = formset_installation[i].cleaned_data['banner_names'].id
                     redirect = formset_installation[i].cleaned_data['redirect']
+
+                    print(install_id)
 
                     if install_id != None:
                         installation_instance = install_id

@@ -45,7 +45,7 @@ class LocationForm(forms.ModelForm):
 
     class Meta:
         model = Location
-        fields = ['is_slider', 'name', 'height', 'width']
+        fields = ['is_slider', 'is_active', 'name', 'height', 'width']
         labels = {
             'name' : 'Nama Lokasi Pemasangan',
             'width' : 'Ukuran Gambar',

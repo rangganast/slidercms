@@ -13,7 +13,7 @@ urlpatterns = [
     path('keywords/', login_required(views.KeywordListPage.as_view()), name='keywords'),
     path('page/', login_required(views.PageView.as_view()), name='page'),
     path('page/add_page/', login_required(views.AddPageView.as_view()), name='add_page'),
-    path('page/update_page/<str:pk_page>', login_required(views.UpdatePageView.as_view()), name='update_page'),
+    path('page/update_page/<str:pk>/', login_required(views.UpdatePageView.as_view()), name='update_page'),
     path('page/archive_page/<str:pk>/', login_required(views.ArchivePageView.as_view()), name='archive_page'),
 
     path('banner/', login_required(views.BannerView.as_view()), name='banner'),
