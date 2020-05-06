@@ -58,22 +58,33 @@
                     <div class="row">
                         <div class="form-group form-inline">
                             <label for="datepicker1">Tanggal :</label>
-                            <input name="date1" class="form-control ml-3" id="datepicker1" placeholder="DD/MM/YY"
+                            <input name="date1"class="form-control ml-3" id="datepicker1" placeholder="DD-MM-YY"
                                 autocomplete="off" required value="{{tanggal1}}" />
                             <script>
                                 $('#datepicker1').datepicker({
                                     uiLibrary: 'bootstrap4',
-                                    format: 'dd/mm/yyyy'
+                                    format: 'dd-mm-yyyy',
+                                    disableDates: function (date) {
+                                        const currentDate = new Date().setHours(0,0,0,0);
+                                        return date.setHours(0,0,0,0) >= currentDate ? true : false;
+                                    }
                                 });
                             </script>
 
                             <label class="ml-3" for="datepicker2"> s/d </label>
-                            <input name="date2" class="form-control ml-3" id="datepicker2" placeholder="DD/MM/YY"
-                                autocomplete="off" required value="{{tanggal2}}" />
+                            <input name="date2"class="form-control ml-3" id="datepicker2"
+                                placeholder="DD-MM-YY" autocomplete="off" required value="{{tanggal2}}" />
                             <script>
                                 $('#datepicker2').datepicker({
                                     uiLibrary: 'bootstrap4',
-                                    format: 'dd/mm/yyyy'
+                                    format: 'dd-mm-yyyy',
+                                    disableDates: function (date) {
+                                        var date1 = $('#datepicker1').val();
+                                        var date1 = date1.slice(6, 10) + '-' + date1.slice(3, 5) + '-' +
+                                            date1.slice(0, 2)
+                                        const currentDate = new Date(date1).setHours(0, 0, 0, 0);
+                                        return date.setHours(0, 0, 0, 0) >= currentDate ? true : false;
+                                    }
                                 });
                             </script>
 

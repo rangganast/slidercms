@@ -1,7 +1,7 @@
 import requests
 import json
 
-token = 'e9afcf297d4cff57bd1824d5899b48c068446946'
+token = '94efa1fdcbef94fbdaeb39f0cff9c246d9154fb1'
 
 def get_list():
     url = 'https://keywords-log-qa.holahalo.dev/api/v1/keyword/list'

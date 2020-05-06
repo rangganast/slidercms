@@ -16,7 +16,7 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.TextInput(attrs={'type': 'password', 'id': 'inputPassword', 'class': 'form-control', 'name': 'password', 'placeholder': 'Password', 'required': 'True',}))
 
 class ApplicationForm(forms.ModelForm):
-    names = forms.ModelChoiceField(queryset=Application.objects.all(), widget=forms.Select(attrs={'class' : 'custom-select'}), label='Nama Aplikasi', empty_label='Pilih Aplikasi')
+    names = forms.ModelChoiceField(queryset=Application.objects.all(), widget=forms.Select(attrs={'class' : 'form-control'}), label='Nama Aplikasi', empty_label='Pilih Aplikasi')
 
     class Meta:
         model = Application
@@ -104,10 +104,11 @@ class BannerForm(forms.ModelForm):
 
         else:
             pass
+
         return image
 
 class InstallationForm(forms.ModelForm):
-    banner_names = forms.ModelChoiceField(queryset=Banner.objects.all(), widget=forms.Select(attrs={'class' : 'custom-select', 'onchange' : 'load_banner(this);', 'required' : True}), label='Nama Banner', empty_label='Pilih Banner')
+    banner_names = forms.ModelChoiceField(queryset=Banner.objects.all(), widget=forms.Select(attrs={'class' : 'form-control banner-select', 'onchange' : 'load_banner(this);', 'required' : True}), label='Nama Banner', empty_label='Pilih Banner')
     class Meta:
         model = Installation
         fields = ['banner_names', 'redirect']
@@ -126,7 +127,7 @@ class InstallationForm(forms.ModelForm):
 InstallationFormSet = modelformset_factory(Installation, form=InstallationForm, extra=1, can_delete=True)
 
 class KeywordDateRangeForm(forms.Form):
-    date1 = forms.CharField(label='Tanggal Cari:', widget=forms.DateInput(
+    date1 = forms.DateField(label='Tanggal Cari:', widget=forms.DateInput(
         attrs={'id': 'datepicker1', 'name': 'date1', 'class': 'form-control ml-3', 'placeholder': 'DD/MM/YY', 'autocomplete': 'off', 'required': 'True'}))
-    date2 = forms.CharField(label='s/d', widget=forms.DateInput(
+    date2 = forms.DateField(label='s/d', widget=forms.DateInput(
         attrs={'id': 'datepicker2', 'name':'date2', 'class': 'form-control ml-3', 'placeholder': 'DD/MM/YY', 'autocomplete': 'off', 'required': 'True'}))

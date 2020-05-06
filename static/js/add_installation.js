@@ -1,5 +1,11 @@
 function cloneInstall(selector){
     var originalRadio = $(selector).find('input:checked');
+    var originalOption = $(selector).find('select > option:selected').val();
+
+    console.log(originalOption);
+
+    $(selector).find('.location-select').select2('destroy');
+    $(selector).find('.banner-select').select2('destroy');
 
     var newElement = $(selector).clone(true, true);
     var totalInstall = $('fieldset').length;
@@ -8,12 +14,19 @@ function cloneInstall(selector){
 
     newElement.find('legend').html('Lokasi Pemasangan ke-' + (totalInstall + 1));
     
-    newElement.find('#id_location-select-' + (totalInstall - 1)).attr('id', 'id_location-select-' + totalInstall)
-    newElement.find('#id_location-select-' + totalInstall).attr('name', 'location-select-' + totalInstall)
+    newElement.find('#id_location-select-' + (totalInstall - 1)).attr('id', 'id_location-select-' + totalInstall);
+    newElement.find('#id_location-select-' + totalInstall).attr('name', 'location-select-' + totalInstall);
 
-    newElement.find('#id_location-size-' + (totalInstall - 1)).attr('id', 'id_location-size-' + totalInstall)
+    newElement.find('#id_location-select-' + (totalInstall - 1)).attr('id', 'id_location-select-' + totalInstall);
+    newElement.find('#id_location-select-' + totalInstall).attr('name', 'location-select-' + totalInstall);
+
+    if (originalOption) {
+        newElement.find('#id_location-select-' + totalInstall + ' > option[value="' + originalOption + '"]').remove();
+    }
     
-    var forLabel = 'id_location-select-' + (totalInstall - 1)
+    newElement.find('#id_location-size-' + (totalInstall - 1)).attr('id', 'id_location-size-' + totalInstall);
+    
+    var forLabel = 'id_location-select-' + (totalInstall - 1);
     newElement.find('label[for="' + forLabel + '"]').attr('for', 'id_location-select-' + totalInstall);
 
     newElement.find('#id_banner-' + (totalInstall - 1) + '-min').attr('id', 'id_banner-' + totalInstall + '-min');
@@ -32,6 +45,11 @@ function cloneInstall(selector){
     newElement.find('.banner-div').not(':first').remove();
 
     $(selector).after(newElement);
+
+    $('.location-select').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih lokasi',
+    });
 
     $('.banner-name').find('select').each(function (index) {
         $(this).attr("id", "id_installation-" + index + "-banner_names");
@@ -106,6 +124,11 @@ function cloneInstall(selector){
         $(this).find('#id_banner-' + index + '-max').val(max_child);
     });
 
+    $('.banner-select').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih banner',
+    });
+
     if (originalRadio.length == 1) {
         originalRadio.prop('checked', true)
     }
@@ -143,6 +166,8 @@ function cloneBanner(input) {
     var id = id.slice(-1);
 
     var selector = '#id_install-' + id + '-fieldset .banner-div:last';
+
+    $(selector).find('.banner-select').select2('destroy');
 
     var originalRadio = $(selector).find('input:checked');
     
@@ -231,6 +256,11 @@ function cloneBanner(input) {
     if (originalRadio.length == 1) {
         originalRadio.prop('checked', true)
     }
+
+    $('.banner-select').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih banner',
+    });
 
     var totalBannerFieldset = $('#id_install-' + id + '-fieldset .banner-div').length;
 

@@ -34,7 +34,7 @@
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" for="app_select">Nama Aplikasi</label>
                     <div class="col-sm-10">
-                        <select id="app_select" class="custom-select" disabled>
+                        <select id="app_select" class="form-control" disabled>
                             <option value="{{ app.id }}" selected>{{ app.name }}</option>
                         </select>
                     </div>
@@ -45,7 +45,7 @@
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" for="page_select">Nama Halaman</label>
                     <div class="col-sm-10">
-                        <select id="page_select" class="custom-select" disabled>
+                        <select id="page_select" class="form-control" disabled>
                             <option value="{{ page.id }}" selected>{{ page.name }}</option>
                         </select>
                     </div>
@@ -63,7 +63,7 @@
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label" for="id_location-select-0">Nama Lokasi</label>
                             <div class="col-sm-10">
-                                <select id="id_location-select-0" name="location-select-0" class="custom-select location-select" disabled>
+                                <select id="id_location-select-0" name="location-select-0" class="form-control location-select" disabled>
                                     <option value="{{ location.id }}" selected>{{ location.name }}</option>
                                 </select>
                             </div>
@@ -95,8 +95,8 @@
                                     {% with bannerSlice=""|add:start|add:":"|add:end  %}
                                     
                                     {% for banner in banners|slice:bannerSlice %}
-                                    <!-- <img id="img-{{ start }}" src="http://127.0.0.1:8000/media/{{ banner.image }}" width="400"> -->
-                                    <img id="img-{{ start }}" src="https://banner-slider-qa.holahalo.dev/media/{{ banner.image }}" width="400">
+                                    <img id="img-{{ start }}" src="http://127.0.0.1:8000/media/{{ banner.image }}" width="400">
+                                    <!-- <img id="img-{{ start }}" src="https://banner-slider-qa.holahalo.dev/media/{{ banner.image }}" width="400"> -->
                                     {% endfor %}
 
                                     {% endwith %}
@@ -167,6 +167,29 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 <script>
+    $(document).ready(function () {
+        $('#app_select').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih aplikasi',
+        });
+        $('#page_select').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih halaman',
+        });
+        $('.location-select').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih lokasi',
+        });
+        $('.location-select').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih lokasi',
+        });
+        $('.banner-select').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih banner',
+        });
+    });
+
     function load_banner(input) {
         var url = $('#installationForm').attr("data-banner-url");
         var banner_id = $(input).val();
@@ -182,8 +205,8 @@
             'banner_id' : banner_id
             },
             success: function(data) {
-                // var imageUrl = 'http://127.0.0.1:8000' + data;
-                var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
+                var imageUrl = 'http://127.0.0.1:8000' + data;
+                // var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
                 $('#img-' + id).attr('src', imageUrl);
         }
         });

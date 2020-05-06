@@ -37,7 +37,7 @@
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" for="app_select">Nama Aplikasi</label>
                     <div class="col-sm-10">
-                        <select id="app_select" class="custom-select">
+                        <select id="app_select" class="form-control input-lg">
                             <option value="">Pilih Aplikasi</option>
                             {% for app in apps %}
                             <option value="{{ app.id }}">{{ app.name }}</option>
@@ -51,7 +51,7 @@
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" for="page_select">Nama Halaman</label>
                     <div class="col-sm-10">        
-                        <select id="page_select" class="custom-select" disabled>
+                        <select id="page_select" class="form-control" disabled>
                             {% include 'app/pages_dropdown_list_options.html' %}
                         </select>
                     </div>
@@ -69,10 +69,10 @@
 
                     <div class="container">
 
-                        <div class="form-group row">
+                        <div class="form-group row location-div">
                             <label class="col-sm-2 col-form-label" for="id_location-select-0">Nama Lokasi</label>
                             <div class="col-sm-10">
-                                <select id="id_location-select-0" name="location-select-0" class="custom-select location-select" onchange="load_size(this);" disabled required>
+                                <select id="id_location-select-0" name="location-select-0" class="form-control location-select" onchange="load_size(this);" disabled required>
                                     {% include 'app/locations_dropdown_list_options.html' %}
                                 </select>
                                 <input id="id_banner-0-min" name="banner-0-min" type="hidden" value="0">
@@ -149,7 +149,7 @@
                         <button id="id_install-delete-button" type="button" class="btn btn-danger float-right mr-2"
                             onclick="removeInstall('fieldset.page-border:last');" style="display: none;">Hapus Halaman</button>
                         <button id="id_install-add-button" type="button" class="btn btn-primary float-right"
-                            onclick="cloneInstall('fieldset.page-border:last');">Tambah Halaman</button>
+                            onclick="cloneInstall('fieldset.page-border:last');">Tambah Lokasi</button>
                     </div>
                 </div>
 
@@ -160,13 +160,35 @@
 
 </div>
 
+
+
 <script src="{% static 'js/add_installation.js' %}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 <script>
+    $(document).ready(function () {
+        $('#app_select').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih aplikasi',
+        });
+        $('#page_select').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih halaman',
+        });
+        $('.location-select').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih lokasi',
+        });
+        $('.banner-select').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih banner',
+        });
+    });
+
     $('#app_select').change(function () {
         var url = $('#installationForm').attr("data-page-url");
         var app_id = $(this).val();
@@ -224,11 +246,12 @@
                 'banner_id' : banner_id
             },
             success: function(data) {
-                // var imageUrl = 'http://127.0.0.1:8000' + data;
-                var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
+                var imageUrl = 'http://127.0.0.1:8000' + data;
+                // var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
                 $('#img-' + id).attr('src', imageUrl);
             }
         });
+
     }
     
     function load_size(input) {
@@ -249,6 +272,13 @@
                 $('#id_location-size-' + id).html('*Ukuran gambar di Lokasi Pemasangan ini adalah ' + data);
             }
         });
+
+        if(location_id) {
+            $('.location-select:not(#' + $(input).attr('id') + ')').each(function () {
+                $(this).find('option[value="' + location_id + '"]').remove();
+                // $(this).find('option:not([value="' + location_id + '"])').removeAttr("style");
+            });
+        }
     }
     
 </script>
