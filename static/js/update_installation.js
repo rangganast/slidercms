@@ -5,6 +5,7 @@ function cloneBanner() {
     var selector = '.banner-div:last';
 
     var originalRadio = $(selector).find('input:checked');
+    $(selector).find('.banner-select').select2('destroy');
 
     newElement = $(selector).clone(true, true);
     
@@ -42,6 +43,11 @@ function cloneBanner() {
     newElement.find('input[type="hidden"]').val('');
 
     $(selector).after(newElement);
+
+    $('.banner-select').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih banner',
+    });
 
     if (originalRadio.length == 1) {
         originalRadio.prop('checked', true)

@@ -1,8 +1,7 @@
 function cloneInstall(selector){
+
     var originalRadio = $(selector).find('input:checked');
     var originalOption = $(selector).find('select > option:selected').val();
-
-    console.log(originalOption);
 
     $(selector).find('.location-select').select2('destroy');
     $(selector).find('.banner-select').select2('destroy');
@@ -20,8 +19,12 @@ function cloneInstall(selector){
     newElement.find('#id_location-select-' + (totalInstall - 1)).attr('id', 'id_location-select-' + totalInstall);
     newElement.find('#id_location-select-' + totalInstall).attr('name', 'location-select-' + totalInstall);
 
+    newElement.find('#id_location-previous-value-' + (totalInstall - 1)).attr('id', 'id_location-previous-value-' + totalInstall);
+    newElement.find('#id_location-previous-value-' + totalInstall).attr('name', 'location-previous-value-' + totalInstall);
+    newElement.find('#id_location-previous-value-' + totalInstall).val('');
+
     if (originalOption) {
-        newElement.find('#id_location-select-' + totalInstall + ' > option[value="' + originalOption + '"]').remove();
+        newElement.find('#id_location-select-' + totalInstall + ' > option[value="' + originalOption + '"]').attr('disabled', true);
     }
     
     newElement.find('#id_location-size-' + (totalInstall - 1)).attr('id', 'id_location-size-' + totalInstall);
@@ -146,6 +149,12 @@ function cloneInstall(selector){
 }
 
 function removeInstall(selector) {
+
+    var originalOption = $(selector).find('select > option:selected').val();
+
+    $('.location-select').each(function () {
+        $(this).find('option[value="' + originalOption + '"]').attr('disabled', false);
+    });
 
     $(selector).remove();
 

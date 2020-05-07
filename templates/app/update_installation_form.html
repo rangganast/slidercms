@@ -95,8 +95,8 @@
                                     {% with bannerSlice=""|add:start|add:":"|add:end  %}
                                     
                                     {% for banner in banners|slice:bannerSlice %}
-                                    <img id="img-{{ start }}" src="http://127.0.0.1:8000/media/{{ banner.image }}" width="400">
-                                    <!-- <img id="img-{{ start }}" src="https://banner-slider-qa.holahalo.dev/media/{{ banner.image }}" width="400"> -->
+                                    <!-- <img id="img-{{ start }}" src="http://127.0.0.1:8000/media/{{ banner.image }}" width="400"> -->
+                                    <img id="img-{{ start }}" src="https://banner-slider-qa.holahalo.dev/media/{{ banner.image }}" width="400">
                                     {% endfor %}
 
                                     {% endwith %}
@@ -205,8 +205,8 @@
             'banner_id' : banner_id
             },
             success: function(data) {
-                var imageUrl = 'http://127.0.0.1:8000' + data;
-                // var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
+                // var imageUrl = 'http://127.0.0.1:8000' + data;
+                var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
                 $('#img-' + id).attr('src', imageUrl);
         }
         });

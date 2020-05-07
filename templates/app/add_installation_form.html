@@ -78,6 +78,7 @@
                                 <input id="id_banner-0-min" name="banner-0-min" type="hidden" value="0">
                                 <input id="id_banner-0-max" name="banner-0-max" type="hidden" value="0">
                             </div>
+                            <input type="hidden" id="id_location-previous-value-0" name="location-previous-value-0" value="">
                         </div>
 
                         <div class="form-group row mb-4">
@@ -147,7 +148,7 @@
                 <div class="container mb-5">
                     <div class="form-group row float-right">
                         <button id="id_install-delete-button" type="button" class="btn btn-danger float-right mr-2"
-                            onclick="removeInstall('fieldset.page-border:last');" style="display: none;">Hapus Halaman</button>
+                            onclick="removeInstall('fieldset.page-border:last');" style="display: none;">Hapus Lokasi</button>
                         <button id="id_install-add-button" type="button" class="btn btn-primary float-right"
                             onclick="cloneInstall('fieldset.page-border:last');">Tambah Lokasi</button>
                     </div>
@@ -246,8 +247,8 @@
                 'banner_id' : banner_id
             },
             success: function(data) {
-                var imageUrl = 'http://127.0.0.1:8000' + data;
-                // var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
+                // var imageUrl = 'http://127.0.0.1:8000' + data;
+                var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
                 $('#img-' + id).attr('src', imageUrl);
             }
         });
@@ -263,6 +264,9 @@
             var id = $(input).attr('id').slice(-1);
         }
 
+        var prev = $('#id_location-previous-value-' + id).val();
+        console.log(prev);
+
         $.ajax({
             url: url,
             data: {
@@ -273,10 +277,15 @@
             }
         });
 
+        $('#id_location-previous-value-' + id).val(location_id);
+
         if(location_id) {
             $('.location-select:not(#' + $(input).attr('id') + ')').each(function () {
-                $(this).find('option[value="' + location_id + '"]').remove();
-                // $(this).find('option:not([value="' + location_id + '"])').removeAttr("style");
+                $(this).find('option[value="' + location_id + '"]').attr('disabled', true);
+
+                if(prev !== '') {
+                    $(this).find('option[value="' + prev + '"]').attr('disabled', false);
+                }
             });
         }
     }

@@ -575,6 +575,11 @@ def load_pages(request):
 def load_locations(request):
     page_id = request.GET.get('page_id')
     locations = Location.objects.filter(page_id=page_id)
+    installations = Installation.objects.filter(location_id__in=locations)
+
+    for installation in installations:
+        locations = locations.exclude(id=installation.location_id)
+
     return render(request, 'app/locations_dropdown_list_options.html', {'locations': locations})
 
 def load_location_size(request):
