@@ -33,6 +33,8 @@ class PageView(View):
 
         context = {
             'contents' : contents,
+            'apps': apps,
+            'pages' : pages,
         }
         return render(request, self.template_name, context)
 
@@ -374,6 +376,8 @@ class InstallationView(View):
 
         context = {
             'contents' : contents,
+            'apps' : apps,
+            'pages' : pages,
         }
 
         return render(request, self.template_name, context)
@@ -569,7 +573,7 @@ class KeywordListPage(View):
 
 def load_pages(request):
     app_id = request.GET.get('app_id')
-    pages = Page.objects.filter(application_id=app_id)
+    pages = Page.objects.filter(application_id=app_id, is_archived=False)
     return render(request, 'app/pages_dropdown_list_options.html', {'pages': pages})
 
 def load_locations(request):
@@ -592,3 +596,19 @@ def load_banner(request):
     banner_id = request.GET.get('banner_id')
     banner = Banner.objects.get(pk=banner_id)
     return HttpResponse(banner.image.url)
+
+def check_similar_page(request):
+    value = request.GET.get('value')
+    check = True
+    if Page.objects.filter(name=value).exists():
+        check = False
+
+    return HttpResponse(check)
+
+def check_similar_location(request):
+    value = request.GET.get('value')
+    check = True
+    if Location.objects.filter(name=value).exists():
+        check = False
+
+    return HttpResponse(check)

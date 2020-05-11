@@ -17,6 +17,14 @@ $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
 })
 
+$('#app_filter').change(function () {
+    table.search($(this).val()).draw();
+})
+
+$('#page_filter').change(function () {
+    table.search($(this).val()).draw();
+})
+
 function active(input) {
     var pk = $(input).attr('id');
     var pk = pk.slice(-1);

@@ -7,7 +7,8 @@
 <link rel="stylesheet" href="{% static 'css/add_page.css' %}">
 
 <div class="container mt-5 mb-5">
-    <form method="POST">
+    <form id="pageForm" method="POST" data-check-similar-page-url="{% url 'app:ajax_check_similar_page' %}"
+        data-check-similar-location-url="{% url 'app:ajax_check_similar_location' %}">
         {% csrf_token %}
 
         {{ formset_page.management_form }}
@@ -51,7 +52,10 @@
                         <div class="form-group row mb-4">
                             <label class="col-sm-2 col-form-label"
                                 for="{{ page.name.id_for_label }}">{{ page.name.label }}</label>
-                            <div class="col-sm-10">{{ page.name }}</div>
+                            <div class="col-sm-10">
+                                {{ page.name }}
+                                <small id="id_warning-text-page-0" style="color: red; display: none;">Nama Halaman telah dipakai. Silahkan coba nama lain.</small>
+                            </div>
                             <input id="id_page-0-min" type="hidden" name="page-0-min" value="0">
                             <input id="id_page-0-max" type="hidden" name="page-0-max" value="0">
                         </div>
@@ -74,7 +78,11 @@
 
                             <div class="form-group row location-name">
                                 <label class="col-sm-3 col-form-label" for="{{ location.name.id_for_label }}">{{ location.name.label }}</label>
-                                <div class="col-sm-9">{{ location.name }}</div>
+                                <div class="col-sm-9">
+                                    {{ location.name }}
+                                    <small id="id_warning-text-location-0" style="color: red; display: none;">Nama Lokasi
+                                        telah dipakai. Silahkan coba nama lain.</small>
+                                </div>
                             </div>
 
                             <div class="form-group row location-size">
@@ -117,5 +125,99 @@
 <script src="{% static 'js/add_page.js' %}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#id_names').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih aplikasi',
+        });
+    });
+
+    function checkSimilarPage(input) {
+        var url = $('#pageForm').attr("data-check-similar-page-url");
+        var value = $(input).val();
+
+        var inputId = $(input).attr('id')
+        var id = inputId.slice(8, 10);
+
+        var inputValue = $(input).val();
+
+        if (id.includes('-')) {
+            var id = inputId.slice(8, 9);
+        }
+
+        $.ajax({
+            url: url,
+            data: {
+                'value' : value
+            },
+            success: function(data) {
+                if(data == 'False') {
+                    $('#id_warning-text-page-' + id).show();
+                }else{
+                    $('#id_warning-text-page-' + id).hide();
+                }
+            }
+        });
+
+        $('.page-name:not(#' + inputId + ')').each(function () {
+            var pageValue = $(this).val();
+            if (pagevalue == inputValue) {
+                $('#id_warning-text-page-' + id).show();
+                return false;
+            }else{
+                $('#id_warning-text-page-' + id).hide();
+            }
+        });
+    }
+
+    function checkSimilarLocation(input) {
+        var url = $('#pageForm').attr("data-check-similar-location-url");
+        var value = $(input).val();
+
+        var inputId = $(input).attr('id')
+        var id = inputId.slice(12, 14);
+
+        if (id.includes('-')) {
+            var id = inputId.slice(12, 13);
+        }
+
+        $.ajax({
+            url: url,
+            data: {
+                'value' : value
+            },
+            success: function(data) {
+                if(data == 'False') {
+                    $('#id_warning-text-location-' + id).show();
+                }else{
+                    $('#id_warning-text-location-' + id).hide();
+                }
+            }
+        });
+
+        // var inputId = $(input).attr('id')
+        // var id = inputId.slice(8, 10);
+
+        // if (id.includes('-')) {
+        // var id = inputId.slice(8, 9);
+        // }
+
+        // var inputValue = $(input).val();
+
+        // $('.page-name:not(#' + inputId + ')').each(function () {
+        // if ($(this).val() == inputValue) {
+        // $('#id_warning-text-' + id).show();
+        // $('#id_success-text-' + id).hide();
+        // return false;
+        // }else{
+        // $('#id_warning-text-' + id).hide();
+        // $('#id_success-text-' + id).show();
+        // return false;
+        // }
+        // });
+    }
+</script>
 
 {% endblock content %}

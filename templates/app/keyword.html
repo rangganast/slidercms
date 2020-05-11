@@ -64,10 +64,6 @@
                                 $('#datepicker1').datepicker({
                                     uiLibrary: 'bootstrap4',
                                     format: 'dd-mm-yyyy',
-                                    disableDates: function (date) {
-                                        const currentDate = new Date().setHours(0,0,0,0);
-                                        return date.setHours(0,0,0,0) >= currentDate ? true : false;
-                                    }
                                 });
                             </script>
 
@@ -83,7 +79,7 @@
                                         var date1 = date1.slice(6, 10) + '-' + date1.slice(3, 5) + '-' +
                                             date1.slice(0, 2)
                                         const currentDate = new Date(date1).setHours(0, 0, 0, 0);
-                                        return date.setHours(0, 0, 0, 0) >= currentDate ? true : false;
+                                        return date.setHours(0, 0, 0, 0) > currentDate ? true : false;
                                     }
                                 });
                             </script>

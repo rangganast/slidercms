@@ -30,7 +30,7 @@ class PageForm(forms.ModelForm):
             'name' : 'Nama Halaman',
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control', 'required': 'True'})
+            'name' : forms.TextInput(attrs={'class' : 'form-control page-name', 'required': 'True', 'oninput' : 'checkSimilarPage(this);'})
         }
 
 PageFormSet = modelformset_factory(Page, form=PageForm, extra=1, can_delete=True)
@@ -52,11 +52,10 @@ class LocationForm(forms.ModelForm):
             'height' : 'x',
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control','required': 'True'}),
+            'name' : forms.TextInput(attrs={'class' : 'form-control','required': 'True', 'oninput' : 'checkSimilarLocation(this);'}),
             'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True', 'min' : '1'}),
             'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True', 'min' : '1'}),
         }
-    
 
 LocationFormSet = modelformset_factory(Location, form=LocationForm, extra=1, can_delete=True)
 
@@ -108,7 +107,7 @@ class BannerForm(forms.ModelForm):
         return image
 
 class InstallationForm(forms.ModelForm):
-    banner_names = forms.ModelChoiceField(queryset=Banner.objects.all(), widget=forms.Select(attrs={'class' : 'form-control banner-select', 'onchange' : 'load_banner(this);', 'required' : True}), label='Nama Banner', empty_label='Pilih Banner')
+    banner_names = forms.ModelChoiceField(queryset=Banner.objects.filter(is_archived=False), widget=forms.Select(attrs={'class' : 'form-control banner-select', 'onchange' : 'load_banner(this);', 'required' : True}), label='Nama Banner', empty_label='Pilih Banner')
     class Meta:
         model = Installation
         fields = ['banner_names', 'redirect']
@@ -122,7 +121,6 @@ class InstallationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(InstallationForm, self).__init__(*args, **kwargs)
         self.fields['redirect'].required = False
-    
 
 InstallationFormSet = modelformset_factory(Installation, form=InstallationForm, extra=1, can_delete=True)
 

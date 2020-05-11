@@ -13,15 +13,20 @@ function clonePage(selector){
 
     newElement.find('#id_page-' + (totalPage - 1) + '-name').attr('id', 'id_page-' + totalPage + '-name');
     newElement.find('#id_page-' + totalPage + '-name').attr('name', 'page-' + totalPage + '-name');
+    newElement.find('#id_page-' + totalPage + '-name').val('');
 
     var forLabel = 'id_page-' + (totalPage - 1) + '-name'
     newElement.find('label[for="' + forLabel + '"]').attr('for', 'id_page-' + totalPage + '-name');
     
     newElement.find('#id_page-' + (totalPage - 1) + '-min').attr('id', 'id_page-' + totalPage + '-min');
     newElement.find('#id_page-' + totalPage + '-min').attr('name', 'page-' + totalPage + '-min');
+    newElement.find('#id_page-' + totalPage + '-min').val('');
 
     newElement.find('#id_page-' + (totalPage - 1) + '-max').attr('id', 'id_page-' + totalPage + '-max');
     newElement.find('#id_page-' + totalPage + '-max').attr('name', 'page-' + totalPage + '-max');
+    
+    newElement.find('#id_warning-text-page-' + (totalPage - 1)).attr('id', 'id_warning-text-page-' + totalPage);
+    newElement.find('#id_warning-text-page-' + totalPage).hide();
     
     newElement.find('#id_location-add-' + (totalPage - 1)).attr('id', 'id_location-add-' + totalPage);
     newElement.find('#id_location-delete-' + (totalPage - 1)).attr('id', 'id_location-delete-' + totalPage).hide();
@@ -61,6 +66,10 @@ function clonePage(selector){
 
     $('.location-name').find('label').each(function (index) {
         $(this).attr("for", "id_location-" + index + "-name");
+    });
+
+    $('.location-name').find('small').each(function (index) {
+        $(this).attr("id", "id_warning-text-location-" + index);
     });
 
 
@@ -126,10 +135,84 @@ function removePage(selector) {
     if ($('fieldset').length == 1) {
         $('#id_page-delete-button').hide();
     }
+    
+    $('.location-slider').find('input:first').each(function (index) {
+        $(this).attr("id", "id_location-" + index + "-is_slider_0");
+        $(this).attr("name", "location-" + index + "-is_slider");
+    });
+    
+    $('.location-slider').find('label:first').each(function (index) {
+        $(this).attr("for", "id_location-" + index + "-is_slider_0");
+    });
+    
+    $('.location-slider').find('label:nth-child(2)').each(function (index) {
+        $(this).find('label').attr("for", "id_location-" + index + "-is_slider_0");
+    });
+    
+    $('.location-slider').find('input:last').each(function (index) {
+        $(this).attr("id", "id_location-" + index + "-is_slider_1");
+        $(this).attr("name", "location-" + index + "-is_slider");
+    });
+    
+    $('.location-slider').find('label:last').each(function (index) {
+        $(this).attr("for", "id_location-" + index + "-is_slider_1");
+    });
+    
+    
+    
+    $('.location-name input').each(function (index) {
+        $(this).attr("id", "id_location-" + index + "-name");
+        $(this).attr("name", "location-" + index + "-name");
+    });
+    
+    $('.location-name').find('label').each(function (index) {
+        $(this).attr("for", "id_location-" + index + "-name");
+    });
+    
+    $('.location-name').find('small').each(function (index) {
+        $(this).attr("id", "id_warning-text-location-" + index);
+    });
+    
+    
+    $('.location-size').find('input:first').each(function (index) {
+        $(this).attr("id", "id_location-" + index + "-width");
+        $(this).attr("name", "location-" + index + "-width");
+    });
+    
+    $('.location-size').find('label:first').each(function (index) {
+        $(this).attr("for", "id_location-" + index + "-width");
+    });
+    
+    $('.location-size').find('input:last').each(function (index) {
+        $(this).attr("id", "id_location-" + index + "-height");
+        $(this).attr("name", "location-" + index + "-height");
+    });
+    
+    $('.location-size').find('label:last').each(function (index) {
+        $(this).attr("for", "id_location-" + index + "-height");
+    });
+    
+    
+    
+    $('fieldset').each(function (index) {
+        var min_child = $(this).find('.location-name:first input').attr("name").slice(9, 11);
 
+        if (min_child.includes('-')) {
+            var min_child = $(this).find('.location-name:first input').attr("name").slice(9, 10);
+        }
+        
+        $(this).find('#id_page-' + index + '-min').val(min_child);
+        
+        var max_child = $(this).find('.location-name:last input').attr("name").slice(9, 11);
+        if (max_child.includes('-')) {
+            var max_child = $(this).find('.location-name:last input').attr("name").slice(9, 10);
+        }
+        
+        $(this).find('#id_page-' + index + '-max').val(max_child);
+    });
+    
     var totalPage = $('fieldset').length;
     $('#id_page-TOTAL_FORMS').val(totalPage);
-
 }
 
 function cloneLocation(input) {
@@ -180,6 +263,9 @@ function cloneLocation(input) {
         $(this).attr("for", "id_location-" + index + "-name");
     });
 
+    $('.location-name').find('small').each(function (index) {
+        $(this).attr("id", "id_warning-text-location-" + index);
+    });
 
 
     $('.location-size').find('input:first').each(function (index) {
@@ -277,6 +363,9 @@ function removeLocation(input) {
         $(this).attr("for", "id_location-" + index + "-name");
     });
 
+    $('.location-name').find('small').each(function (index) {
+        $(this).attr("id", "id_warning-text-location-" + index);
+    });
 
 
     $('.location-size').find('input:first').each(function (index) {

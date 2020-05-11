@@ -167,26 +167,23 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-
 <script>
     $(document).ready(function () {
         $('#app_select').select2({
             theme: 'bootstrap4',
-            placeholder: 'Pilih aplikasi',
+            placeholder: 'Pilih Aplikasi',
         });
         $('#page_select').select2({
             theme: 'bootstrap4',
-            placeholder: 'Pilih halaman',
+            placeholder: 'Pilih Halaman',
         });
         $('.location-select').select2({
             theme: 'bootstrap4',
-            placeholder: 'Pilih lokasi',
+            placeholder: 'Pilih Lokasi',
         });
         $('.banner-select').select2({
             theme: 'bootstrap4',
-            placeholder: 'Pilih banner',
+            placeholder: 'Pilih Banner',
         });
     });
 
@@ -265,7 +262,6 @@
         }
 
         var prev = $('#id_location-previous-value-' + id).val();
-        console.log(prev);
 
         $.ajax({
             url: url,

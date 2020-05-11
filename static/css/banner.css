@@ -43,7 +43,8 @@
 .btn-danger:hover,
 .btn-danger:active,
 .btn-danger:visited,
-.btn-danger:focus {
+.btn-danger:focus,
+.btn-danger:disabled {
     background-color: #FF9900 !important;
     color: #000000;
     border-color: #000000;

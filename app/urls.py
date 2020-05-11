@@ -31,6 +31,8 @@ urlpatterns = [
     path('ajax/load-locations/', login_required(views.load_locations), name='ajax_load_locations'),
     path('ajax/load-banner/', login_required(views.load_banner), name='ajax_load_banner'),
     path('ajax/load-location-size/', login_required(views.load_location_size), name='ajax_load_location_size'),
+    path('ajax/check-similar-page/', login_required(views.check_similar_page), name='ajax_check_similar_page'),
+    path('ajax/check-similar-location/', login_required(views.check_similar_location), name='ajax_check_similar_location'),
 
     path('login/', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('logout/', login_required(auth_views.LogoutView.as_view()), name='logout'),
