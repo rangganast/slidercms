@@ -7,7 +7,8 @@
 <link rel="stylesheet" href="{% static 'css/update_page.css' %}">
 
 <div class="container mt-5 mb-5">
-    <form method="POST" action="{% url 'app:update_page' pk=page.id %}">
+    <form id="pageForm" method="POST" action="{% url 'app:update_page' pk=page.id %}"
+        data-check-similar-page-url="{% url 'app:ajax_check_similar_page_update' %}">
         {% csrf_token %}
 
         {{ formset_page.management_form }}
@@ -17,7 +18,7 @@
 
             <h3 class="text-center mb-2">Form Update Halaman
                 <span class="btn-group float-right">
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button id="submitUpdatePage" type="submit" class="btn btn-primary">Simpan</button>
                 </span>
                 <span class="btn-group float-right">
                     <a href="{% url 'app:page' %}" style="color: white; text-decoration: none;">
@@ -45,6 +46,8 @@
                     <div class="col-sm-4">
                         {{ page.id }}
                         {{ page.name }}
+                        <small id="id_warning-text-page" style="color: red; display: none;">Nama Halaman telah
+                            dipakai. Silahkan masukkan nama lain.</small>
                     </div>
                 </div>
                 {% endfor %}
@@ -117,6 +120,13 @@
 
 <script>
     $(document).ready(function () {
+        $('#id_names').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih aplikasi',
+        });
+
+        $('input').prop('disabled', false);
+
         $('fieldset:last').remove();
         $('.page-div:last').remove();
     

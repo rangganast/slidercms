@@ -269,8 +269,27 @@
                 'location_id' : location_id
             },
             success: function(data) {
-                $('#id_location-size-' + id).html('*Ukuran gambar di Lokasi Pemasangan ini adalah ' + data);
+                var arr = data.split(',')
+                $('#id_location-size-' + id).html('*Ukuran gambar di Lokasi Pemasangan ini adalah ' + arr[0]);
+
+                if(arr[1] == 'True') {
+                    if($('#id_install-' + id + '-fieldset').find('.banner-div').length == 1){
+                        $('#id_banner-add-' + id).click();
+                        $('#id_banner-delete-' + id).hide();
+                    }else if ($('#id_install-' + id + '-fieldset').find('.banner-div').length > 2){
+                        $('#id_install-' + id + '-fieldset').find('.banner-div:gt(1)').remove();
+                        $('#id_banner-delete-' + id).hide();
+                    }else{
+                        $('#id_banner-delete-' + id).hide();
+                    }
+                }else{
+                    if ($('#id_install-' + id + '-fieldset').find('.banner-div').length > 1){
+                        $('#id_install-' + id + '-fieldset').find('.banner-div:gt(0)').remove();
+                        $('#id_banner-delete-' + id).hide();
+                    }
+                }
             }
+
         });
 
         $('#id_location-previous-value-' + id).val(location_id);

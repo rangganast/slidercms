@@ -52,7 +52,7 @@ class LocationForm(forms.ModelForm):
             'height' : 'x',
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control location-name-input','required': 'True', 'disabled': 'true'}),
+            'name' : forms.TextInput(attrs={'class' : 'form-control location-name-input','required': 'True', 'oninput' : 'checkSimilarLocation(this);', 'disabled': 'true'}),
             'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True', 'min' : '1', 'disabled': 'true'}),
             'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True', 'min' : '1', 'disabled': 'true'}),
         }

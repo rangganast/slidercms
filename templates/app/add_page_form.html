@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="{% static 'css/add_page.css' %}">
 
 <div class="container mt-5 mb-5">
-    <form id="pageForm" method="POST" data-check-similar-page-url="{% url 'app:ajax_check_similar_page' %}"
-        data-check-similar-location-url="{% url 'app:ajax_check_similar_location' %}">
+    <form id="pageForm" method="POST" data-check-similar-page-url="{% url 'app:ajax_check_similar_page_add' %}"
+        data-check-similar-location-url="{% url 'app:ajax_check_similar_location_add' %}">
         {% csrf_token %}
 
         {{ formset_page.management_form }}
@@ -135,66 +135,14 @@
         
         $('#id_names').change(function () {
             $('.page-name').prop('disabled', false);
-            $('#id_location-0-is_slider_0').prop('disabled', false);
-            $('#id_location-0-is_slider_1').prop('disabled', false);
-            $('#id_location-0-name').prop('disabled', false);
-            $('#id_location-0-width').prop('disabled', false);
-            $('#id_location-0-height').prop('disabled', false);
+            //$('#id_location-0-is_slider_0').prop('disabled', false);
+            //$('#id_location-0-is_slider_1').prop('disabled', false);
+            //$('#id_location-0-name').prop('disabled', false);
+            //$('#id_location-0-width').prop('disabled', false);
+            //$('#id_location-0-height').prop('disabled', false);
             $('#id_page-add-button').prop('disabled', false);
         });
     });
-
-    function checkSimilarPage(input) {
-        
-        var url = $('#pageForm').attr("data-check-similar-page-url");
-        var value = $(input).val();
-        var app_value = $('#id_names').val();
-        
-        var inputId = $(input).attr('id')
-        var id = inputId.slice(8, 10);
-                
-        if (id.includes('-')) {
-            var id = inputId.slice(8, 9);
-        }
-
-        //if(value != ''){
-        //    $('#id_page-' + id + '-fieldset').find('input:not(#' + inputId + ')').prop('disabled', false);
-        //}else{
-        //    $('#id_page-' + id + '-fieldset').find('input:not(#' + inputId + ')').prop('disabled', true);
-        //}
-
-        $.ajax({
-            url: url,
-            data: {
-                'value' : value,
-                'app_value' : app_value,
-            },
-            success: function(data) {
-                if(data == 'True') {
-                    if($('.page-name:not(#' + inputId + ')').length > 0){
-                        $('.page-name:not(#' + inputId + ')').each(function () {
-                            if ($(this).val() == value) {
-                                $('#id_warning-text-page-' + id).show();
-                                $('#submitAddPage').prop('disabled', true);
-                                return false;
-                            }else{
-                                $('#id_warning-text-page-' + id).hide();
-                                $('#submitAddPage').prop('disabled', false);
-                            }
-                        });
-                    }else{                        
-                        $('#id_warning-text-page-' + id).hide();
-                        $('#submitAddPage').prop('disabled', false);
-                    }
-                    
-                }else{
-                    $('#id_warning-text-page-' + id).show();
-                    $('#submitAddPage').prop('disabled', true);
-                }
-            }
-        });
-
-    }
 </script>
 
 {% endblock content %}

@@ -20,13 +20,14 @@ class PageView(View):
         contents = []
 
         for i in range(len(pages)):
-            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_names' : [], 'location_sizes' : [], 'is_active': None})
+            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_ids' : [], 'location_names' : [], 'location_sizes' : [], 'is_active': None})
             for app in apps:
                 if pages[i].application_id == app.id:
                     contents[i]['app'] = app.name
             
             for location in locations:
                 if location.page_id == pages[i].id:
+                    contents[i]['location_ids'].append(location.id)
                     contents[i]['location_names'].append(location.name)
                     contents[i]['location_sizes'].append(str(location.width) + " x " + str(location.height))
                     contents[i]['is_active'] = location.is_active
@@ -590,23 +591,33 @@ def load_location_size(request):
     location_id = request.GET.get('location_id')
     location = Location.objects.get(pk=location_id)
     location_size = str(location.width) + " x " + str(location.height)
-    return HttpResponse(location_size)
+    return HttpResponse(location_size + ',' + str(location.is_slider))
 
 def load_banner(request):
     banner_id = request.GET.get('banner_id')
     banner = Banner.objects.get(pk=banner_id)
     return HttpResponse(banner.image.url)
 
-def check_similar_page(request):
+def check_similar_page_add(request):
     value = request.GET.get('value')
     app_value = request.GET.get('app_value')
     check = True
-    if Page.objects.filter(name=value, application_id=app_value).exists():
+    if Page.objects.filter(name__iexact=value, application_id=app_value).exists():
         check = False
 
     return HttpResponse(check)
 
-def check_similar_location(request):
+def check_similar_page_update(request):
+    page_id = request.GET.get('page_id')
+    value = request.GET.get('value')
+    app_value = request.GET.get('app_value')
+    check = True
+    if Page.objects.filter(name__iexact=value, application_id=app_value).exclude(id=page_id).exists():
+        check = False
+
+    return HttpResponse(check)
+
+def check_similar_location_add(request):
     value = request.GET.get('value')
     # page_value = request.GET.get('page_value')
     # app_value = request.GET.get('app_value')

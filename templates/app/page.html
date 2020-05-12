@@ -62,7 +62,17 @@
                 <td>
                     <ul>
                         {% for name in content.location_names %}
-                            <li>{{name}}</li>
+
+                        {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
+                        {% with idSlice=""|add:start|add:":"|add:end %}
+                        {% with loc_id=content.location_ids|slice:idSlice %}
+                        
+                        <li>{{name}} ({{loc_id.0}})</li>
+                        
+                        {% endwith %}
+                        {% endwith %}
+                        {% endwith %}
+
                         {% endfor %}
                     </ul>
                 </td>

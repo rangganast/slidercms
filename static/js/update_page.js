@@ -103,3 +103,30 @@ function removeLocation(input) {
     $('#id_location-TOTAL_FORMS').val(totalLocation);
 
 }
+
+function checkSimilarPage(input) {
+
+    var url = $('#pageForm').attr("data-check-similar-page-url");
+    var page_id = $('#id_page-0-id').val();
+    var value = $(input).val();
+    var app_value = $('#id_names').val();
+
+    $.ajax({
+        url: url,
+        data: {
+            'page_id': page_id,
+            'value': value,
+            'app_value': app_value,
+        },
+        success: function (data) {
+            if (data == 'True') {
+                $('#id_warning-text-page').hide();
+                $('#submitUpdatePage').prop('disabled', false);
+            } else {
+                $('#id_warning-text-page').show();
+                $('#submitUpdatePage').prop('disabled', true);
+            }
+        }
+    });
+
+}
