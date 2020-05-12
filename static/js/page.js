@@ -17,12 +17,10 @@ $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
 })
 
-$('#app_filter').change(function () {
-    table.search($(this).val()).draw();
-})
-
 $('#page_filter').change(function () {
-    table.search($(this).val()).draw();
+    var appname = $('#app_filter option:selected').text();
+    var pagename = $(this).find('option:selected').text();
+    table.search(appname + ' ' + pagename).draw();
 })
 
 function archive(input) {

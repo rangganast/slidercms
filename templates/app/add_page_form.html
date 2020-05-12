@@ -19,7 +19,7 @@
             <h3 class="text-center mb-2">Form Tambah Halaman
                 <span class="btn-group float-right">
                     <a href="{% url 'app:add_page' %}">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button id="submitAddPage" type="submit" class="btn btn-primary">Simpan</button>
                     </a>
                 </span>
                 <span class="btn-group float-right">
@@ -54,7 +54,7 @@
                                 for="{{ page.name.id_for_label }}">{{ page.name.label }}</label>
                             <div class="col-sm-10">
                                 {{ page.name }}
-                                <small id="id_warning-text-page-0" style="color: red; display: none;">Nama Halaman telah dipakai. Silahkan coba nama lain.</small>
+                                <small id="id_warning-text-page-0" style="color: red; display: none;">Nama Halaman telah dipakai. Silahkan masukkan nama lain.</small>
                             </div>
                             <input id="id_page-0-min" type="hidden" name="page-0-min" value="0">
                             <input id="id_page-0-max" type="hidden" name="page-0-max" value="0">
@@ -81,7 +81,7 @@
                                 <div class="col-sm-9">
                                     {{ location.name }}
                                     <small id="id_warning-text-location-0" style="color: red; display: none;">Nama Lokasi
-                                        telah dipakai. Silahkan coba nama lain.</small>
+                                        telah dipakai. Silahkan masukkan nama lain.</small>
                                 </div>
                             </div>
 
@@ -111,7 +111,7 @@
                         <button id="id_page-delete-button" type="button" class="btn btn-danger float-right mr-2"
                             onclick="removePage('fieldset.page-border:last');" style="display: none;">Hapus Halaman</button>
                         <button id="id_page-add-button" type="button" class="btn btn-primary float-right"
-                            onclick="clonePage('fieldset.page-border:last');">Tambah Halaman</button>
+                            onclick="clonePage('fieldset.page-border:last');" disabled>Tambah Halaman</button>
                     </div>
                 </div>
 
@@ -132,91 +132,68 @@
             theme: 'bootstrap4',
             placeholder: 'Pilih aplikasi',
         });
+        
+        $('#id_names').change(function () {
+            $('.page-name').prop('disabled', false);
+            $('#id_location-0-is_slider_0').prop('disabled', false);
+            $('#id_location-0-is_slider_1').prop('disabled', false);
+            $('#id_location-0-name').prop('disabled', false);
+            $('#id_location-0-width').prop('disabled', false);
+            $('#id_location-0-height').prop('disabled', false);
+            $('#id_page-add-button').prop('disabled', false);
+        });
     });
 
     function checkSimilarPage(input) {
+        
         var url = $('#pageForm').attr("data-check-similar-page-url");
         var value = $(input).val();
-
+        var app_value = $('#id_names').val();
+        
         var inputId = $(input).attr('id')
         var id = inputId.slice(8, 10);
-
-        var inputValue = $(input).val();
-
+                
         if (id.includes('-')) {
             var id = inputId.slice(8, 9);
         }
 
+        //if(value != ''){
+        //    $('#id_page-' + id + '-fieldset').find('input:not(#' + inputId + ')').prop('disabled', false);
+        //}else{
+        //    $('#id_page-' + id + '-fieldset').find('input:not(#' + inputId + ')').prop('disabled', true);
+        //}
+
         $.ajax({
             url: url,
             data: {
-                'value' : value
+                'value' : value,
+                'app_value' : app_value,
             },
             success: function(data) {
-                if(data == 'False') {
+                if(data == 'True') {
+                    if($('.page-name:not(#' + inputId + ')').length > 0){
+                        $('.page-name:not(#' + inputId + ')').each(function () {
+                            if ($(this).val() == value) {
+                                $('#id_warning-text-page-' + id).show();
+                                $('#submitAddPage').prop('disabled', true);
+                                return false;
+                            }else{
+                                $('#id_warning-text-page-' + id).hide();
+                                $('#submitAddPage').prop('disabled', false);
+                            }
+                        });
+                    }else{                        
+                        $('#id_warning-text-page-' + id).hide();
+                        $('#submitAddPage').prop('disabled', false);
+                    }
+                    
+                }else{
                     $('#id_warning-text-page-' + id).show();
-                }else{
-                    $('#id_warning-text-page-' + id).hide();
+                    $('#submitAddPage').prop('disabled', true);
                 }
             }
         });
 
-        $('.page-name:not(#' + inputId + ')').each(function () {
-            var pageValue = $(this).val();
-            if (pagevalue == inputValue) {
-                $('#id_warning-text-page-' + id).show();
-                return false;
-            }else{
-                $('#id_warning-text-page-' + id).hide();
-            }
-        });
-    }
-
-    function checkSimilarLocation(input) {
-        var url = $('#pageForm').attr("data-check-similar-location-url");
-        var value = $(input).val();
-
-        var inputId = $(input).attr('id')
-        var id = inputId.slice(12, 14);
-
-        if (id.includes('-')) {
-            var id = inputId.slice(12, 13);
-        }
-
-        $.ajax({
-            url: url,
-            data: {
-                'value' : value
-            },
-            success: function(data) {
-                if(data == 'False') {
-                    $('#id_warning-text-location-' + id).show();
-                }else{
-                    $('#id_warning-text-location-' + id).hide();
-                }
-            }
-        });
-
-        // var inputId = $(input).attr('id')
-        // var id = inputId.slice(8, 10);
-
-        // if (id.includes('-')) {
-        // var id = inputId.slice(8, 9);
-        // }
-
-        // var inputValue = $(input).val();
-
-        // $('.page-name:not(#' + inputId + ')').each(function () {
-        // if ($(this).val() == inputValue) {
-        // $('#id_warning-text-' + id).show();
-        // $('#id_success-text-' + id).hide();
-        // return false;
-        // }else{
-        // $('#id_warning-text-' + id).hide();
-        // $('#id_success-text-' + id).show();
-        // return false;
-        // }
-        // });
     }
 </script>
 

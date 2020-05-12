@@ -30,7 +30,7 @@ class PageForm(forms.ModelForm):
             'name' : 'Nama Halaman',
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control page-name', 'required': 'True', 'oninput' : 'checkSimilarPage(this);'})
+            'name' : forms.TextInput(attrs={'class' : 'form-control page-name', 'required': 'True', 'oninput' : 'checkSimilarPage(this);', 'disabled' : 'true'})
         }
 
 PageFormSet = modelformset_factory(Page, form=PageForm, extra=1, can_delete=True)
@@ -41,7 +41,7 @@ class LocationForm(forms.ModelForm):
         (False, 'Tidak')
     ]
 
-    is_slider = forms.CharField(label='Apakah lokasi pemasangan banner berupa "Slider"?', widget=forms.RadioSelect(choices=choices, attrs={'class' : 'ml-2', 'required' : True}))
+    is_slider = forms.CharField(label='Apakah lokasi pemasangan banner berupa "Slider"?', widget=forms.RadioSelect(choices=choices, attrs={'class' : 'ml-2', 'required' : True, 'disabled' : 'true'}))
 
     class Meta:
         model = Location
@@ -52,9 +52,9 @@ class LocationForm(forms.ModelForm):
             'height' : 'x',
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control','required': 'True', 'oninput' : 'checkSimilarLocation(this);'}),
-            'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True', 'min' : '1'}),
-            'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True', 'min' : '1'}),
+            'name' : forms.TextInput(attrs={'class' : 'form-control location-name-input','required': 'True', 'disabled': 'true'}),
+            'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True', 'min' : '1', 'disabled': 'true'}),
+            'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True', 'min' : '1', 'disabled': 'true'}),
         }
 
 LocationFormSet = modelformset_factory(Location, form=LocationForm, extra=1, can_delete=True)

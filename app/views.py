@@ -599,15 +599,21 @@ def load_banner(request):
 
 def check_similar_page(request):
     value = request.GET.get('value')
+    app_value = request.GET.get('app_value')
     check = True
-    if Page.objects.filter(name=value).exists():
+    if Page.objects.filter(name=value, application_id=app_value).exists():
         check = False
 
     return HttpResponse(check)
 
 def check_similar_location(request):
     value = request.GET.get('value')
+    # page_value = request.GET.get('page_value')
+    # app_value = request.GET.get('app_value')
     check = True
+
+    # page = Page.objects.filter(name=page_value, application_id=app_value)
+
     if Location.objects.filter(name=value).exists():
         check = False
 

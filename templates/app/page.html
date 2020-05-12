@@ -9,7 +9,7 @@
 <div class="container mt-5 mb-5">
     <h3 class="mt-3 mb-3">Manajemen Halaman</h3>
 
-    <div class="control-group mb-3">
+    <div id="filterDiv" class="control-group mb-3" data-page-url="{% url 'app:ajax_load_pages' %}">
         <div class="col input-wrapper">
             <div class="row">
                 <div class="col-sm-3 no-padding">
@@ -17,17 +17,14 @@
                     <select id="app_filter" class="form-control">
                         <option value="">Cari Aplikasi</option>
                         {% for app in apps %}
-                        <option value="{{app.name}}">{{app.name}}</option>
+                        <option value="{{app.id}}">{{app.name}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-sm-3 no-padding">
                     <label for="page_filter"><small>Cari Nama Halaman</small></label>
-                    <select id="page_filter" class="form-control">
-                        <option value="">Cari Halaman</option>
-                        {% for page in pages %}
-                        <option value="{{page.name}}">{{page.name}}</option>
-                        {% endfor %}
+                    <select id="page_filter" class="form-control" disabled>
+                        {% include 'app/pages_dropdown_list_options.html' %}
                     </select>
                 </div>
             </div>
@@ -129,6 +126,24 @@
             theme: 'bootstrap4',
             placeholder: 'Cari Halaman',
         });
+    });
+
+    $('#app_filter').change(function () {
+        var url = $('#filterDiv').attr("data-page-url");
+        var app_id = $(this).val();
+
+        if(app_id) {
+            $.ajax({
+                url: url,
+                data: {
+                    'app_id' : app_id
+                },
+                success: function(data) {
+                    $("#page_filter").html(data);
+                    $("#page_filter").prop('disabled', false);
+                }
+            });
+        }
     });
 
     {% if messages %}
