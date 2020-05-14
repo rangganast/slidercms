@@ -1,50 +1,12 @@
 {% extends 'app/base.html' %}
 
+{% load static %}
+
 {% block content %}
-<style>
-    .card {
-        border: none;
-    }
-
-    .searchspan {
-        float: left;
-        margin-left: 7px;
-        margin-top: -26px;
-        position: absolute;
-        z-index: 2;
-    }
-
-    .searchinput {
-        padding-left: 30px;
-    }
-
-    .dataTables_wrapper .dataTables_filter {
-    float: right;
-    text-align: right;
-    visibility: hidden;
-    }
-
-    fieldset.scheduler-border {
-    border: 1px groove #ddd !important;
-    padding: 0 1.4em 1.4em 1.4em !important;
-    margin: 0 0 1.5em 0 !important;
-    -webkit-box-shadow: 0px 0px 0px 0px #000;
-    box-shadow: 0px 0px 0px 0px #000;
-    }
-
-    legend.scheduler-border {
-    font-size: 1.2em !important;
-    font-weight: bold !important;
-    text-align: left !important;
-    width: auto;
-    padding: 0 10px;
-    border-bottom: none;
-    }
-
-</style>
+<link rel="stylesheet" href="{% static 'css/keyword.css' %}">
 
 <div class="container mt-5 mb-3">
-    <h3 class="text-center">Keyword Counter</h3>
+    <h3>Keyword Counter</h3>
 </div>
 
 <div class="container mt-3">
@@ -59,7 +21,7 @@
                         <div class="form-group form-inline">
                             <label for="datepicker1">Tanggal :</label>
                             <input name="date1"class="form-control ml-3" id="datepicker1" placeholder="DD-MM-YY"
-                                autocomplete="off" required value="{{tanggal1}}" />
+                                autocomplete="off" required value="{{date1}}" />
                             <script>
                                 $('#datepicker1').datepicker({
                                     uiLibrary: 'bootstrap4',
@@ -69,7 +31,7 @@
 
                             <label class="ml-3" for="datepicker2"> s/d </label>
                             <input name="date2"class="form-control ml-3" id="datepicker2"
-                                placeholder="DD-MM-YY" autocomplete="off" required value="{{tanggal2}}" />
+                                placeholder="DD-MM-YY" autocomplete="off" required value="{{date2}}" />
                             <script>
                                 $('#datepicker2').datepicker({
                                     uiLibrary: 'bootstrap4',
@@ -85,6 +47,7 @@
                             </script>
 
                             <button name="filter" type="submit" class="btn btn-sm btn-primary ml-3">Terapkan</button>
+                            <button id="resetFilter" name="reset" type="button" class="btn btn-sm btn-secondary ml-2">Reset Filter</button>
                         </div>
                     </div>
                 </div>
@@ -123,16 +86,6 @@
     </table>
 </div>
 
-<script>
-    oTable = $('#keywordTable').DataTable({
-        bInfo: false,
-        order: [
-            [1, "desc"],
-        ],
-    });
-    $('#myInputTextField').keyup(function(){
-        oTable.search($(this).val()).draw() ;
-    })
-</script>
+<script src="{% static 'js/keyword.js' %}"></script>
 
 {% endblock content %}

@@ -3,12 +3,16 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from .decorators import developer_required, marketing_required, superuser_required
 from django.http import HttpResponse, HttpResponseRedirect
 from . import services
-from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, InstallationFormSet, KeywordDateRangeForm
-from .models import Application, Page, Location, Banner, Installation
+from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, InstallationFormSet, UserForm, KeywordDateRangeForm
+from .models import Application, Page, Location, Banner, Installation, User
 
 # Create your views here.
+@method_decorator([login_required, developer_required], name='dispatch')
 class PageView(View):
     template_name = 'app/page.html'
 
@@ -39,6 +43,7 @@ class PageView(View):
         }
         return render(request, self.template_name, context)
 
+@method_decorator([login_required, developer_required], name='dispatch')
 class AddPageView(View):
     form_class = {
         'form_application' : ApplicationForm,
@@ -105,6 +110,7 @@ class AddPageView(View):
 
             return redirect(reverse('app:add_page'))
 
+@method_decorator([login_required, developer_required], name='dispatch')
 class UpdatePageView(View):
     form_class = {
         'form_application' : ApplicationForm,
@@ -189,6 +195,7 @@ class UpdatePageView(View):
             print('error dari location: ' + str(formset_location.errors))
             return redirect(reverse('app:page'))
 
+@method_decorator([login_required, developer_required], name='dispatch')
 class ArchivePageView(View):
     def post(self, request, pk):
         page_instance = Page.objects.get(pk=pk)
@@ -206,6 +213,20 @@ class ArchivePageView(View):
 
             return redirect(reverse('app:page'))
 
+@method_decorator([login_required, developer_required], name='dispatch')
+class DeletePageView(View):
+    def post(self, request, pk):
+        page_instance = Page.objects.get(pk=pk)
+        location_instances = Location.objects.filter(page_id=pk)
+
+        page_instance.delete()
+        for location in location_instances:
+            location.delete()
+
+        messages.add_message(request, messages.INFO, "Halaman berhasil dihapus!", extra_tags="page_deleted")
+        return redirect(reverse('app:page'))
+
+@method_decorator([login_required, marketing_required], name='dispatch')
 class BannerView(View):
     template_name = 'app/banner.html'
 
@@ -228,6 +249,7 @@ class BannerView(View):
 
         return render(request, self.template_name, context)
 
+@method_decorator([login_required, marketing_required], name='dispatch')
 class AddBannerView(View):
     form_class = {
         'form_banner' : BannerForm,
@@ -257,17 +279,19 @@ class AddBannerView(View):
 
             banner_instance = Banner(name=name, description=description, image=image, width=width, height=height)
             banner_instance.save()
+
+            messages.add_message(request, messages.INFO, "Data berhasil ditambahkan!", extra_tags="banner_added")
+
+            return redirect(reverse('app:banner'))
+
         else:
             context = {
                 'form_banner' : form_banner,
             }
 
             return render(request, self.template_name, context)
-        
-        messages.add_message(request, messages.INFO, "Data berhasil ditambahkan!", extra_tags="banner_added")
 
-        return redirect(reverse('app:banner'))
-
+@method_decorator([login_required, marketing_required], name='dispatch')
 class UpdateBannerView(View):
     form_class = {
         'form_banner' : BannerForm,
@@ -320,13 +344,14 @@ class UpdateBannerView(View):
             return redirect(reverse('app:banner'))
 
         else:
-
             context = {
+                'banner' : banner_instance,
                 'form_banner' : form_banner,
             }
 
             return render(request, self.template_name, context)
 
+@method_decorator([login_required, marketing_required], name='dispatch')
 class ArchiveBannerView(View):
     def post(self, request, pk):
         banner_instance = Banner.objects.get(pk=pk)
@@ -344,6 +369,17 @@ class ArchiveBannerView(View):
 
             return redirect(reverse('app:banner'))
 
+@method_decorator([login_required, marketing_required], name='dispatch')
+class DeleteBannerView(View):
+    def post(self, request, pk):
+        banner_instance = Banner.objects.get(pk=pk)
+        banner_instance.delete()
+
+        messages.add_message(request, messages.INFO, "Data berhasil dihapus!", extra_tags="banner_deleted")
+
+        return redirect(reverse('app:banner'))
+
+@method_decorator([login_required, marketing_required], name='dispatch')
 class InstallationView(View):
     template_name = 'app/installation.html'
 
@@ -383,6 +419,7 @@ class InstallationView(View):
 
         return render(request, self.template_name, context)
 
+@method_decorator([login_required, marketing_required], name='dispatch')
 class AddInstallationView(View):
     form_class = {
         'formset_installation' : InstallationFormSet,
@@ -433,6 +470,7 @@ class AddInstallationView(View):
             
             return HttpResponseRedirect(reverse('app:install'))
 
+@method_decorator([login_required, marketing_required], name='dispatch')
 class UpdateInstallationView(View):
     form_class = {
         'formset_installation' : InstallationFormSet,
@@ -501,6 +539,7 @@ class UpdateInstallationView(View):
 
             return HttpResponseRedirect(reverse('app:install'))
 
+@method_decorator([login_required, marketing_required], name='dispatch')
 class DetailInstallationView(View):
     template_name = 'app/detail_installation.html'
 
@@ -521,9 +560,9 @@ class DetailInstallationView(View):
         
         return render(request, self.template_name, context)
 
+@method_decorator([login_required, marketing_required], name='dispatch')
 class ActiveInstallationView(View):
     def post(self, request, pk):
-        print(pk)
         location_instance = Location.objects.get(pk=pk)
 
         if location_instance.is_active == True:
@@ -541,6 +580,208 @@ class ActiveInstallationView(View):
 
             return HttpResponseRedirect(reverse('app:install'))
 
+@method_decorator([login_required, marketing_required], name='dispatch')
+class DeleteInstallationView(View):
+    def post(self, request, pk):
+        location_instances = Installation.objects.filter(location_id=pk)
+        for location in location_instances:
+            location.delete()
+
+        messages.add_message(request, messages.INFO, "Pemasangan berhasil dihapus!", extra_tags="install_deleted")
+
+        return HttpResponseRedirect(reverse('app:install'))
+
+@method_decorator([login_required, superuser_required], name='dispatch')
+class UserView(View):
+    template_name = 'app/user.html'
+
+    def get(self, request):
+        users = User.objects.all().exclude(is_superuser=True)
+
+        contents = []
+
+        for i in range(len(users)):
+            contents.append({'id' : None, 'role' : None, 'email' : None, 'username' : None})
+            contents[i]['id'] = users[i].id
+            contents[i]['email'] = users[i].email
+            contents[i]['username'] = users[i].username
+
+            if users[i].is_developer == True:
+                contents[i]['role'] = 'Developer'
+            elif users[i].is_marketing == True:
+                contents[i]['role'] = 'Marketing'
+
+        context = {
+            'contents': contents,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, superuser_required], name='dispatch')
+class AddUserView(View):
+    form_class = {
+        'form_user' : UserForm,
+    }
+
+    inital = {'key' : 'value'}
+    template_name = 'app/add_user_form.html'
+
+    def get(self, request):
+        form_user = self.form_class['form_user']()
+
+        context = {
+            'form_user' : form_user,
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        form_user = self.form_class['form_user'](request.POST or None)
+
+        if form_user.is_valid():
+            role = request.POST.get('roles')
+            email = form_user.cleaned_data['email']
+            username = form_user.cleaned_data['username']
+            password = form_user.cleaned_data['password']
+
+            if role == '1':
+                user_instance = User(email=email, username=username, is_developer=True)
+            elif role == '2':
+                user_instance = User(email=email, username=username, is_marketing=True)
+
+            user_instance.set_password(password)
+            user_instance.save()
+
+            messages.add_message(request, messages.INFO, "User berhasil ditambahkan!", extra_tags="user_added")
+
+            return redirect(reverse('app:user'))
+        else:
+            context = {
+                'form_user' : form_user,
+            }
+
+            return render(request, self.template_name, context)
+    
+@method_decorator([login_required], name='dispatch')
+class UpdateUserView(View):
+    form_class = {
+        'form_user' : UserForm,
+    }
+
+    inital = {'key' : 'value'}
+    template_name = 'app/update_user_form.html'
+
+    def get(self, request):
+        form_user = self.form_class['form_user'](initial={'username' : request.user.username, 'email' : request.user.email, 'password' : '1234567890'})
+
+        context = {
+            'form_user' : form_user,
+        }
+
+        return render(request, self.template_name, context)
+
+    # def post(self, request):
+    #     form_user = self.form_class['form_user'](request.POST or None)
+
+    #     if form_user.is_valid():
+    #         email = form_user.cleaned_data['email']
+    #         username = form_user.cleaned_data['username']
+    #         password = form_user.cleaned_data['password']
+
+    #         user_instance = User.objects.get(username=username)
+
+    #         user_instance.email = email
+    #         user_instance.username = username
+
+    #         user_instance.set_password(password)
+    #         user_instance.save()
+
+    #         return redirect(reverse('app:login'))
+    #     else:
+    #         context = {
+    #             'form_user' : form_user,
+    #         }
+
+    #         return render(request, self.template_name, context)
+
+@method_decorator([login_required], name='dispatch')
+class UpdateUsernameView(View):
+    def post(self, request, pk):
+        user = User.objects.get(id=pk)
+
+        new_username = request.POST.get('newUsernameInput')
+        confirm_password = request.POST.get('passwordConfirm')
+
+        if user.check_password('{}'.format(confirm_password)):
+            try:
+                user = User.objects.exclude(pk=pk).get(username=new_username)
+                messages.add_message(request, messages.INFO, "Username telah dipakai!", extra_tags="username_used")
+
+                return redirect(reverse('app:update_user'))
+            except User.DoesNotExist:
+                user.save()
+                messages.add_message(request, messages.INFO, "Username berhasil diubah!", extra_tags="username_changed")
+
+                return redirect(reverse('app:update_user'))
+        else:
+            messages.add_message(request, messages.INFO, "Password Salah!", extra_tags="password_wrong")
+
+            return redirect(reverse('app:update_user'))
+
+@method_decorator([login_required], name='dispatch')
+class UpdateEmailView(View):
+    def post(self, request, pk):
+        user = User.objects.get(id=pk)
+
+        new_email = request.POST.get('newEmailInput')
+        confirm_password = request.POST.get('passwordConfirm')
+
+        if user.check_password('{}'.format(confirm_password)):
+            try:
+                user = User.objects.exclude(pk=pk).get(email=new_email)
+                messages.add_message(request, messages.INFO, "Email telah dipakai!", extra_tags="email_used")
+
+                return redirect(reverse('app:update_user'))
+            except User.DoesNotExist:
+                user.email = new_email
+                user.save()
+                messages.add_message(request, messages.INFO, "Email berhasil diubah!", extra_tags="email_changed")
+
+                return redirect(reverse('app:update_user'))
+        else:
+            messages.add_message(request, messages.INFO, "Password Salah!", extra_tags="password_wrong")
+
+            return redirect(reverse('app:update_user'))
+
+@method_decorator([login_required], name='dispatch')
+class UpdatePasswordView(View):
+    def post(self, request, pk):
+        user = User.objects.get(id=pk)
+
+        new_password = request.POST.get('newPasswordConfirm')
+        confirm_password = request.POST.get('oldPasswordInput')
+
+        if user.check_password('{}'.format(confirm_password)):
+            user.set_password(new_password)
+            user.save()
+
+            messages.add_message(request, messages.INFO, "Password berhasil diubah!", extra_tags="password_changed")
+
+            return redirect(reverse('app:update_user'))
+        else:
+            messages.add_message(request, messages.INFO, "Password Salah!", extra_tags="password_wrong")
+
+            return redirect(reverse('app:update_user'))
+
+@method_decorator([login_required, superuser_required], name='dispatch')
+class DeleteUserView(View):
+    def post(self, request, pk):
+        user = User.objects.get(id=pk)
+        user.delete()
+
+        return redirect(reverse('app:user'))
+
+@method_decorator([login_required, marketing_required], name='dispatch')
 class KeywordListPage(View):
     form_class = {
         'date' : KeywordDateRangeForm
@@ -551,13 +792,9 @@ class KeywordListPage(View):
     def get(self, request, *args, **kwargs):
         form_date = self.form_class['date']()
 
-        keywords_list = services.get_keywords()
-        lists = services.get_list()
         counts = services.get_count_keywords()
 
         context = {
-            'keywords_list': keywords_list,
-            'lists': lists,
             'counts': counts,
             'form_date': form_date
         }
@@ -569,14 +806,18 @@ class KeywordListPage(View):
             counts = services.get_count_keywords_with_params(date1=date1, date2=date2)
 
             context['counts'] = counts
+            context['date1'] = date1
+            context['date2'] = date2
             
         return render(request, self.template_name, context)
 
+@login_required
 def load_pages(request):
     app_id = request.GET.get('app_id')
     pages = Page.objects.filter(application_id=app_id, is_archived=False)
     return render(request, 'app/pages_dropdown_list_options.html', {'pages': pages})
 
+@login_required
 def load_locations(request):
     page_id = request.GET.get('page_id')
     locations = Location.objects.filter(page_id=page_id)
@@ -587,17 +828,20 @@ def load_locations(request):
 
     return render(request, 'app/locations_dropdown_list_options.html', {'locations': locations})
 
+@login_required
 def load_location_size(request):
     location_id = request.GET.get('location_id')
     location = Location.objects.get(pk=location_id)
     location_size = str(location.width) + " x " + str(location.height)
     return HttpResponse(location_size + ',' + str(location.is_slider))
 
+@login_required
 def load_banner(request):
     banner_id = request.GET.get('banner_id')
     banner = Banner.objects.get(pk=banner_id)
     return HttpResponse(banner.image.url)
 
+@login_required
 def check_similar_page_add(request):
     value = request.GET.get('value')
     app_value = request.GET.get('app_value')
@@ -607,6 +851,7 @@ def check_similar_page_add(request):
 
     return HttpResponse(check)
 
+@login_required
 def check_similar_page_update(request):
     page_id = request.GET.get('page_id')
     value = request.GET.get('value')
@@ -617,6 +862,7 @@ def check_similar_page_update(request):
 
     return HttpResponse(check)
 
+@login_required
 def check_similar_location_add(request):
     value = request.GET.get('value')
     # page_value = request.GET.get('page_value')

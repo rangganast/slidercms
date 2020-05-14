@@ -28,7 +28,7 @@ function archive(input) {
         cancelButtonText: 'Batal',
         cancelButtonClass: 'btn btn-secondary',
         confirmButtonText: 'Archive',
-        confirmButtonClass: 'btn btn-danger',
+        confirmButtonClass: 'btn btn-success',
         reverseButtons: true
     }).then((result) => {
         if (result.value) {
@@ -49,11 +49,32 @@ function unarchive(input) {
         cancelButtonText: 'Batal',
         cancelButtonClass: 'btn btn-secondary',
         confirmButtonText: 'Unarchive',
-        confirmButtonClass: 'btn btn-danger',
+        confirmButtonClass: 'btn btn-success',
         reverseButtons: true
     }).then((result) => {
         if (result.value) {
             $('#form_banner_archive_' + pk).submit();
+        };
+    });
+};
+
+function deleteBanner(input) {
+    var pk = $(input).attr('id');
+    Swal.fire({
+        title: 'Hapus',
+        icon: 'info',
+        html: 'Anda yakin ingin menghapus banner ini?',
+        showCancelButton: true,
+        showCloseButton: true,
+        focusConfirm: false,
+        cancelButtonText: 'Batal',
+        cancelButtonClass: 'btn btn-secondary',
+        confirmButtonText: 'Hapus',
+        confirmButtonClass: 'btn btn-danger',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.value) {
+            $('#form_banner_delete_' + pk).submit();
         };
     });
 };

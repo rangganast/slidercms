@@ -1,38 +1,56 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/simple-sidebar.css' %}">
+<style>
+    .navbar{
+        border-bottom:1px solid #6c757d;
+        vertical-align: center;
+    }
+    table.no-spacing {
+        border-spacing:0;
+        border-collapse: collapse;
+    }
+    
+    .borderless td, .borderless th {
+        border: none;
+        padding: 0;
+        padding-right: 10px;
+    }
 
-<div class="bg-light border-right" id="sidebar-wrapper">
-    <div class="sidebar-heading">
+    #updateUser{
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: none;
+    }
+</style>
+
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="{% url 'app:home' %}">
         <strong>Slider Manager</strong>
-    </div>
-    <div class="list-group list-group-flush">
-        <a href="{% url 'app:keywords' %}" class="list-group-item list-group-item-action bg-light">
-            <i class="fas fa-font mr-2"></i>
-            <strong>Keyword Counter</strong>
-        </a>
-        <a href="{% url 'app:page' %}" class="list-group-item list-group-item-action bg-light">
-            <i class="fas fa-file-alt mr-2"></i>
-            <strong>Manajemen Halaman</strong>
-        </a>
-        <a href="{% url 'app:banner' %}" class="list-group-item list-group-item-action bg-light">
-            <i class="far fa-file-image mr-2"></i>
-            <strong>Manajemen Banner</strong>
-        </a>
-        <a href="{% url 'app:install' %}" class="list-group-item list-group-item-action bg-light">
-            <i class="far fa-copy fa-flip-horizontal mr-2"></i>
-            <strong>Pemasangan Banner</strong>
-        </a>
-        <a href="" class="list-group-item list-group-item-action bg-light">
-            <i class="fas fa-user mr-2"></i>
-            <strong>Manajemen Pengguna</strong>
-        </a>
-        <a href="#" onclick="logout();" class="list-group-item list-group-item-action bg-light">
-            <i class="fas fa-sign-out-alt mr-2"></i>
-            <strong>Logout</strong>
-        </a>
-    </div>    
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
-<script src="{% static 'js/navbar.js' %}"></script>
+    </a>
+    <form method="GET" class="form-inline" action="{% url 'app:update_user' %}">
+        <button id="updateUser" type="submit">
+            <table class="table no-spacing borderless" cellspacing="0">
+                <tr>
+                    <td style="vertical-align : middle;text-align:center;" rowspan="2">
+                        <i class="fas fa-user-circle fa-3x"></i>
+                    </td>
+                    <td>
+                        {% if user.is_superuser == True %}
+                        <strong>Super Admin</strong>
+                        {% elif user.is_developer == True %}
+                        <strong>Developer</strong>
+                        {% elif user.is_marketing == True %}
+                        <strong>Marketing</strong>
+                        {% endif %}    
+                    </td>
+                </tr>
+                <tr>
+                    <td>{{request.user.username}}</td>
+                </tr>
+            </table>
+        </button>
+    </form>
+</nav>

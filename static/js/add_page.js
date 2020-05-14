@@ -15,15 +15,15 @@ function clonePage(selector){
     newElement.find('#id_page-' + totalPage + '-name').attr('name', 'page-' + totalPage + '-name');
     newElement.find('#id_page-' + totalPage + '-name').val('');
 
-    newElement.find('#id_location-' + (totalPage-1) + '-is_slider_0').val('');
-    newElement.find('#id_location-' + (totalPage-1) + '-is_slider_0').prop('disabled', true);
-    newElement.find('#id_location-' + (totalPage-1) + '-is_slider_1').val('');
+    newElement.find('#id_location-' + (totalPage - 1) + '-is_slider_0').prop('checked', false);
+    newElement.find('#id_location-' + (totalPage - 1) + '-is_slider_0').prop('disabled', true);
+    newElement.find('#id_location-' + (totalPage - 1) + '-is_slider_1').prop('checked', false);
     newElement.find('#id_location-' + (totalPage - 1) + '-is_slider_1').prop('disabled', true);
-    newElement.find('#id_location-' + (totalPage-1) + '-name').val('');
+    newElement.find('#id_location-' + (totalPage - 1) + '-name').val('');
     newElement.find('#id_location-' + (totalPage - 1) + '-name').prop('disabled', true);
-    newElement.find('#id_location-' + (totalPage-1) + '-width').val('');
+    newElement.find('#id_location-' + (totalPage - 1) + '-width').val('');
     newElement.find('#id_location-' + (totalPage - 1) + '-width').prop('disabled', true);
-    newElement.find('#id_location-' + (totalPage-1) + '-height').val('');
+    newElement.find('#id_location-' + (totalPage - 1) + '-height').val('');
     newElement.find('#id_location-' + (totalPage - 1) + '-height').prop('disabled', true);
 
     var forLabel = 'id_page-' + (totalPage - 1) + '-name'
@@ -206,8 +206,6 @@ function removePage(selector) {
         $(this).attr("for", "id_location-" + index + "-height");
     });
     
-    
-    
     $('fieldset').each(function (index) {
         var min_child = $(this).find('.location-name:first input').attr("name").slice(9, 11);
 
@@ -224,6 +222,9 @@ function removePage(selector) {
         
         $(this).find('#id_page-' + index + '-max').val(max_child);
     });
+
+    var totalLocation = $('.location-div').length;
+    $('#id_location-TOTAL_FORMS').val(totalLocation);
     
     var totalPage = $('fieldset').length;
     $('#id_page-TOTAL_FORMS').val(totalPage);
@@ -241,7 +242,7 @@ function cloneLocation(input) {
     newElement = $(selector).clone(true, true);
 
     newElement.find('input:checked').prop('checked', false);
-    newElement.find('input').val('');
+    newElement.find('input:not(:radio)').val('');
 
     $(selector).after(newElement);
 

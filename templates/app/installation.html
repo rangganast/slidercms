@@ -101,9 +101,22 @@
                             <button type="submit" class="btn btn-sm btn-warning">Update</button>
                         </form>
                     </span>
+                    
+                    {% if request.user.is_superuser == True %}
+        
+                    <span class="spanFormat">
+                        <form id="form_install_delete_{{content.loc_id}}" action="{% url 'app:delete_install' pk=content.loc_id %}" method="POST">
+                            {% csrf_token %}
+                            <button id="{{ content.loc_id }}" type="button" onclick="deleteInstall(this);"
+                                class="btn btn-sm btn-danger">Hapus</button>
+                        </form>
+                    </span>
+        
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
+
                 
         </tbody>     
     </table>
@@ -176,6 +189,15 @@
     {% endif %}
     
     {% if 'install_unactivated' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'install_deleted' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',

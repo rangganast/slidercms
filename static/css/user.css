@@ -43,21 +43,8 @@
 .btn-danger:hover,
 .btn-danger:active,
 .btn-danger:visited,
-.btn-danger:focus {
-    background-color: #dc3545 !important;
-    color: #000000;
-    border-color: #000000;
-    box-shadow: 3px 3px #000000;
-}
-
-.btn-success,
-.btn-success:hover,
-.btn-success:active,
-.btn-success:visited,
-.btn-success:focus,
-.btn-success:disabled {
-    background-color: #FF9900 !important;
-    color: #000000;
+.btn-danger:focus,
+.btn-danger:disabled {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }

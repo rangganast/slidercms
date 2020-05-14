@@ -18,15 +18,19 @@ $('#myInputTextField').keyup(function () {
 })
 
 $('#app_filter').change(function () {
-    var appname = $('#app_filter option:selected').text();
-    table.column(1).search(appname).draw();
+    var appname = $('#app_filter option:selected').text().toLowerCase();
+    var regex = '\\b' + appname + '\\b';
+    table.column(1).search(regex, true, false).draw();
 })
 
 $('#page_filter').change(function () {
-    var appname = $('#app_filter option:selected').text();
-    var pagename = $(this).find('option:selected').text();
-    table.column(1).search(appname).draw();
-    table.column(2).search(pagename).draw();
+    var appname = $('#app_filter option:selected').text().toLowerCase();
+    var pagename = $(this).find('option:selected').text().toLowerCase();
+    var app_regex = '\\b' + appname + '\\b';
+    var page_regex = '\\b' + pagename + '\\b';
+
+    table.column(1).search(app_regex, true, false).draw();
+    table.column(2).search(page_regex, true, false).draw();
 })
 
 function active(input) {
@@ -45,7 +49,7 @@ function active(input) {
             cancelButtonText: 'Tidak',
             cancelButtonClass: 'btn btn-secondary',
             confirmButtonText: 'Ya',
-            confirmButtonClass: 'btn btn-danger',
+            confirmButtonClass: 'btn btn-success',
             reverseButtons: true
         }).then((result) => {
             if (result.value) {
@@ -70,7 +74,7 @@ function active(input) {
             cancelButtonText: 'Tidak',
             cancelButtonClass: 'btn btn-secondary',
             confirmButtonText: 'Ya',
-            confirmButtonClass: 'btn btn-danger',
+            confirmButtonClass: 'btn btn-success',
             reverseButtons: true
         }).then((result) => {
             if (result.value) {
@@ -86,4 +90,25 @@ function active(input) {
 
     }
 
+};
+
+function deleteInstall(input) {
+    var pk = $(input).attr('id');
+    Swal.fire({
+        title: 'Hapus',
+        icon: 'info',
+        html: 'Anda yakin ingin menghapus Pemasangan ini?',
+        showCancelButton: true,
+        showCloseButton: true,
+        focusConfirm: false,
+        cancelButtonText: 'Batal',
+        cancelButtonClass: 'btn btn-secondary',
+        confirmButtonText: 'Hapus',
+        confirmButtonClass: 'btn btn-danger',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.value) {
+            $('#form_install_delete_' + pk).submit();
+        };
+    });
 };

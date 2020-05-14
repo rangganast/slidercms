@@ -1,6 +1,6 @@
 from django import forms
 from PIL import Image
-from .models import Application, Page, Location, Banner, Installation
+from .models import Application, Page, Location, Banner, Installation, User
 from django.forms import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
@@ -52,7 +52,7 @@ class LocationForm(forms.ModelForm):
             'height' : 'x',
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control location-name-input','required': 'True', 'oninput' : 'checkSimilarLocation(this);', 'disabled': 'true'}),
+            'name' : forms.TextInput(attrs={'class' : 'form-control location-name-input','required': 'True', 'disabled': 'true'}),
             'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True', 'min' : '1', 'disabled': 'true'}),
             'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True', 'min' : '1', 'disabled': 'true'}),
         }
@@ -123,6 +123,52 @@ class InstallationForm(forms.ModelForm):
         self.fields['redirect'].required = False
 
 InstallationFormSet = modelformset_factory(Installation, form=InstallationForm, extra=1, can_delete=True)
+
+class UserForm(forms.ModelForm):
+    DEVELOPER = 1
+    MARKETING = 2
+    ROLE_CHOICES = (
+        (DEVELOPER, 'Developer'),
+        (MARKETING, 'Marketing'),
+    )
+
+    roles = forms.ChoiceField(choices=ROLE_CHOICES, widget=forms.Select(attrs={'class' : 'form-control'}), label='Role', required=False)
+
+    class Meta:
+        model = User
+        fields = ['roles', 'username', 'email', 'password']
+        labels = {
+            'username' : _('Username'),
+            'email' : _('Email'),
+            'password' : _('Password'),
+        }
+        widgets = {
+            'username' : forms.TextInput(attrs={'class' : 'form-control', 'aria-describedby' : 'inputGroupPrependEmail'}),
+            'email' : forms.EmailInput(attrs={'class' : 'form-control', 'aria-describedby' : 'inputGroupPrependUsername'}),
+            'password' : forms.PasswordInput(attrs={'class' : 'form-control', 'aria-describedby' : 'inputGroupPrependPassword'}, render_value=True),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        self.fields['username'].required = False 
+        self.fields['email'].required = False 
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', False)
+        
+        if not User.objects.all().exclude(email=email).filter(email=email):
+            return email
+        else:
+            raise forms.ValidationError("Email telah terdaftar. Silahkan masukkan email lain.")
+
+    def clean_username(self):
+
+        username = self.cleaned_data.get('username', False)
+
+        if not User.objects.all().exclude(username=username).filter(username=username):
+            return username
+        else:
+            raise forms.ValidationError("Username telah dipakai. Silahkan masukkan username lain.")
 
 class KeywordDateRangeForm(forms.Form):
     date1 = forms.DateField(label='Tanggal Cari:', widget=forms.DateInput(

@@ -4,6 +4,7 @@ $(document).on("click", ".open-imgModal", function () {
     $('#imgModal').modal('handleUpdate')
 });
 
+
 table = $('#pageTable').DataTable({
     bInfo : false,
     ordering : [[ 0, "asc" ]],
@@ -18,31 +19,42 @@ $('#myInputTextField').keyup(function () {
 })
 
 $('#app_filter').change(function () {
-    var appname = $('#app_filter option:selected').text();
-    table.column(1).search(appname).draw();
+    var appname = $('#app_filter option:selected').text().toLowerCase();
+    var regex = '\\b' + appname + '\\b';
+    table.column(1).search(regex, true, false).draw();
 })
 
 $('#page_filter').change(function () {
-    var appname = $('#app_filter option:selected').text();
-    var pagename = $(this).find('option:selected').text();
-    table.column(1).search(appname).draw();
-    table.column(2).search(pagename).draw();
+    var appname = $('#app_filter option:selected').text().toLowerCase();
+    var pagename = $(this).find('option:selected').text().toLowerCase();
+    var app_regex = '\\b' + appname + '\\b';
+    var page_regex = '\\b' + pagename + '\\b';
+    
+    table.column(1).search(app_regex, true, false).draw();
+    table.column(2).search(page_regex, true, false).draw();
+})
+
+$('#resetFilter').click(function(){
+    table.search('').draw();
+    $('#myInputTextField').val('');
+    $('#app_filter').val('').trigger('change');
+    $('#page_filter').val('').trigger('change');
+    $('#page_filter').prop('disabled', true);
 })
 
 function archive(input) {
     var pk = $(input).attr('id');
-    console.log(pk);
     Swal.fire({
         title: 'Archive',
         icon: 'info',
-        html: 'Anda yakin ingin meng-archive location ini?',
+        html: 'Anda yakin ingin meng-archive halaman ini?',
         showCancelButton: true,
         showCloseButton: true,
         focusConfirm: false,
         cancelButtonText: 'Batal',
         cancelButtonClass: 'btn btn-secondary',
         confirmButtonText: 'Archive',
-        confirmButtonClass: 'btn btn-danger',
+        confirmButtonClass: 'btn btn-success',
         reverseButtons: true
     }).then((result) => {
         if (result.value) {
@@ -56,18 +68,39 @@ function unarchive(input) {
     Swal.fire({
         title: 'Unarchive',
         icon: 'info',
-        html: 'Anda yakin ingin meng-unarchive location ini?',
+        html: 'Anda yakin ingin meng-unarchive halaman ini?',
         showCancelButton: true,
         showCloseButton: true,
         focusConfirm: false,
         cancelButtonText: 'Batal',
         cancelButtonClass: 'btn btn-secondary',
         confirmButtonText: 'Unarchive',
-        confirmButtonClass: 'btn btn-danger',
+        confirmButtonClass: 'btn btn-success',
         reverseButtons: true
     }).then((result) => {
         if (result.value) {
             $('#form_page_archive_' + pk).submit();
+        };
+    });
+};
+
+function deletePage(input) {
+    var pk = $(input).attr('id');
+    Swal.fire({
+        title: 'Hapus',
+        icon: 'info',
+        html: 'Anda yakin ingin menghapus halaman ini?',
+        showCancelButton: true,
+        showCloseButton: true,
+        focusConfirm: false,
+        cancelButtonText: 'Batal',
+        cancelButtonClass: 'btn btn-secondary',
+        confirmButtonText: 'Hapus',
+        confirmButtonClass: 'btn btn-danger',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.value) {
+            $('#form_page_delete_' + pk).submit();
         };
     });
 };

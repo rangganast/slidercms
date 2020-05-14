@@ -7,16 +7,14 @@
 <link rel="stylesheet" href="{% static 'css/update_banner.css' %}">
 
 <div class="container mt-5 mb-5">
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" action="{% url 'app:update_banner' pk=banner.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         
         <div id="card-field" class="container-fluid mt-3">
 
             <h3 class="text-center mb-2">Form Update Banner
                 <span class="btn-group float-right">
-                    <a href="{% url 'app:update_banner' pk=banner.id %}">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </a>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 </span>
                 <span class="btn-group float-right">
                     <a href="{% url 'app:banner' %}" style="color: white; text-decoration: none;">

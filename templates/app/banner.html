@@ -59,7 +59,7 @@
                     <span class="spanFormat">
                         <form id="form_banner_archive_{{content.id}}" action="{% url 'app:archive_banner' pk=content.id %}" method="POST">
                             {% csrf_token %}
-                            <button id="{{ content.id }}" type="button" onclick="archive(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
+                            <button id="{{ content.id }}" type="button" onclick="archive(this);" class="btn btn-sm btn-success" {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
                         </form>
                     </span>
 
@@ -68,10 +68,21 @@
                     <span class="spanFormat">
                         <form id="form_banner_archive_{{content.id}}" action="{% url 'app:archive_banner' pk=content.id %}" method="POST">
                             {% csrf_token %}
-                            <button id="{{ content.id }}" type="button" onclick="unarchive(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
+                            <button id="{{ content.id }}" type="button" onclick="unarchive(this);" class="btn btn-sm btn-success" {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
                         </form>
                     </span>
   
+                    {% endif %}
+
+                    {% if request.user.is_superuser == True %}
+
+                    <span class="spanFormat">
+                        <form id="form_banner_delete_{{content.id}}" action="{% url 'app:delete_banner' pk=content.id %}" method="POST">
+                            {% csrf_token %}
+                            <button id="{{ content.id }}" type="button" onclick="deleteBanner(this);" class="btn btn-sm btn-danger">Hapus</button>
+                        </form>
+                    </span>
+
                     {% endif %}
                 </td>
             </tr>
@@ -128,6 +139,15 @@
     {% endif %}
     
     {% if 'banner_unarchived' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'banner_deleted' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',

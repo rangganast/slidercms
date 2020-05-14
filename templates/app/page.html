@@ -27,6 +27,10 @@
                         {% include 'app/pages_dropdown_list_options.html' %}
                     </select>
                 </div>
+                <div class="col-sm-2 no-padding">
+                    <label style="color: white;" for="page_filter">Tombol Reset Filter</label>
+                    <button id="resetFilter" name="reset" type="button" class="btn btn-secondary ml-2">Reset Filter</button>
+                </div>
             </div>
         </div>
     </div>
@@ -96,7 +100,7 @@
                         <form id="form_page_archive_{{content.page_id}}" action="{% url 'app:archive_page' pk=content.page_id %}"
                             method="POST">
                             {% csrf_token %}
-                            <button id="{{ content.page_id }}" type="button" onclick="archive(this);" class="btn btn-sm btn-danger"
+                            <button id="{{ content.page_id }}" type="button" onclick="archive(this);" class="btn btn-sm btn-success"
                                 {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
                         </form>
                     </span>
@@ -107,8 +111,20 @@
                         <form id="form_page_archive_{{content.page_id}}" action="{% url 'app:archive_page' pk=content.page_id %}"
                             method="POST">
                             {% csrf_token %}
-                            <button id="{{ content.page_id }}" type="button" onclick="unarchive(this);" class="btn btn-sm btn-danger"
+                            <button id="{{ content.page_id }}" type="button" onclick="unarchive(this);" class="btn btn-sm btn-success"
                                 {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
+                        </form>
+                    </span>
+
+                    {% endif %}
+
+                    
+                    {% if request.user.is_superuser == True %}
+                                            
+                    <span class="spanFormat">
+                        <form id="form_page_delete_{{content.page_id}}" action="{% url 'app:delete_page' pk=content.page_id %}" method="POST">
+                            {% csrf_token %}
+                            <button id="{{ content.page_id }}" type="button" onclick="deletePage(this);" class="btn btn-sm btn-danger">Hapus</button>
                         </form>
                     </span>
 
@@ -187,6 +203,15 @@
     {% endif %}
     
     {% if 'page_unarchived' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'page_deleted' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',

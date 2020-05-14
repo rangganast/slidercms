@@ -1,5 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.db.models import Max
+
+class User(AbstractUser):
+    is_developer = models.BooleanField('developer status', default=False)
+    is_marketing = models.BooleanField('marketing status', default=False)
+    email = models.EmailField(unique=True)
+
+    def __str__(self):
+        return self.username
 
 class Application(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
@@ -98,6 +107,7 @@ class Installation(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='locations')
     banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='banners')
+    date_created = models.DateTimeField(auto_now_add=True)
     redirect = models.URLField(null=True, blank=True)
 
     def save(self, **kwargs):

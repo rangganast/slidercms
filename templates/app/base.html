@@ -31,9 +31,10 @@
 </head>
 
 <body>
+    {% include 'app/navbar.html' %}
     <div class="d-flex" id="wrapper">
         
-        {% include 'app/navbar.html' %}
+        {% include 'app/sidebar.html' %}
 
         <div id="page-content-wrapper">
             {% block content %}{% endblock content %}

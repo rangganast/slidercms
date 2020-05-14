@@ -1,0 +1,35 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/simple-sidebar.css' %}">
+
+<div class="bg-light border-right" id="sidebar-wrapper">
+    <div class="list-group list-group-flush">
+        <a href="{% url 'app:keywords' %}" class="list-group-item list-group-item-action bg-light">
+            <i class="fas fa-font mr-2"></i>
+            <strong>Keyword Counter</strong>
+        </a>
+        <a href="{% url 'app:page' %}" class="list-group-item list-group-item-action bg-light">
+            <i class="fas fa-file-alt mr-2"></i>
+            <strong>Manajemen Halaman</strong>
+        </a>
+        <a href="{% url 'app:banner' %}" class="list-group-item list-group-item-action bg-light">
+            <i class="far fa-file-image mr-2"></i>
+            <strong>Manajemen Banner</strong>
+        </a>
+        <a href="{% url 'app:install' %}" class="list-group-item list-group-item-action bg-light">
+            <i class="far fa-copy fa-flip-horizontal mr-2"></i>
+            <strong>Pemasangan Banner</strong>
+        </a>
+        <a href="{% url 'app:user' %}" class="list-group-item list-group-item-action bg-light">
+            <i class="fas fa-user mr-2"></i>
+            <strong>Manajemen Pengguna</strong>
+        </a>
+        <a href="#" onclick="logout();" class="list-group-item list-group-item-action bg-light">
+            <i class="fas fa-sign-out-alt mr-2"></i>
+            <strong>Logout</strong>
+        </a>
+    </div>    
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<script src="{% static 'js/navbar.js' %}"></script>
