@@ -1,35 +1,210 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/simple-sidebar.css' %}">
 
-<div class="bg-light border-right" id="sidebar-wrapper">
-    <div class="list-group list-group-flush">
-        <a href="{% url 'app:keywords' %}" class="list-group-item list-group-item-action bg-light">
-            <i class="fas fa-font mr-2"></i>
-            <strong>Keyword Counter</strong>
-        </a>
-        <a href="{% url 'app:page' %}" class="list-group-item list-group-item-action bg-light">
-            <i class="fas fa-file-alt mr-2"></i>
-            <strong>Manajemen Halaman</strong>
-        </a>
-        <a href="{% url 'app:banner' %}" class="list-group-item list-group-item-action bg-light">
-            <i class="far fa-file-image mr-2"></i>
-            <strong>Manajemen Banner</strong>
-        </a>
-        <a href="{% url 'app:install' %}" class="list-group-item list-group-item-action bg-light">
-            <i class="far fa-copy fa-flip-horizontal mr-2"></i>
-            <strong>Pemasangan Banner</strong>
-        </a>
-        <a href="{% url 'app:user' %}" class="list-group-item list-group-item-action bg-light">
-            <i class="fas fa-user mr-2"></i>
-            <strong>Manajemen Pengguna</strong>
-        </a>
-        <a href="#" onclick="logout();" class="list-group-item list-group-item-action bg-light">
-            <i class="fas fa-sign-out-alt mr-2"></i>
-            <strong>Logout</strong>
-        </a>
-    </div>    
-</div>
+{% if request.user.is_superuser == True %}
+    
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="{% url 'app:home' %}" class="brand-link">
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    </a>
 
-<script src="{% static 'js/navbar.js' %}"></script>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <!-- <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="#" class="d-block">Alexander Pierce</a>
+            </div>
+        </div> -->
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                data-accordion="false">
+                <li class="nav-item">
+                    <a id="keywordCounter" href="{% url 'app:keywords' %}" class="nav-link">
+                        <i class="fas fa-font nav-icon"></i>
+                        <p>
+                            Keyword Counter
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item has-treeview menu-open">
+                    <a id="sliderManagement" href="#" class="nav-link">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>
+                            Manajemen Slider
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a id="pageManagement" href="{% url 'app:page' %}" class="nav-link">
+                                <i class="fas fa-file-alt nav-icon"></i>
+                                <p>Manajemen Halaman</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="bannerManagement" href="{% url 'app:banner' %}" class="nav-link">
+                                <i class="far fa-file-image nav-icon"></i>
+                                <p>Manajemen Banner</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="installManagement" href="{% url 'app:install' %}" class="nav-link">
+                                <i class="far fa-copy fa-flip-horizontal nav-icon"></i>
+                                <p>Pemasangan Banner</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a id="userManagement" href="{% url 'app:user' %}" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Manajemen Pengguna
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout();">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>
+                            Logout
+                        </p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>
+{% endif %}
+
+{% if request.user.is_marketing == True %}
+    
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="{% url 'app:home' %}" class="brand-link">
+
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <!-- <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="#" class="d-block">Alexander Pierce</a>
+            </div>
+        </div> -->
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                data-accordion="false">
+                <li class="nav-item">
+                    <a id="keywordCounter" href="{% url 'app:keywords' %}" class="nav-link">
+                        <i class="fas fa-font nav-icon"></i>
+                        <p>
+                            Keyword Counter
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item has-treeview menu-open">
+                    <a id="sliderManagement" href="#" class="nav-link">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>
+                            Manajemen Slider
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a id="bannerManagement" href="{% url 'app:banner' %}" class="nav-link">
+                                <i class="far fa-file-image nav-icon"></i>
+                                <p>Manajemen Banner</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="installManagement" href="{% url 'app:install' %}" class="nav-link">
+                                <i class="far fa-copy fa-flip-horizontal nav-icon"></i>
+                                <p>Pemasangan Banner</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout();">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>
+                            Logout
+                        </p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>
+{% endif %}
+
+{% if request.user.is_developer == True %}
+    
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="{% url 'app:home' %}" class="brand-link">
+
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <!-- <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="#" class="d-block">Alexander Pierce</a>
+            </div>
+        </div> -->
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                data-accordion="false">
+                <li class="nav-item">
+                    <a id="pageManagement" href="{% url 'app:page' %}" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Manajemen Halaman
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout();">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>
+                            Logout
+                        </p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>
+{% endif %}
+
+<script src="{% static 'js/sidebar.js' %}"></script>

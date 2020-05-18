@@ -49,7 +49,7 @@ ul li:before {
 .btn-primary:active,
 .btn-primary:visited,
 .btn-primary:focus {
-    border-color: #000000;
+    border-color: hsl(0, 0%, 0%);
     box-shadow: 3px 3px #000000;
 }
 
@@ -60,7 +60,6 @@ ul li:before {
 .btn-danger:focus, 
 .btn-danger:disabled {
     background-color: #dc3545 !important;
-    color: #000000;
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }

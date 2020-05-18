@@ -2,90 +2,92 @@
 
 {% load static %}
 
-{% block content %}
+{% block title %}Keyword Counter{% endblock title %}
+
+{% block style %}
 <link rel="stylesheet" href="{% static 'css/keyword.css' %}">
+{% endblock style %}
 
-<div class="container mt-5 mb-3">
-    <h3>Keyword Counter</h3>
-</div>
+{% block contentheader %}Keyword Counter{% endblock contentheader %}
 
-<div class="container mt-3">
-    <fieldset class="scheduler-border">
-        
-        <legend class="scheduler-border">Filter</legend>
-        
-        <form method="GET">
-            <div class="container">
-                <div class="control-group">
-                    <div class="row">
-                        <div class="form-group form-inline">
-                            <label for="datepicker1">Tanggal :</label>
-                            <input name="date1"class="form-control ml-3" id="datepicker1" placeholder="DD-MM-YY"
-                                autocomplete="off" required value="{{date1}}" />
-                            <script>
-                                $('#datepicker1').datepicker({
-                                    uiLibrary: 'bootstrap4',
-                                    format: 'dd-mm-yyyy',
-                                });
-                            </script>
+{% block content %}
 
-                            <label class="ml-3" for="datepicker2"> s/d </label>
-                            <input name="date2"class="form-control ml-3" id="datepicker2"
-                                placeholder="DD-MM-YY" autocomplete="off" required value="{{date2}}" />
-                            <script>
-                                $('#datepicker2').datepicker({
-                                    uiLibrary: 'bootstrap4',
-                                    format: 'dd-mm-yyyy',
-                                    disableDates: function (date) {
-                                        var date1 = $('#datepicker1').val();
-                                        var date1 = date1.slice(6, 10) + '-' + date1.slice(3, 5) + '-' +
-                                            date1.slice(0, 2)
-                                        const currentDate = new Date(date1).setHours(0, 0, 0, 0);
-                                        return date.setHours(0, 0, 0, 0) >= currentDate ? true : false;
-                                    }
-                                });
-                            </script>
+<fieldset class="scheduler-border">
+    
+    <legend class="scheduler-border">Filter</legend>
+    
+    <form method="GET">
+        <div class="container">
+            <div class="control-group">
+                <div class="row">
+                    <div class="form-group form-inline">
+                        <label for="datepicker1">Tanggal :</label>
+                        <input name="date1"class="form-control ml-3" id="datepicker1" placeholder="DD-MM-YY"
+                            autocomplete="off" required value="{{date1}}" />
 
-                            <button name="filter" type="submit" class="btn btn-sm btn-primary ml-3">Terapkan</button>
-                            <button id="resetFilter" name="reset" type="button" class="btn btn-sm btn-secondary ml-2">Reset Filter</button>
-                        </div>
+                        <label class="ml-3" for="datepicker2"> s/d </label>
+                        <input name="date2"class="form-control ml-3" id="datepicker2"
+                            placeholder="DD-MM-YY" autocomplete="off" required value="{{date2}}" />
+
+                        <button name="filter" type="submit" class="btn btn-sm btn-primary ml-3">Terapkan</button>
+                        <button id="resetFilter" name="reset" type="button" class="btn btn-sm btn-secondary ml-2">Reset Filter</button>
                     </div>
                 </div>
             </div>
-        </form>
-            
-        <div class="control-group">
-            <div class="row">
-                <div class="col input-wrapper">
-                    <input id="myInputTextField" type="text"
-                        class="form-control form-control-borderless searchinput" placeholder="Cari keyword...">
-                    <span class="fas fa-search searchspan"></span>
-                </div>
+        </div>
+    </form>
+        
+    <div class="control-group">
+        <div class="row">
+            <div class="col input-wrapper">
+                <input id="myInputTextField" type="text"
+                    class="form-control form-control-borderless searchinput" placeholder="Cari keyword...">
+                <span class="fas fa-search searchspan"></span>
             </div>
         </div>
+    </div>
 
-    </fieldset>
-</div>
+</fieldset>
 
-<div class="container">
-    <table id="keywordTable" class="table table-sm table-striped table-bordered">
-        <thead class="thead-dark">
-            <tr>                    
-                <th>Keyword</th>
-                <th>Jumlah Pencarian</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in counts %}
-            <tr>
-                <td>{{item.keyword}}</td>
-                <td>{{item.keyword_count}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<script src="{% static 'js/keyword.js' %}"></script>
-
+<table id="keywordTable" class="table table-sm table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>                    
+            <th>Keyword</th>
+            <th>Jumlah Pencarian</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in counts %}
+        <tr>
+            <td>{{item.keyword}}</td>
+            <td>{{item.keyword_count}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock content %}
+
+{% block script %}
+<script src="{% static 'js/keyword.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('a#keywordCounter').addClass('active');
+    });
+
+    $('#datepicker1').datepicker({
+        uiLibrary: 'bootstrap4',
+        format: 'dd-mm-yyyy',
+    });
+    $('#datepicker2').datepicker({
+        uiLibrary: 'bootstrap4',
+        format: 'dd-mm-yyyy',
+        disableDates: function (date) {
+            var date1 = $('#datepicker1').val();
+            var date1 = date1.slice(6, 10) + '-' + date1.slice(3, 5) + '-' +
+                date1.slice(0, 2)
+            const currentDate = new Date(date1).setHours(0, 0, 0, 0);
+            return date.setHours(0, 0, 0, 0) >= currentDate ? true : false;
+        }
+    });
+</script>
+{% endblock script %}

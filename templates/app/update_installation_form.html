@@ -2,167 +2,176 @@
 
 {% load static %}
 
-{% block content %}
+{% block title %}Update Pemasangan{% endblock title %}
 
+{% block style %}
 <link rel="stylesheet" href="{% static 'css/update_installation.css' %}">
+{% endblock style %}
+    
+{% block content %}
+<form id="installationForm" action="{% url 'app:update_install' pk=location.pk %}" method="POST"
+    data-banner-url="{% url 'app:ajax_load_banner' %}">
+    {% csrf_token %}
 
-<div class="container mt-5 mb-5">
-    <form id="installationForm" action="{% url 'app:update_install' pk=location.pk %}" method="POST"
-        data-banner-url="{% url 'app:ajax_load_banner' %}">
-        {% csrf_token %}
+    {{ formset_installation.management_form }}
 
-        {{ formset_installation.management_form }}
+    <div id="card-field" class="container-fluid mt-3">
 
-        <div id="card-field" class="container-fluid mt-3">
+        <h3 class="text-center mb-2">Form Update Pemasangan Banner
+            <span class="btn-group float-right">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </span>
+            <span class="btn-group float-right">
+                <a href="{% url 'app:install' %}" style="color: white; text-decoration: none;">
+                    <button type="button" class="btn btn-secondary mr-2">
+                        Batal
+                    </button>
+                </a>
+            </span>
+        </h3>
 
-            <h3 class="text-center mb-2">Form Update Pemasangan Banner
-                <span class="btn-group float-right">
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </span>
-                <span class="btn-group float-right">
-                    <a href="{% url 'app:install' %}" style="color: white; text-decoration: none;">
-                        <button type="button" class="btn btn-secondary mr-2">
-                            Batal
-                        </button>
-                    </a>
-                </span>
-            </h3>
+        <hr>
 
-            <hr>
-
-            <div class="container-fluid mt-5">
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label" for="app_select">Nama Aplikasi</label>
-                    <div class="col-sm-10">
-                        <select id="app_select" class="form-control" disabled>
-                            <option value="{{ app.id }}" selected>{{ app.name }}</option>
-                        </select>
-                    </div>
+        <div class="container-fluid mt-5">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="app_select">Nama Aplikasi</label>
+                <div class="col-sm-10">
+                    <select id="app_select" class="form-control" disabled>
+                        <option value="{{ app.id }}" selected>{{ app.name }}</option>
+                    </select>
                 </div>
             </div>
+        </div>
 
-            <div class="container-fluid mb-3">
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label" for="page_select">Nama Halaman</label>
-                    <div class="col-sm-10">
-                        <select id="page_select" class="form-control" disabled>
-                            <option value="{{ page.id }}" selected>{{ page.name }}</option>
-                        </select>
-                    </div>
+        <div class="container-fluid mb-3">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="page_select">Nama Halaman</label>
+                <div class="col-sm-10">
+                    <select id="page_select" class="form-control" disabled>
+                        <option value="{{ page.id }}" selected>{{ page.name }}</option>
+                    </select>
                 </div>
             </div>
+        </div>
 
-            <div class="container-fluid mb-5">
+        <div class="container-fluid mb-5">
 
-                <fieldset id="id_install-0-fieldset" class="page-border fieldset">
+            <fieldset id="id_install-0-fieldset" class="page-border fieldset">
 
-                    <legend class="page-border">Lokasi Pemasangan ke-</legend>
+                <legend class="page-border">Detail Lokasi Pemasangan</legend>
 
-                    <div class="container">
+                <div class="container">
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="id_location-select-0">Nama Lokasi</label>
+                        <div class="col-sm-10">
+                            <select id="id_location-select-0" name="location-select-0" class="form-control location-select" disabled>
+                                <option value="{{ location.id }}" selected>{{ location.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <small style="color: red;" id="id_location-size-0">*Ukuran gambar di Lokasi Pemasangan
+                                ini adalah {{ location.width }} x {{ location.height }}</small>
+                            </div>
+                        </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="id_location-select-0">Kode Campaign</label>
+                        <div class="col-sm-10">
+                            <select id="id_location-select-0" name="location-select-0" class="form-control location-select" disabled>
+                                <option value="{{ location.id }}" selected>{{ location.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                        
+                    {% for installation in formset_installation %}
+                    <div id="banner-div-{{ forloop.counter0 }}" class="banner-div">
+                        {{installation.id}}
+                        {{installation.DELETE}}
+
+                        <div class="form-group row mb-4 banner-name">
+                            <label class="col-sm-2 col-form-label" for="{{ installation.banner_names.id_for_label }}">{{ installation.banner_names.label }}</label>
+                            <div class="col-sm-10">
+                                {{ installation.banner_names }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4 banner-preview">
+                            <label class="col-sm-2 col-form-label" for="">Gambar Banner</label>
+                            <div class="col-sm-10">
+                                {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
+                                {% with bannerSlice=""|add:start|add:":"|add:end  %}
+                                
+                                {% for banner in banners|slice:bannerSlice %}
+                                <!-- <img id="img-{{ start }}" src="http://127.0.0.1:8000/media/{{ banner.image }}" width="400"> -->
+                                <img id="img-{{ start }}" src="https://banner-slider-qa.holahalo.dev/media/{{ banner.image }}" width="400">
+                                {% endfor %}
+
+                                {% endwith %}
+                                {% endwith %}
+                            </div>
+                        </div>
+
+                        <div class="form-group row redirect-toggle">
+                            <div class="col-sm-12">
+                                <strong>
+                                    <label class="radio-inline mr-2"
+                                        for="id_banner-{{ forloop.counter0 }}-is_redirect_0"
+                                        style="color: #007bff;">Apakah ketika gambar banner diklik akan mengarah ke
+                                        halaman lain?</label>
+                                    <label class="radio-inline" style="color: #007bff;">
+                                        <input id="id_banner-{{ forloop.counter0 }}-is_redirect_0"
+                                            name="banner-{{ forloop.counter0 }}-is_redirect"
+                                            type="radio" class="ml-2" onchange="showRedirect(this);" {% if installation.redirect.value == None %}{% else %}checked{% endif %}>
+                                        <label for="id_banner-{{ forloop.counter0 }}-is_redirect_0">Ya</label>
+                                    </label>
+                                    <label class="radio-inline" style="color: #007bff;">
+                                        <input id="id_banner-{{ forloop.counter0 }}-is_redirect_1"
+                                            name="banner-{{ forloop.counter0 }}-is_redirect"
+                                            type="radio" class="ml-2" onchange="hideRedirect(this);" {% if installation.redirect.value == None %}checked{% else %}{% endif %}>
+                                        <label for="id_banner-{{ forloop.counter0 }}-is_redirect_1"
+                                            class="ml-2">Tidak</label>
+                                    </label>
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4 banner-url" {% if installation.redirect.value == None %}style="display: none;"{% else %}{% endif %}>
+                            <label class="col-sm-2 col-form-label"
+                                for="{{ installation.redirect.id_for_label }}">{{ installation.redirect.label }}</label>
+                            <div class="col-sm-10">{{ installation.redirect }}</div>
+                        </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-2 col-form-label" for="id_location-select-0">Nama Lokasi</label>
-                            <div class="col-sm-10">
-                                <select id="id_location-select-0" name="location-select-0" class="form-control location-select" disabled>
-                                    <option value="{{ location.id }}" selected>{{ location.name }}</option>
-                                </select>
+                            <div class="col-sm-12">
+                                <button id="id_banner-delete-{{ forloop.counter0 }}" type="button"
+                                    class="btn btn-sm btn-danger float-right delete-btn" onclick="removeBanner(this);">Hapus Banner</button>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-10">
-                                <small style="color: red;" id="id_location-size-0">*Ukuran gambar di Lokasi Pemasangan
-                                    ini adalah {{ location.width }} x {{ location.height }}</small>
-                            </div>
-                        </div>
-
-                        {% for installation in formset_installation %}
-                        <div id="banner-div-{{ forloop.counter0 }}" class="banner-div">
-                            {{installation.id}}
-                            {{installation.DELETE}}
-
-                            <div class="form-group row mb-4 banner-name">
-                                <label class="col-sm-2 col-form-label" for="{{ installation.banner_names.id_for_label }}">{{ installation.banner_names.label }}</label>
-                                <div class="col-sm-10">
-                                    {{ installation.banner_names }}
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-4 banner-preview">
-                                <label class="col-sm-2 col-form-label" for="">Gambar Banner</label>
-                                <div class="col-sm-10">
-                                    {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
-                                    {% with bannerSlice=""|add:start|add:":"|add:end  %}
-                                    
-                                    {% for banner in banners|slice:bannerSlice %}
-                                    <!-- <img id="img-{{ start }}" src="http://127.0.0.1:8000/media/{{ banner.image }}" width="400"> -->
-                                    <img id="img-{{ start }}" src="https://banner-slider-qa.holahalo.dev/media/{{ banner.image }}" width="400">
-                                    {% endfor %}
-
-                                    {% endwith %}
-                                    {% endwith %}
-                                </div>
-                            </div>
-
-                            <div class="form-group row redirect-toggle">
-                                <div class="col-sm-12">
-                                    <strong>
-                                        <label class="radio-inline mr-2"
-                                            for="id_banner-{{ forloop.counter0 }}-is_redirect_0"
-                                            style="color: #007bff;">Apakah ketika gambar banner diklik akan mengarah ke
-                                            halaman lain?</label>
-                                        <label class="radio-inline" style="color: #007bff;">
-                                            <input id="id_banner-{{ forloop.counter0 }}-is_redirect_0"
-                                                name="banner-{{ forloop.counter0 }}-is_redirect"
-                                                type="radio" class="ml-2" onchange="showRedirect(this);" {% if installation.redirect.value == None %}{% else %}checked{% endif %}>
-                                            <label for="id_banner-{{ forloop.counter0 }}-is_redirect_0">Ya</label>
-                                        </label>
-                                        <label class="radio-inline" style="color: #007bff;">
-                                            <input id="id_banner-{{ forloop.counter0 }}-is_redirect_1"
-                                                name="banner-{{ forloop.counter0 }}-is_redirect"
-                                                type="radio" class="ml-2" onchange="hideRedirect(this);" {% if installation.redirect.value == None %}checked{% else %}{% endif %}>
-                                            <label for="id_banner-{{ forloop.counter0 }}-is_redirect_1"
-                                                class="ml-2">Tidak</label>
-                                        </label>
-                                    </strong>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-4 banner-url" {% if installation.redirect.value == None %}style="display: none;"{% else %}{% endif %}>
-                                <label class="col-sm-2 col-form-label"
-                                    for="{{ installation.redirect.id_for_label }}">{{ installation.redirect.label }}</label>
-                                <div class="col-sm-10">{{ installation.redirect }}</div>
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-sm-12">
-                                    <button id="id_banner-delete-{{ forloop.counter0 }}" type="button"
-                                        class="btn btn-sm btn-danger float-right delete-btn" onclick="removeBanner(this);">Hapus Banner</button>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                        </div>
-                        {% endfor %}
-
-                        <button id="id_banner-add-0" type="button" class="btn btn-sm btn-primary float-right"
-                            onclick="cloneBanner();">Tambah Banner</button>
+                        <hr>
 
                     </div>
+                    {% endfor %}
 
-                </fieldset>
+                    <button id="id_banner-add-0" type="button" class="btn btn-sm btn-primary float-right"
+                        onclick="cloneBanner();">Tambah Banner</button>
 
-            </div>
+                </div>
+
+            </fieldset>
 
         </div>
-    </form>
 
-</div>
+    </div>
+</form>
+{% endblock content %}
 
+{% block script %}
 <script src="{% static 'js/update_installation.js' %}"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
@@ -212,5 +221,5 @@
         });
     }
 </script>
-
-{% endblock content %}
+    
+{% endblock script %}

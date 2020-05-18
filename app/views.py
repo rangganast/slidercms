@@ -3,13 +3,15 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
+import datetime
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from .decorators import developer_required, marketing_required, superuser_required
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from . import services
 from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, InstallationFormSet, UserForm, KeywordDateRangeForm
-from .models import Application, Page, Location, Banner, Installation, User
+from .models import Application, Page, Location, Banner, Campaign, Installation, User
 
 # Create your views here.
 @method_decorator([login_required, developer_required], name='dispatch')
@@ -232,16 +234,16 @@ class BannerView(View):
 
     def get(self, request):
         banners = Banner.objects.all().order_by('pk')
-        installations = Installation.objects.values('banner_id', 'location_id').order_by('banner_id')
+        installations = Installation.objects.values('banner_id', 'campaign_id').order_by('banner_id')
 
         contents = []
 
         for i in range(len(banners)):
             contents.append({'id': banners[i].id, 'name': banners[i].name, 'description': banners[i].description, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].image, 'is_archived': banners[i].is_archived, 'is_active': None})
-            for installation in installations:
-                if installation['banner_id'] == banners[i].id:
-                    location = Location.objects.get(pk=installation['location_id'])
-                    contents[i]['is_active'] = location.is_active
+            # for installation in installations:
+            #     if installation['banner_id'] == banners[i].id:
+            #         location = Location.objects.get(pk=installation['campaign_id'])
+            #         contents[i]['is_active'] = location.is_active
 
         context = {
             'contents': contents,
@@ -387,18 +389,26 @@ class InstallationView(View):
         apps = Application.objects.all().order_by('pk')
         pages = Page.objects.all().order_by('pk')
         locations = Location.objects.all().order_by('pk')
+        campaigns = Campaign.objects.all().order_by('pk')
         banners = Banner.objects.all().order_by('pk')
         installations = Installation.objects.all().order_by('pk')
 
         contents = []
 
-        for i in range(len(locations)):
-            if Installation.objects.filter(location_id=locations[i].id).exists():
-                contents.append({'loc_id' : locations[i].id, 'page_id' : locations[i].page_id, 'app' : None, 'app_id' : None, 'page' : None, 'location' : locations[i].name, 'banners' : [], 'is_active' : locations[i].is_active})
+        for i in range(len(campaigns)):
+            if Installation.objects.filter(campaign_id=campaigns[i].id).exists():
+                contents.append({'loc_id' : None, 'page_id' : None, 'app' : None, 'app_id' : None, 'page' : None, 'location' : None, 'banners' : [], 'campaign_id' : campaigns[i].id, 'campaign_code' : campaigns[i].campaign_code, 'priority' : campaigns[i].priority, 'created_date' : None, 'updated_date' : None, 'valid_date' : campaigns[i].valid_date_start, 'is_active' : campaigns[i].is_active})
 
-                installs = Installation.objects.filter(location_id=contents[-1]['loc_id'])
+                installs = Installation.objects.filter(campaign_id=contents[-1]['campaign_id'])
                 for install in installs:
                     contents[-1]['banners'].append(Banner.objects.get(pk=install.banner_id))
+                    contents[-1]['created_date'] = install.date_created
+
+                for location in locations:
+                    if campaigns[i].location_id == location.id:
+                        contents[i]['loc_id'] = location.id
+                        contents[i]['location'] = location.name
+                        contents[i]['page_id'] = location.page_id
 
                 for page in pages:
                     for j in range(len(contents)):
@@ -449,7 +459,20 @@ class AddInstallationView(View):
                 min_banner = request.POST.get('banner-' + str(i) + '-min', '')
                 max_banner = request.POST.get('banner-' + str(i) + '-max', '')
 
+                campaign_code = request.POST.get('installation-' + str(i) + '-campaign_code', '')
+                priority = request.POST.get('installation-' + str(i) + '-priority', '')
+
+                daterange = request.POST.get('installation-' + str(i) + '-daterangepicker', '').split('-')
+                startDate = daterange[0][:-1]
+                endDate = daterange[1][1:]
+
+                startDate = datetime.datetime.strptime(startDate, '%d/%m/%Y').strftime('%Y-%m-%d')
+                endDate = datetime.datetime.strptime(endDate, '%d/%m/%Y').strftime('%Y-%m-%d')
+
                 location_instance = Location(pk=location)
+
+                campaign_instance = Campaign(location=location_instance, campaign_code=campaign_code, priority=priority, valid_date_start=startDate, valid_date_end=endDate)
+                campaign_instance.save()
 
                 installation = formset_installation.cleaned_data
 
@@ -459,7 +482,7 @@ class AddInstallationView(View):
                         banner_instance = Banner.objects.get(pk=banner)
                         redirect = installation[j]['redirect']
 
-                        installation_instance = Installation(location=location_instance, banner=banner_instance, redirect=redirect)
+                        installation_instance = Installation(banner=banner_instance, campaign=campaign_instance, date_created=datetime.date.today(), redirect=redirect)
                         installation_instance.save()
                         
             messages.add_message(request, messages.INFO, "Pemasangan Banner berhasil ditambahkan!", extra_tags="install_added")
@@ -719,6 +742,7 @@ class UpdateUsernameView(View):
 
                 return redirect(reverse('app:update_user'))
             except User.DoesNotExist:
+                user.username = new_username
                 user.save()
                 messages.add_message(request, messages.INFO, "Username berhasil diubah!", extra_tags="username_changed")
 
@@ -779,6 +803,8 @@ class DeleteUserView(View):
         user = User.objects.get(id=pk)
         user.delete()
 
+        messages.add_message(request, messages.INFO, "User berhasil dihapus!", extra_tags="user_deleted")
+
         return redirect(reverse('app:user'))
 
 @method_decorator([login_required, marketing_required], name='dispatch')
@@ -821,10 +847,6 @@ def load_pages(request):
 def load_locations(request):
     page_id = request.GET.get('page_id')
     locations = Location.objects.filter(page_id=page_id)
-    installations = Installation.objects.filter(location_id__in=locations)
-
-    for installation in installations:
-        locations = locations.exclude(id=installation.location_id)
 
     return render(request, 'app/locations_dropdown_list_options.html', {'locations': locations})
 
@@ -839,7 +861,8 @@ def load_location_size(request):
 def load_banner(request):
     banner_id = request.GET.get('banner_id')
     banner = Banner.objects.get(pk=banner_id)
-    return HttpResponse(banner.image.url)
+    banner_size = str(banner.width) + " x " + str(banner.height)
+    return HttpResponse(banner_size + ',' + banner.image.url)
 
 @login_required
 def check_similar_page_add(request):

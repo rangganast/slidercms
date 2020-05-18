@@ -108,14 +108,17 @@ class BannerForm(forms.ModelForm):
 
 class InstallationForm(forms.ModelForm):
     banner_names = forms.ModelChoiceField(queryset=Banner.objects.filter(is_archived=False), widget=forms.Select(attrs={'class' : 'form-control banner-select', 'onchange' : 'load_banner(this);', 'required' : True}), label='Nama Banner', empty_label='Pilih Banner')
+    campaign_code = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control', 'maxfield' : '30', 'required' : True}), label='Tanggal Berlaku')
+    priority = forms.CharField(widget=forms.NumberInput(attrs={'class' : 'form-control', 'required' : True, 'max' : '100', 'min' : '0'}), label='Tanggal Berlaku')
+    daterangepicker = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control daterangefilter', 'required' : True}), label='Tanggal Berlaku')
     class Meta:
         model = Installation
-        fields = ['banner_names', 'redirect']
+        fields = ['banner_names', 'redirect', 'campaign_code', 'priority', 'daterangepicker']
         labels = {
             'redirect' : _('Link Tujuan Banner'),
         }
         widgets = {
-            'redirect' : forms.URLInput(attrs={'class' : 'form-control'}),
+            'campaign_code' : forms.TextInput(attrs={'class' : 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):

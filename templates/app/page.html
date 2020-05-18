@@ -2,12 +2,13 @@
 
 {% load static %}
 
+{% block title %}Manajemen Halaman{% endblock title %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'css/page.css' %}">{% endblock style %}
+
+{% block contentheader %}Manajemen Halaman{% endblock contentheader %}
+
 {% block content %}
-
-<link rel="stylesheet" href="{% static 'css/page.css' %}">
-
-<div class="container mt-5 mb-5">
-    <h3 class="mt-3 mb-3">Manajemen Halaman</h3>
 
     <div id="filterDiv" class="control-group mb-3" data-page-url="{% url 'app:ajax_load_pages' %}">
         <div class="col input-wrapper">
@@ -38,8 +39,7 @@
     <div class="control-group mb-3">
         <div class="row">
             <div class="col input-wrapper">
-                <input id="myInputTextField" type="text"
-                    class="form-control form-control-borderless searchinput" placeholder="Cari...">
+                <input id="myInputTextField" type="text" class="form-control form-control-borderless searchinput" placeholder="Cari...">
                 <span class="fas fa-search searchspan"></span>
             </div>
         </div>
@@ -100,7 +100,7 @@
                         <form id="form_page_archive_{{content.page_id}}" action="{% url 'app:archive_page' pk=content.page_id %}"
                             method="POST">
                             {% csrf_token %}
-                            <button id="{{ content.page_id }}" type="button" onclick="archive(this);" class="btn btn-sm btn-success"
+                            <button id="{{ content.page_id }}-archive" type="button" onclick="archive(this);" class="btn btn-sm btn-success"
                                 {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
                         </form>
                     </span>
@@ -111,7 +111,7 @@
                         <form id="form_page_archive_{{content.page_id}}" action="{% url 'app:archive_page' pk=content.page_id %}"
                             method="POST">
                             {% csrf_token %}
-                            <button id="{{ content.page_id }}" type="button" onclick="unarchive(this);" class="btn btn-sm btn-success"
+                            <button id="{{ content.page_id }}-unarchive" type="button" onclick="unarchive(this);" class="btn btn-sm btn-success"
                                 {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
                         </form>
                     </span>
@@ -124,36 +124,39 @@
                     <span class="spanFormat">
                         <form id="form_page_delete_{{content.page_id}}" action="{% url 'app:delete_page' pk=content.page_id %}" method="POST">
                             {% csrf_token %}
-                            <button id="{{ content.page_id }}" type="button" onclick="deletePage(this);" class="btn btn-sm btn-danger">Hapus</button>
+                            <button id="{{ content.page_id }}-delete" type="button" onclick="deletePage(this);" class="btn btn-sm btn-danger">Hapus</button>
                         </form>
                     </span>
-
+                    
                     {% endif %}
                 </td>
             </tr>
-        {% endfor %}
+            {% endfor %}
         </tbody>     
     </table>
-
+    
 </div>
+{% endblock content %}
 
+{% block script %}
 <script src="{% static 'js/page.js' %}"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
+        $('a#sliderManagement').addClass('active');
+        $('a#pageManagement').addClass('active');
+
         $('#app_filter').select2({
             theme: 'bootstrap4',
             placeholder: 'Cari Aplikasi',
         });
-    
+        
         $('#page_filter').select2({
             theme: 'bootstrap4',
             placeholder: 'Cari Halaman',
         });
     });
-
+    
     $('#app_filter').change(function () {
         var url = $('#filterDiv').attr("data-page-url");
         var app_id = $(this).val();
@@ -224,5 +227,4 @@
     {% endif %}
         
 </script>
-
-{% endblock content %}  
+{% endblock script %}

@@ -2,11 +2,12 @@
 
 {% load static %}
 
+{% block title %}Tambah User{% endblock title %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'css/add_banner.css' %}">{% endblock style %}
+
 {% block content %}
-
-<link rel="stylesheet" href="{% static 'css/add_banner.css' %}">
-
-<div class="container mt-5 mb-5">
+<div class="container mb-5">
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
@@ -14,7 +15,7 @@
 
             <h3 class="text-center mb-2">Form Tambah Pengguna
                 <span class="btn-group float-right">
-                    <a href="{% url 'app:add_banner' %}">
+                    <a href="{% url 'app:add_user' %}">
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </a>
                 </span>
@@ -93,7 +94,9 @@
 
     </form>
 </div>
-
-<script src="{% static 'js/add_banner.js' %}"></script>
-
 {% endblock content %}
+
+{% block script %}
+<script src="{% static 'js/add_banner.js' %}"></script>
+{% endblock script %}
+    

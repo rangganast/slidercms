@@ -1,56 +1,21 @@
 {% load static %}
-<style>
-    .navbar{
-        border-bottom:1px solid #6c757d;
-        vertical-align: center;
-    }
-    table.no-spacing {
-        border-spacing:0;
-        border-collapse: collapse;
-    }
     
-    .borderless td, .borderless th {
-        border: none;
-        padding: 0;
-        padding-right: 10px;
-    }
+<!-- Navbar -->
+<nav class="main-header navbar navbar-expand navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+        </li>
+    </ul>
 
-    #updateUser{
-        background: none;
-        color: inherit;
-        border: none;
-        padding: 0;
-        font: inherit;
-        cursor: pointer;
-        outline: none;
-    }
-</style>
-
-<nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" href="{% url 'app:home' %}">
-        <strong>Slider Manager</strong>
-    </a>
-    <form method="GET" class="form-inline" action="{% url 'app:update_user' %}">
-        <button id="updateUser" type="submit">
-            <table class="table no-spacing borderless" cellspacing="0">
-                <tr>
-                    <td style="vertical-align : middle;text-align:center;" rowspan="2">
-                        <i class="fas fa-user-circle fa-3x"></i>
-                    </td>
-                    <td>
-                        {% if user.is_superuser == True %}
-                        <strong>Super Admin</strong>
-                        {% elif user.is_developer == True %}
-                        <strong>Developer</strong>
-                        {% elif user.is_marketing == True %}
-                        <strong>Marketing</strong>
-                        {% endif %}    
-                    </td>
-                </tr>
-                <tr>
-                    <td>{{request.user.username}}</td>
-                </tr>
-            </table>
-        </button>
-    </form>
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">     
+        <!-- <li class="nav-item">
+            <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
+                <i class="fas fa-th-large"></i>
+            </a>
+        </li> -->
+    </ul>
 </nav>
+<!-- /.navbar -->

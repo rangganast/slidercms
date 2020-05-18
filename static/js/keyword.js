@@ -1,8 +1,5 @@
 oTable = $('#keywordTable').DataTable({
     bInfo: false,
-    order: [
-        [1, "desc"],
-    ],
 });
 $('#myInputTextField').keyup(function () {
     oTable.search($(this).val()).draw();

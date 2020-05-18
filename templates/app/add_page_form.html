@@ -2,11 +2,13 @@
 
 {% load static %}
 
+{% block title %}Tambah Halaman{% endblock title %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'css/add_page.css' %}">{% endblock style %}
+
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/add_page.css' %}">
-
-<div class="container mt-5 mb-5">
+<div class="container mb-5">
     <form id="pageForm" method="POST" data-check-similar-page-url="{% url 'app:ajax_check_similar_page_add' %}"
         data-check-similar-location-url="{% url 'app:ajax_check_similar_location_add' %}">
         {% csrf_token %}
@@ -121,7 +123,9 @@
     </form>
 
 </div>
+{% endblock content %}
 
+{% block script %}
 <script src="{% static 'js/add_page.js' %}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
@@ -144,5 +148,5 @@
         });
     });
 </script>
-
-{% endblock content %}
+    
+{% endblock script %}

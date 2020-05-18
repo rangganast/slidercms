@@ -2,323 +2,208 @@
 
 {% load static %}
 
+{% block title %}Tambah Pemasangan{% endblock title %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/add_installation.css' %}">{% endblock style %}
+
 {% block content %}
+<form id="installationForm" method="POST" data-page-url="{% url 'app:ajax_load_pages' %}"
+    data-location-url="{% url 'app:ajax_load_locations' %}" data-banner-url="{% url 'app:ajax_load_banner' %}"
+    data-location-size-url="{% url 'app:ajax_load_location_size' %}">
+    {% csrf_token %}
 
-<link rel="stylesheet" href="{% static 'css/add_installation.css' %}">
+    {{ formset_installation.management_form }}
 
-<div class="container mt-5 mb-5">
-    <form id="installationForm" method="POST" data-page-url="{% url 'app:ajax_load_pages' %}"
-        data-location-url="{% url 'app:ajax_load_locations' %}" data-banner-url="{% url 'app:ajax_load_banner' %}"
-        data-location-size-url="{% url 'app:ajax_load_location_size' %}">
-        {% csrf_token %}
+    <div id="card-field" class="container-fluid mt-3">
 
-        {{ formset_installation.management_form }}
+        <h3 class="text-center mb-2">Form Tambah Pemasangan Banner
+            <span class="btn-group float-right">
+                <a href="{% url 'app:add_install' %}">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </a>
+            </span>
+            <span class="btn-group float-right">
+                <a href="{% url 'app:install' %}" style="color: white; text-decoration: none;">
+                    <button type="button" class="btn btn-secondary mr-2">
+                        Batal
+                    </button>
+                </a>
+            </span>
+        </h3>
 
-        <div id="card-field" class="container-fluid mt-3">
+        <hr>
 
-            <h3 class="text-center mb-2">Form Tambah Pemasangan Banner
-                <span class="btn-group float-right">
-                    <a href="{% url 'app:add_install' %}">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </a>
-                </span>
-                <span class="btn-group float-right">
-                    <a href="{% url 'app:install' %}" style="color: white; text-decoration: none;">
-                        <button type="button" class="btn btn-secondary mr-2">
-                            Batal
-                        </button>
-                    </a>
-                </span>
-            </h3>
-
-            <hr>
-
-            <div class="container-fluid mt-5">
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label" for="app_select">Nama Aplikasi</label>
-                    <div class="col-sm-10">
-                        <select id="app_select" class="form-control input-lg">
-                            <option value="">Pilih Aplikasi</option>
-                            {% for app in apps %}
-                            <option value="{{ app.id }}">{{ app.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+        <div class="container-fluid mt-5">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="app_select">Nama Aplikasi</label>
+                <div class="col-sm-10">
+                    <select id="app_select" class="form-control input-lg">
+                        <option value="">Pilih Aplikasi</option>
+                        {% for app in apps %}
+                        <option value="{{ app.id }}">{{ app.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
+        </div>
 
-            <div class="container-fluid mb-3">
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label" for="page_select">Nama Halaman</label>
-                    <div class="col-sm-10">        
-                        <select id="page_select" class="form-control" disabled>
-                            {% include 'app/pages_dropdown_list_options.html' %}
-                        </select>
-                    </div>
+        <div class="container-fluid mb-3">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="page_select">Nama Halaman</label>
+                <div class="col-sm-10">        
+                    <select id="page_select" class="form-control" disabled>
+                        {% include 'app/pages_dropdown_list_options.html' %}
+                    </select>
                 </div>
             </div>
+        </div>
 
-            <input id="id_installation-TOTAL_FIELDSETS" name="installation-TOTAL_FIELDSETS" type="hidden" value="1">
+        <input id="id_installation-TOTAL_FIELDSETS" name="installation-TOTAL_FIELDSETS" type="hidden" value="1">
 
-            <div class="container-fluid mb-5">
+        <div class="container-fluid mb-5">
 
-                {% for installation in formset_installation %}
-                <fieldset id="id_install-0-fieldset" class="page-border fieldset">
+            {% for installation in formset_installation %}
+            <fieldset id="id_install-0-fieldset" class="page-border fieldset">
 
-                    <legend class="page-border">Lokasi Pemasangan ke-1</legend>
+                <legend class="page-border">Lokasi Pemasangan ke-1</legend>
 
-                    <div class="container">
+                <div class="container">
 
-                        <!-- <div class="form-group row mb-4">
+                    <div class="form-group row location-div">
+                        <label class="col-sm-2 col-form-label" for="id_location-select-0">Nama Lokasi</label>
+                        <div class="col-sm-10">
+                            <select id="id_location-select-0" name="location-select-0" class="form-control location-select" onchange="load_size(this);" disabled required>
+                                {% include 'app/locations_dropdown_list_options.html' %}
+                            </select>
+                            <input id="id_banner-0-min" name="banner-0-min" type="hidden" value="0">
+                            <input id="id_banner-0-max" name="banner-0-max" type="hidden" value="0">
+                        </div>
+                        <input type="hidden" id="id_location-previous-value-0" name="location-previous-value-0" value="">
+                        <input type="hidden" id="id_location-is_slider-status-0" name="location-is_slider-0" value="">
+                    </div>
+                    
+                    <div class="form-group row mb-4">
+                        <div class="col-sm-10">
+                            <small style="color: red;" id="id_location-size-0"></small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row mb-4 banner-name">
+                        <label class="col-sm-2 col-form-label" for="id_location-0-campaign">Kode Campaign</label>
+                        <div class="col-sm-10">
+                            {{ installation.campaign_code }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row mb-4 banner-name">
+                        <label class="col-sm-2 col-form-label" for="id_installation-0-priority">Prioritas Banner</label>
+                        <div class="col-sm-1">
+                            {{ installation.priority }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row mb-4">
+                        <div class="col-sm-10">
+                            <small class="banner_priority" style="color: red;">*Prioritas Banner dapat diisi nilai 0-100. Nilai prioritas dalam satu lokasi pemasangan tidak boleh sama.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-4 banner-name">
+                        <label class="col-sm-2 col-form-label" for="i{{ installation.daterangepicker.id_for_label }}">{{ installation.daterangepicker.label }}</label>
+                        <div class="input-group col-sm-10">
+                            {{ installation.daterangepicker }}
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    
+                    <div id="banner-div-0" class="banner-div">        
+
+                        <div class="form-group row mb-4 banner-name">
                             <label class="col-sm-2 col-form-label"
-                                for="{{ installation.id.id_for_label }}">{{ installation.id.label }}</label>
+                                for="{{ installation.banner_names.id_for_label }}">{{ installation.banner_names.label }}</label>
                             <div class="col-sm-10">
-                                {{ installation.id }}
+                                {{ installation.banner_names }}
                             </div>
-                        </div> -->
-
-                        <div class="form-group row location-div">
-                            <label class="col-sm-2 col-form-label" for="id_location-select-0">Nama Lokasi</label>
-                            <div class="col-sm-10">
-                                <select id="id_location-select-0" name="location-select-0" class="form-control location-select" onchange="load_size(this);" disabled required>
-                                    {% include 'app/locations_dropdown_list_options.html' %}
-                                </select>
-                                <input id="id_banner-0-min" name="banner-0-min" type="hidden" value="0">
-                                <input id="id_banner-0-max" name="banner-0-max" type="hidden" value="0">
-                            </div>
-                            <input type="hidden" id="id_location-previous-value-0" name="location-previous-value-0" value="">
                         </div>
 
-                        <div class="form-group row mb-4">
+                        <div class="form-group row mb-4 banner-preview">
+                            <label class="col-sm-2 col-form-label" for="">Gambar Banner</label>
                             <div class="col-sm-10">
-                                <small style="color: red;" id="id_location-size-0"></small>
+                                <img id="img-0" src="" width="400">
                             </div>
                         </div>
-                    
-                        <div id="banner-div-0" class="banner-div">        
 
-                            <div class="form-group row mb-4 banner-name">
-                                <label class="col-sm-2 col-form-label"
-                                    for="{{ installation.banner_names.id_for_label }}">{{ installation.banner_names.label }}</label>
-                                <div class="col-sm-10">
-                                    {{ installation.banner_names }}
-                                </div>
+                        <div class="form-group row mb-4 banner-size">
+                            <div class="col-sm-10">
+                                <small style="color: red;" id="id_banner-size-0"></small>
                             </div>
+                        </div>
+                        
+                        <input type="hidden" id="id_banner-previous-value-0" name="banner-previous-value-0" class="banner-previous-value" value="" data-fieldset-id="0">
 
-                            <!-- <div class="form-group row mb-4">
-                                <div class="col-sm-10">
-                                    <small style="color: red;" id="id_banner-size-0"></small>
-                                </div>
-                            </div> -->
-    
-                            <div class="form-group row mb-4 banner-preview">
-                                <label class="col-sm-2 col-form-label"
-                                    for="">Gambar Banner</label>
-                                <div class="col-sm-10">
-                                    <img id="img-0" src="" width="400">
-                                </div>
-                            </div>
-    
-                            <div class="form-group row redirect-toggle">
-                                <div class="col-sm-12">
-                                    <strong>
-                                        <label class="radio-inline mr-2" for="id_banner-0-is_redirect_0"
-                                            style="color: #007bff;">Apakah ketika gambar banner diklik akan mengarah ke
-                                            halaman lain?</label>
-                                        <label class="radio-inline" style="color: #007bff;">
-                                            <input id="id_banner-0-is_redirect_0" name="banner-0-is_redirect"
-                                                type="radio" class="ml-2" onchange="showRedirect(this);">
-                                            <label for="id_banner-0-is_redirect_0">Ya</label>
-                                        </label>
-                                        <label class="radio-inline" style="color: #007bff;">
-                                            <input id="id_banner-0-is_redirect_1" name="banner-0-is_redirect"
-                                                type="radio" class="ml-2" onchange="hideRedirect(this);" checked>
-                                            <label for="id_banner-0-is_redirect_1" class="ml-2">Tidak</label>
-                                        </label>
-                                    </strong>
-                                </div>    
-                            </div>
-    
-                            <div class="form-group row mb-4 banner-url" style="display: none;">
-                                <label class="col-sm-2 col-form-label"
-                                    for="{{ installation.redirect.id_for_label }}">{{ installation.redirect.label }}</label>
-                                <div class="col-sm-10">{{ installation.redirect }}</div>
-                            </div>
-                                
-                            <hr>
-
+                        <div class="form-group row redirect-toggle">
+                            <div class="col-sm-12">
+                                <strong>
+                                    <label class="radio-inline mr-2" for="id_banner-0-is_redirect_0"
+                                        style="color: #007bff;">Apakah ketika gambar banner diklik akan mengarah ke
+                                        halaman lain?</label>
+                                    <label class="radio-inline" style="color: #007bff;">
+                                        <input id="id_banner-0-is_redirect_0" name="banner-0-is_redirect"
+                                            type="radio" class="ml-2" onchange="showRedirect(this);">
+                                        <label for="id_banner-0-is_redirect_0">Ya</label>
+                                    </label>
+                                    <label class="radio-inline" style="color: #007bff;">
+                                        <input id="id_banner-0-is_redirect_1" name="banner-0-is_redirect"
+                                            type="radio" class="ml-2" onchange="hideRedirect(this);" checked>
+                                        <label for="id_banner-0-is_redirect_1" class="ml-2">Tidak</label>
+                                    </label>
+                                </strong>
+                            </div>    
                         </div>
 
-                        <button id="id_banner-add-0" type="button" class="btn btn-sm btn-primary float-right"
-                            onclick="cloneBanner(this);">Tambah Banner</button>
-                        <button id="id_banner-delete-0" type="button" class="btn btn-sm btn-danger float-right mr-2"
-                            onclick="removeBanner(this);" style="display: none;">Hapus Banner</button>
+                        <div class="form-group row mb-4 banner-url" style="display: none;">
+                            <label class="col-sm-2 col-form-label"
+                                for="{{ installation.redirect.id_for_label }}">{{ installation.redirect.label }}</label>
+                            <div class="col-sm-10">{{ installation.redirect }}</div>
+                        </div>
+                            
+                        <hr>
 
                     </div>
-                    
-                </fieldset>
-                {% endfor %}
-                
-                <div class="container mb-5">
-                    <div class="form-group row float-right">
-                        <button id="id_install-delete-button" type="button" class="btn btn-danger float-right mr-2"
-                            onclick="removeInstall('fieldset.page-border:last');" style="display: none;">Hapus Lokasi</button>
-                        <button id="id_install-add-button" type="button" class="btn btn-primary float-right"
-                            onclick="cloneInstall('fieldset.page-border:last');">Tambah Lokasi</button>
-                    </div>
+
+                    <button id="id_banner-add-0" type="button" class="btn btn-sm btn-primary float-right"
+                        onclick="cloneBanner(this);">Tambah Banner</button>
+                    <button id="id_banner-delete-0" type="button" class="btn btn-sm btn-danger float-right mr-2"
+                        onclick="removeBanner(this);" style="display: none;">Hapus Banner</button>
+
                 </div>
-
+                
+            </fieldset>
+            {% endfor %}
+            
+            <div class="container mb-5">
+                <div class="form-group row float-right">
+                    <button id="id_install-delete-button" type="button" class="btn btn-danger float-right mr-2"
+                        onclick="removeInstall('fieldset.page-border:last');" style="display: none;">Hapus Lokasi</button>
+                    <button id="id_install-add-button" type="button" class="btn btn-primary float-right"
+                        onclick="cloneInstall('fieldset.page-border:last');">Tambah Lokasi</button>
+                </div>
             </div>
 
         </div>
-    </form>
 
-</div>
-
-
-
-<script src="{% static 'js/add_installation.js' %}"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#app_select').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih Aplikasi',
-        });
-        $('#page_select').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih Halaman',
-        });
-        $('.location-select').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih Lokasi',
-        });
-        $('.banner-select').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih Banner',
-        });
-    });
-
-    $('#app_select').change(function () {
-        var url = $('#installationForm').attr("data-page-url");
-        var app_id = $(this).val();
-
-        if(app_id) {
-            $.ajax({
-                url: url,
-                data: {
-                    'app_id' : app_id,
-                },
-                success: function(data) {
-                    $("#page_select").html(data);
-                    $("#page_select").prop('disabled', false);
-                }
-            });
-        }else{
-            $("#page_select").prop('disabled', true);
-        }
-
-    });
-
-    $('#page_select').change(function () {
-        var url = $('#installationForm').attr("data-location-url");
-        var page_id = $(this).val();
-
-        if(page_id) { 
-            $.ajax({
-                url: url,
-                data: {
-                    'page_id' : page_id
-                },
-                success: function(data) {
-                    $(".location-select").html(data);
-                    $(".location-select").prop('disabled', false);
-                }
-            });
-        }else{
-           $(".location-select").prop('disabled', true);
-        }
-
-    });
-
-    function load_banner(input) {
-        var url = $('#installationForm').attr("data-banner-url");
-        var banner_id = $(input).val();
-        var id = $(input).attr('id').slice(16, 18);
-
-        if(id.includes('-')) {
-            var id = $(input).attr('id').slice(16, 17);
-        }
-
-        $.ajax({
-            url: url,
-            data: {
-                'banner_id' : banner_id
-            },
-            success: function(data) {
-                // var imageUrl = 'http://127.0.0.1:8000' + data;
-                var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
-                $('#img-' + id).attr('src', imageUrl);
-            }
-        });
-
-    }
-    
-    function load_size(input) {
-        var url = $('#installationForm').attr("data-location-size-url");
-        var location_id = $(input).val();
-        var id = $(input).attr('id').slice(-2);
-
-        if(id.includes('-')) {
-            var id = $(input).attr('id').slice(-1);
-        }
-
-        var prev = $('#id_location-previous-value-' + id).val();
-
-        $.ajax({
-            url: url,
-            data: {
-                'location_id' : location_id
-            },
-            success: function(data) {
-                var arr = data.split(',')
-                $('#id_location-size-' + id).html('*Ukuran gambar di Lokasi Pemasangan ini adalah ' + arr[0]);
-
-                if(arr[1] == 'True') {
-                    if($('#id_install-' + id + '-fieldset').find('.banner-div').length == 1){
-                        $('#id_banner-add-' + id).click();
-                        $('#id_banner-delete-' + id).hide();
-                    }else if ($('#id_install-' + id + '-fieldset').find('.banner-div').length > 2){
-                        $('#id_install-' + id + '-fieldset').find('.banner-div:gt(1)').remove();
-                        $('#id_banner-delete-' + id).hide();
-                    }else{
-                        $('#id_banner-delete-' + id).hide();
-                    }
-                }else{
-                    if ($('#id_install-' + id + '-fieldset').find('.banner-div').length > 1){
-                        $('#id_install-' + id + '-fieldset').find('.banner-div:gt(0)').remove();
-                        $('#id_banner-delete-' + id).hide();
-                    }
-                }
-            }
-
-        });
-
-        $('#id_location-previous-value-' + id).val(location_id);
-
-        if(location_id) {
-            $('.location-select:not(#' + $(input).attr('id') + ')').each(function () {
-                $(this).find('option[value="' + location_id + '"]').attr('disabled', true);
-
-                if(prev !== '') {
-                    $(this).find('option[value="' + prev + '"]').attr('disabled', false);
-                }
-            });
-        }
-    }
-    
-</script>
-
+    </div>
+</form>
 {% endblock content %}  
+
+{% block script %}
+<script src="{% static 'js/add_installation.js' %}"></script>
+{% endblock script %}
+    

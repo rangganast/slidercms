@@ -5,7 +5,7 @@ from django.db.models import Max
 class User(AbstractUser):
     is_developer = models.BooleanField('developer status', default=False)
     is_marketing = models.BooleanField('marketing status', default=False)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
 
     def __str__(self):
         return self.username
@@ -54,7 +54,6 @@ class Location(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='pages')
     is_slider = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
     name = models.CharField(max_length=100)
     width = models.IntegerField()
     height = models.IntegerField()
@@ -103,11 +102,20 @@ class Banner(models.Model):
             self.id = "BN" + "{0:03d}".format(max)
         super().save(*kwargs)
 
+class Campaign(models.Model):
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='campaign_location')
+    campaign_code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    is_active = models.BooleanField(default=False)
+    priority = models.IntegerField(null=True, blank=True)
+    valid_date_start = models.DateField(null=True, blank=True)
+    valid_date_end = models.DateField(null=True, blank=True)
+
 class Installation(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='locations')
     banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='banners')
-    date_created = models.DateTimeField(auto_now_add=True)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='campaigns')
+    date_created = models.DateField(null=True, blank=True)
+    date_updated = models.DateField(null=True, blank=True)
     redirect = models.URLField(null=True, blank=True)
 
     def save(self, **kwargs):

@@ -2,117 +2,120 @@
 
 {% load static %}
 
-{% block content %}
+{% block title %}Update Halaman{% endblock title %}
 
+{% block style %}
 <link rel="stylesheet" href="{% static 'css/update_page.css' %}">
+{% endblock style %}
+    
+{% block content %}
+<form id="pageForm" method="POST" action="{% url 'app:update_page' pk=page.id %}"
+    data-check-similar-page-url="{% url 'app:ajax_check_similar_page_update' %}">
+    {% csrf_token %}
 
-<div class="container mt-5 mb-5">
-    <form id="pageForm" method="POST" action="{% url 'app:update_page' pk=page.id %}"
-        data-check-similar-page-url="{% url 'app:ajax_check_similar_page_update' %}">
-        {% csrf_token %}
+    {{ formset_page.management_form }}
+    {{ formset_location.management_form }}
 
-        {{ formset_page.management_form }}
-        {{ formset_location.management_form }}
+    <div id="card-field" class="container-fluid mt-3">
 
-        <div id="card-field" class="container-fluid mt-3">
+        <h3 class="text-center mb-2">Form Update Halaman
+            <span class="btn-group float-right">
+                <button id="submitUpdatePage" type="submit" class="btn btn-primary">Simpan</button>
+            </span>
+            <span class="btn-group float-right">
+                <a href="{% url 'app:page' %}" style="color: white; text-decoration: none;">
+                    <button type="button" class="btn btn-secondary mr-2">
+                        Batal
+                    </button>
+                </a>
+            </span>
+        </h3>
 
-            <h3 class="text-center mb-2">Form Update Halaman
-                <span class="btn-group float-right">
-                    <button id="submitUpdatePage" type="submit" class="btn btn-primary">Simpan</button>
-                </span>
-                <span class="btn-group float-right">
-                    <a href="{% url 'app:page' %}" style="color: white; text-decoration: none;">
-                        <button type="button" class="btn btn-secondary mr-2">
-                            Batal
-                        </button>
-                    </a>
-                </span>
-            </h3>
+        <hr>
 
-            <hr>
+        <div class="container-fluid mt-5 mb-5">
 
-            <div class="container-fluid mt-5 mb-5">
-
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label" for="{{ form_application.names.id_for_label }}">{{ form_application.names.label }}</label>
-                    <div class="col-sm-4">
-                        {{ form_application.names }}
-                    </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="{{ form_application.names.id_for_label }}">{{ form_application.names.label }}</label>
+                <div class="col-sm-4">
+                    {{ form_application.names }}
                 </div>
-
-                {% for page in formset_page %}
-                <div class="form-group row page-div">
-                    <label class="col-sm-2 col-form-label" for="{{ page.name.id_for_label }}">{{ page.name.label }}</label>
-                    <div class="col-sm-4">
-                        {{ page.id }}
-                        {{ page.name }}
-                        <small id="id_warning-text-page" style="color: red; display: none;">Nama Halaman telah
-                            dipakai. Silahkan masukkan nama lain.</small>
-                    </div>
-                </div>
-                {% endfor %}
-
-                <div class="form-group">
-                    <h4>Daftar Lokasi Pemasangan:
-                        <span class="btn-group float-right">
-                            <button id="id_location-add" type="button" class="btn btn-primary float-right" onclick="cloneLocation();">Tambah Lokasi</button>
-                        </span>
-                    </h4>
-                </div>
-                
-                {% for location in formset_location %}
-                <fieldset id="id_location-{{ forloop.counter0 }}-fieldset" class="location-border fieldset">
-                    {{ location.DELETE }}
-                    {{ location.id }}
-                    
-                    <legend class="location-border">Lokasi ke-{{ forloop.counter }}</legend>
-
-                    <div class="container">
-
-                        <div class="location-div ml-5">
-
-                            <div class="form-group row mb-0 location-slider">
-                                <div class="col-sm-12">
-                                    <strong>
-                                        <label class="radio-inline mr-2" for="{{ location.is_slider.id_for_label }}" style="color: #007bff;">{{ location.is_slider.label }}</label>
-                                        {% for option in location.is_slider %}
-                                        <label for="radio-inline" style="color: #007bff;">
-                                            {{ option }}
-                                        </label>
-                                        {% endfor %}
-                                    </strong>
-                                </div>    
-                            </div>
-
-                            <div class="form-group row location-name">
-                                <label class="col-sm-3 col-form-label" for="{{ location.name.id_for_label }}">{{ location.name.label }}</label>
-                                <div class="col-sm-9">{{ location.name }}</div>
-                            </div>
-
-                            <div class="form-group row location-size">
-                                <label class="col-sm-3 col-form-label mr-3" for="{{ location.width.id_for_label}}">{{ location.width.label }}</label>
-                                {{ location.width }}
-
-                                <label class="mr-2 ml-2" for="{{ location.height.id_for_label}}">{{ location.height.label }}</label>
-                                {{ location.height }}            
-                            </div>     
-
-                        </div>
-
-                        <button id="id_location-delete-{{ forloop.counter0 }}" type="button" class="btn btn-sm btn-danger float-right delete-btn"
-                            onclick="removeLocation(this);">Hapus Lokasi</button>
-                        
-                    </div>
-                    
-                </fieldset>
-                {% endfor %}
-
             </div>
 
-        </div>
-    </form>
+            {% for page in formset_page %}
+            <div class="form-group row page-div">
+                <label class="col-sm-2 col-form-label" for="{{ page.name.id_for_label }}">{{ page.name.label }}</label>
+                <div class="col-sm-4">
+                    {{ page.id }}
+                    {{ page.name }}
+                    <small id="id_warning-text-page" style="color: red; display: none;">Nama Halaman telah
+                        dipakai. Silahkan masukkan nama lain.</small>
+                </div>
+            </div>
+            {% endfor %}
 
-</div>
+            <div class="form-group">
+                <h4>Daftar Lokasi Pemasangan:
+                    <span class="btn-group float-right">
+                        <button id="id_location-add" type="button" class="btn btn-primary float-right" onclick="cloneLocation();">Tambah Lokasi</button>
+                    </span>
+                </h4>
+            </div>
+            
+            {% for location in formset_location %}
+            <fieldset id="id_location-{{ forloop.counter0 }}-fieldset" class="location-border fieldset">
+                {{ location.DELETE }}
+                {{ location.id }}
+                
+                <legend class="location-border">Lokasi ke-{{ forloop.counter }}</legend>
+
+                <div class="container">
+
+                    <div class="location-div ml-5">
+
+                        <div class="form-group row mb-0 location-slider">
+                            <div class="col-sm-12">
+                                <strong>
+                                    <label class="radio-inline mr-2" for="{{ location.is_slider.id_for_label }}" style="color: #007bff;">{{ location.is_slider.label }}</label>
+                                    {% for option in location.is_slider %}
+                                    <label for="radio-inline" style="color: #007bff;">
+                                        {{ option }}
+                                    </label>
+                                    {% endfor %}
+                                </strong>
+                            </div>    
+                        </div>
+
+                        <div class="form-group row location-name">
+                            <label class="col-sm-3 col-form-label" for="{{ location.name.id_for_label }}">{{ location.name.label }}</label>
+                            <div class="col-sm-9">{{ location.name }}</div>
+                        </div>
+
+                        <div class="form-group row location-size">
+                            <label class="col-sm-3 col-form-label mr-3" for="{{ location.width.id_for_label}}">{{ location.width.label }}</label>
+                            {{ location.width }}
+
+                            <label class="mr-2 ml-2" for="{{ location.height.id_for_label}}">{{ location.height.label }}</label>
+                            {{ location.height }}            
+                        </div>     
+
+                    </div>
+
+                    <button id="id_location-delete-{{ forloop.counter0 }}" type="button" class="btn btn-sm btn-danger float-right delete-btn"
+                        onclick="removeLocation(this);">Hapus Lokasi</button>
+                    
+                </div>
+                
+            </fieldset>
+            {% endfor %}
+
+        </div>
+
+    </div>
+</form>
+{% endblock content %}
+
+{% block script %}
 
 <script src="{% static 'js/update_page.js' %}"></script>
 
@@ -142,5 +145,6 @@
         $('#id_location-TOTAL_FORMS').val(totalLocation);
     })
 </script>
-
-{% endblock content %}  
+    
+{% endblock script %}
+    

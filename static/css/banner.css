@@ -45,7 +45,6 @@
 .btn-danger:visited,
 .btn-danger:focus {
     background-color: #dc3545 !important;
-    color: #000000;
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }

@@ -35,15 +35,15 @@ $('#page_filter').change(function () {
 })
 
 $('#resetFilter').click(function(){
-    table.search('').draw();
     $('#myInputTextField').val('');
     $('#app_filter').val('').trigger('change');
     $('#page_filter').val('').trigger('change');
     $('#page_filter').prop('disabled', true);
+    $('#pageTable').DataTable().search('');
 })
 
 function archive(input) {
-    var pk = $(input).attr('id');
+    var pk = $(input).attr('id').split('-')[0];
     Swal.fire({
         title: 'Archive',
         icon: 'info',
@@ -64,7 +64,7 @@ function archive(input) {
 };
 
 function unarchive(input) {
-    var pk = $(input).attr('id');
+    var pk = $(input).attr('id').split('-')[0];
     Swal.fire({
         title: 'Unarchive',
         icon: 'info',
@@ -85,7 +85,7 @@ function unarchive(input) {
 };
 
 function deletePage(input) {
-    var pk = $(input).attr('id');
+    var pk = $(input).attr('id').split('-')[0];
     Swal.fire({
         title: 'Hapus',
         icon: 'info',

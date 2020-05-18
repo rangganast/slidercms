@@ -49,7 +49,7 @@ function active(input) {
             cancelButtonText: 'Tidak',
             cancelButtonClass: 'btn btn-secondary',
             confirmButtonText: 'Ya',
-            confirmButtonClass: 'btn btn-success',
+            confirmButtonClass: 'btn btn-primary',
             reverseButtons: true
         }).then((result) => {
             if (result.value) {
@@ -74,7 +74,7 @@ function active(input) {
             cancelButtonText: 'Tidak',
             cancelButtonClass: 'btn btn-secondary',
             confirmButtonText: 'Ya',
-            confirmButtonClass: 'btn btn-success',
+            confirmButtonClass: 'btn btn-primary',
             reverseButtons: true
         }).then((result) => {
             if (result.value) {

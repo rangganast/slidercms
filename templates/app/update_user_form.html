@@ -2,103 +2,103 @@
 
 {% load static %}
 
-{% block content %}
+{% block title %}Update Pengguna{% endblock title %}
 
+{% block style %}
 <link rel="stylesheet" href="{% static 'css/add_banner.css' %}">
+{% endblock style %}
 
-<div class="container mt-5 mb-5">
-    
-    <div id="card-field" class="container-fluid mt-3">
+{% block content %}
+<div id="card-field" class="container-fluid mt-3">
 
-        <h3 class="text-center mb-2">Form Update Pengguna
-            <span class="btn-group float-right">
-                <a href="{% url 'app:user' %}" style="color: white; text-decoration: none;">
-                    <button type="button" class="btn btn-secondary mr-2">
-                        Batal
-                    </button>
-                </a>
-            </span>
-        </h3>
+    <h3 class="text-center mb-2">Form Update Pengguna
+        <span class="btn-group float-right">
+            <a href="{% url 'app:user' %}" style="color: white; text-decoration: none;">
+                <button type="button" class="btn btn-secondary mr-2">
+                    Batal
+                </button>
+            </a>
+        </span>
+    </h3>
 
-        <hr>
+    <hr>
 
-        <div class="container-fluid mt-5 mb-5">
+    <div class="container-fluid mt-5 mb-5">
 
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label" for="{{ form_user.email.id_for_label }}">{{ form_user.email.label }}</label>
-                <div class="col-sm-10">
-                    <div class="input-group">
-                        {{ form_user.email }}
-                        {% if form_user.email %}
-                        {% for error in form_user.email.errors %}
-                        <small style="color: red;">{{error}}</small>
-                        {% endfor %}
-                        {% endif %}
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="{{ form_user.email.id_for_label }}">{{ form_user.email.label }}</label>
+            <div class="col-sm-10">
+                <div class="input-group">
+                    {{ form_user.email }}
+                    {% if form_user.email %}
+                    {% for error in form_user.email.errors %}
+                    <small style="color: red;">{{error}}</small>
+                    {% endfor %}
+                    {% endif %}
 
-                        <div class="input-group-append">
-                            <span class="input-group-text" id="inputGroupPrependEmail">
-                                <a href="" data-toggle="modal" data-target="#modalEmail">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </span>
-                        </div>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="inputGroupPrependEmail">
+                            <a href="" data-toggle="modal" data-target="#modalEmail">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </span>
+                    </div>
 
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="{{ form_user.username.id_for_label }}">{{ form_user.username.label }}</label>
+            <div class="col-sm-10">
+                <div class="input-group">
+                    {{ form_user.username }}
+                    {% if form_user.username %}
+                    {% for error in form_user.username.errors %}
+                    <small style="color: red;">{{error}}</small>
+                    {% endfor %}
+                    {% endif %}
+
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="inputGroupPrependUsername">
+                            <a href="" data-toggle="modal" data-target="#modalUsername">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </span>
                     </div>
 
                 </div>
             </div>
+        </div>
 
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label" for="{{ form_user.username.id_for_label }}">{{ form_user.username.label }}</label>
-                <div class="col-sm-10">
-                    <div class="input-group">
-                        {{ form_user.username }}
-                        {% if form_user.username %}
-                        {% for error in form_user.username.errors %}
-                        <small style="color: red;">{{error}}</small>
-                        {% endfor %}
-                        {% endif %}
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="{{ form_user.password.id_for_label }}">{{ form_user.password.label }}</label>
+            <div class="col-sm-10">
+                <div class="input-group">
+                    {{ form_user.password }}
+                    {% if form_user.errors %}
+                    {% for error in form_user.password.errors %}
+                    <small style="color: red;">{{error}}</small>
+                    {% endfor %}
+                    {% endif %}
 
-                        <div class="input-group-append">
-                            <span class="input-group-text" id="inputGroupPrependUsername">
-                                <a href="" data-toggle="modal" data-target="#modalUsername">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </span>
-                        </div>
-
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="inputGroupPrependPassword">
+                            <a href data-toggle="modal" data-target="#modalPassword">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </span>
                     </div>
+
                 </div>
             </div>
-
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label" for="{{ form_user.password.id_for_label }}">{{ form_user.password.label }}</label>
-                <div class="col-sm-10">
-                    <div class="input-group">
-                        {{ form_user.password }}
-                        {% if form_user.errors %}
-                        {% for error in form_user.password.errors %}
-                        <small style="color: red;">{{error}}</small>
-                        {% endfor %}
-                        {% endif %}
-
-                        <div class="input-group-append">
-                            <span class="input-group-text" id="inputGroupPrependPassword">
-                                <a href data-toggle="modal" data-target="#modalPassword">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </span>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
         </div>
 
     </div>
-        
+
 </div>
+    
 
 <div class="modal fade" id="modalEmail" tabindex="-1" role="dialog" aria-labelledby="modalEmail"
     aria-hidden="true">
@@ -207,12 +207,14 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Save changes</button>
                 </div>
-
+                
             </form>
         </div>
     </div>
 </div>
-    
+{% endblock content %}
+
+{% block script %}
 <script src="{% static 'js/add_banner.js' %}"></script>
 
 <script>
@@ -298,5 +300,6 @@
     {% endfor %}
     {% endif %}
 </script>
+{% endblock script %}
+    
 
-{% endblock content %}
