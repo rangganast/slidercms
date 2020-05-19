@@ -1,3 +1,51 @@
+$(document).ready(function () {
+    $('.daterangefilter').daterangepicker({
+        cancelButtonClasses: 'btn btn-secondary',
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    });
+
+    $('#app_select').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih aplikasi',
+    });
+    $('#page_select').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih halaman',
+    });
+    $('.location-select').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih lokasi',
+    });
+    $('.banner-select').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih banner',
+    });
+});
+
+function load_banner(input) {
+    var url = $('#installationForm').attr("data-banner-url");
+    var banner_id = $(input).val();
+    var id = $(input).attr('id').slice(16, 18);
+
+    if (id.includes('-')) {
+        var id = $(input).attr('id').slice(16, 17);
+    }
+
+    $.ajax({
+        url: url,
+        data: {
+            'banner_id': banner_id
+        },
+        success: function (data) {
+            // var imageUrl = 'http://127.0.0.1:8000' + data;
+            var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
+            $('#img-' + id).attr('src', imageUrl);
+        }
+    });
+}
+
 function cloneBanner() {
     var total = $('#id_installation-TOTAL_FORMS').val();
     var total = Number(total);

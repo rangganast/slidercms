@@ -4,12 +4,10 @@
 
 {% block title %}Update Pemasangan{% endblock title %}
 
-{% block style %}
-<link rel="stylesheet" href="{% static 'css/update_installation.css' %}">
-{% endblock style %}
+{% block style %}<link rel="stylesheet" href="{% static 'css/update_installation.css' %}">{% endblock style %}
     
 {% block content %}
-<form id="installationForm" action="{% url 'app:update_install' pk=location.pk %}" method="POST"
+<form id="installationForm" action="{% url 'app:update_install' pk=campaign.pk %}" method="POST"
     data-banner-url="{% url 'app:ajax_load_banner' %}">
     {% csrf_token %}
 
@@ -55,7 +53,7 @@
         </div>
 
         <div class="container-fluid mb-5">
-
+            {% for installation in formset_installation %}
             <fieldset id="id_install-0-fieldset" class="page-border fieldset">
 
                 <legend class="page-border">Detail Lokasi Pemasangan</legend>
@@ -78,16 +76,36 @@
                             </div>
                         </div>
 
+                    <input type="hidden" id="id_campaign-id" name="campaign-id" value="{{campaign.id}}">
+
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="id_location-select-0">Kode Campaign</label>
+                        <label class="col-sm-2 col-form-label" for="{{installation.campaign_code.id_for_label}}">{{installation.campaign_code.label}}</label>
                         <div class="col-sm-10">
-                            <select id="id_location-select-0" name="location-select-0" class="form-control location-select" disabled>
-                                <option value="{{ location.id }}" selected>{{ location.name }}</option>
-                            </select>
+                            {{installation.campaign_code}}
                         </div>
                     </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="{{installation.priority.id_for_label}}">{{installation.priority.label}}</label>
+                        <div class="col-sm-10">
+                            {{installation.priority}}
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-4 banner-name">
+                        <label class="col-sm-2 col-form-label" for="{{ installation.daterangepicker.id_for_label }}">{{ installation.daterangepicker.label }}</label>
+                        <div class="input-group col-sm-10">
+                            {{ installation.daterangepicker }}
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
                         
-                    {% for installation in formset_installation %}
                     <div id="banner-div-{{ forloop.counter0 }}" class="banner-div">
                         {{installation.id}}
                         {{installation.DELETE}}
@@ -155,14 +173,14 @@
                         <hr>
 
                     </div>
-                    {% endfor %}
-
+                    
                     <button id="id_banner-add-0" type="button" class="btn btn-sm btn-primary float-right"
                         onclick="cloneBanner();">Tambah Banner</button>
-
+                        
                 </div>
-
+                
             </fieldset>
+            {% endfor %}
 
         </div>
 
@@ -172,54 +190,4 @@
 
 {% block script %}
 <script src="{% static 'js/update_installation.js' %}"></script>
-
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#app_select').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih aplikasi',
-        });
-        $('#page_select').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih halaman',
-        });
-        $('.location-select').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih lokasi',
-        });
-        $('.location-select').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih lokasi',
-        });
-        $('.banner-select').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih banner',
-        });
-    });
-
-    function load_banner(input) {
-        var url = $('#installationForm').attr("data-banner-url");
-        var banner_id = $(input).val();
-        var id = $(input).attr('id').slice(16, 18);
-
-        if(id.includes('-')) {
-            var id = $(input).attr('id').slice(16, 17);
-            }
-
-            $.ajax({
-            url: url,
-            data: {
-            'banner_id' : banner_id
-            },
-            success: function(data) {
-                // var imageUrl = 'http://127.0.0.1:8000' + data;
-                var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
-                $('#img-' + id).attr('src', imageUrl);
-        }
-        });
-    }
-</script>
-    
 {% endblock script %}

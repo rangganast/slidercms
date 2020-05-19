@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Location, Banner, Installation
+from app.models import Location, Banner, Installation, Campaign
 from django.conf import settings
 
 class InstallationSerializer(serializers.ModelSerializer):
@@ -34,7 +34,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ('id', 'name', 'application', 'application_name', 'page', 'page_name', 'is_slider', 'width', 'height', 'is_active', 'banners',)
+        fields = ('id', 'name', 'application', 'application_name', 'page', 'page_name', 'is_slider', 'width', 'height', 'banners',)
 
     def get_application(self, obj):
         return obj.page.application.id
@@ -49,6 +49,7 @@ class LocationSerializer(serializers.ModelSerializer):
         return obj.page.name
 
     def get_installation(self, obj):
-        inst_obj = Installation.objects.filter(location_id=obj.id)
+        campaign_obj = Campaign.objects.filter(location_id=obj.id, priority=100)
+        inst_obj = Installation.objects.filter(campaign_id__in=campaign_obj.id)
         serializer = InstallationSerializer(inst_obj, many=True, context=self.context)
         return serializer.data

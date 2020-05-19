@@ -103,12 +103,25 @@ class Banner(models.Model):
         super().save(*kwargs)
 
 class Campaign(models.Model):
+    id = models.CharField(primary_key=True, editable=False, max_length=6)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='campaign_location')
     campaign_code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     is_active = models.BooleanField(default=False)
     priority = models.IntegerField(null=True, blank=True)
     valid_date_start = models.DateField(null=True, blank=True)
     valid_date_end = models.DateField(null=True, blank=True)
+
+    def save(self, **kwargs):
+        if not self.id:
+            max = Installation.objects.aggregate(id_max=Max('id'))['id_max']
+            if max is not None:
+                max = max[-3:]
+                max = int(max)
+                max += 1
+            else:
+                max = 1
+            self.id = "CMP" + "{0:03d}".format(max)
+        super().save(*kwargs)
 
 class Installation(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
@@ -127,5 +140,5 @@ class Installation(models.Model):
                 max += 1
             else:
                 max = 1
-            self.id = "CMP" + "{0:03d}".format(max)
+            self.id = "INS" + "{0:03d}".format(max)
         super().save(*kwargs)

@@ -1,8 +1,8 @@
 $(document).ready(function () {
-    $('.daterangefilter').daterangepicker({
-        cancelButtonClasses : 'btn btn-secondary',
+    $('#id_installation-0-daterangepicker').daterangepicker({
+        cancelButtonClasses: 'btn btn-secondary',
         locale: {
-            format: 'DD/MM/YYYY'
+            format: 'DD/MM/YYYY',
         }
     });
 
@@ -22,6 +22,14 @@ $(document).ready(function () {
         theme: 'bootstrap4',
         placeholder: 'Pilih Banner',
     });
+});
+
+$('.daterangefilter').on('apply.daterangepicker', function (ev, picker) {
+    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+});
+
+$('.daterangefilter').on('cancel.daterangepicker', function (ev, picker) {
+    $(this).val('');
 });
 
 $('#app_select').change(function () {
@@ -190,6 +198,19 @@ function cloneInstall(selector){
     newElement.find('#id_installation-' + (totalInstall - 1) + '-daterangepicker').attr('id', 'id_installation-' + totalInstall + '-daterangepicker');
     newElement.find('#id_installation-' + totalInstall + '-daterangepicker').attr('name', 'installation-' + totalInstall + '-daterangepicker');
 
+    newElement.find('#id_installation-' + totalInstall + '-daterangepicker').daterangepicker({
+        cancelButtonClasses: 'btn btn-secondary',
+        locale: {
+            format: 'DD/MM/YYYY',
+        }
+    });
+    $('#id_installation-' + (totalInstall - 1) + '-daterangepicker').daterangepicker({
+        cancelButtonClasses: 'btn btn-secondary',
+        locale: {
+            format: 'DD/MM/YYYY',
+        }
+    });
+
     newElement.find('#id_location-previous-value-' + (totalInstall - 1)).attr('id', 'id_location-previous-value-' + totalInstall);
     newElement.find('#id_location-previous-value-' + totalInstall).attr('name', 'location-previous-value-' + totalInstall);
     newElement.find('#id_location-previous-value-' + totalInstall).val('');
@@ -197,10 +218,6 @@ function cloneInstall(selector){
     newElement.find('#id_location-is_slider-status-' + (totalInstall - 1)).attr('id', 'id_location-is_slider-status-' + totalInstall);
     newElement.find('#id_location-is_slider-status-' + totalInstall).attr('name', 'location-is_slider-status-' + totalInstall);
     newElement.find('#id_location-is_slider-status-' + totalInstall).val('');
-
-    if (originalOption) {
-        newElement.find('#id_location-select-' + totalInstall + ' > option[value="' + originalOption + '"]').attr('disabled', true);
-    }
     
     newElement.find('#id_location-size-' + (totalInstall - 1)).attr('id', 'id_location-size-' + totalInstall);
     
@@ -228,7 +245,7 @@ function cloneInstall(selector){
 
     $('.location-select').select2({
         theme: 'bootstrap4',
-        placeholder: 'Pilih lokasi',
+        placeholder: 'Pilih Lokasi',
     });
 
     $('.banner-name').find('select').each(function (index) {
@@ -317,7 +334,7 @@ function cloneInstall(selector){
 
     $('.banner-select').select2({
         theme: 'bootstrap4',
-        placeholder: 'Pilih banner',
+        placeholder: 'Pilih Banner',
     });
 
     if (originalRadio.length == 1) {

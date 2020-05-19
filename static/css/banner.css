@@ -43,7 +43,8 @@
 .btn-danger:hover,
 .btn-danger:active,
 .btn-danger:visited,
-.btn-danger:focus {
+.btn-danger:focus,
+.btn-danger:disabled {
     background-color: #dc3545 !important;
     border-color: #000000;
     box-shadow: 3px 3px #000000;
@@ -65,7 +66,8 @@
 .btn-warning:hover,
 .btn-warning:active,
 .btn-warning:visited,
-.btn-warning:focus {
+.btn-warning:focus,
+.btn-warning:disabled {
     background-color: #FFFF00 !important;
     border-color: #000000;
     box-shadow: 3px 3px #000000;

@@ -80,7 +80,8 @@ ul li:before {
 .btn-warning:hover,
 .btn-warning:active,
 .btn-warning:visited,
-.btn-warning:focus {
+.btn-warning:focus,
+.btn-warning:disabled {
     background-color: #FFFF00 !important;
     border-color: #000000;
     box-shadow: 3px 3px #000000;

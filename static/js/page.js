@@ -39,7 +39,8 @@ $('#resetFilter').click(function(){
     $('#app_filter').val('').trigger('change');
     $('#page_filter').val('').trigger('change');
     $('#page_filter').prop('disabled', true);
-    $('#pageTable').DataTable().search('');
+    var table = $('#pageTable').DataTable();
+    table.draw();
 })
 
 function archive(input) {
