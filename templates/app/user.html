@@ -61,9 +61,8 @@
 <script src="{% static 'js/user.js' %}"></script>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('a#userManagement').addClass('active');
-    });
+    $('#sliderManagement').removeClass('menu-open');
+    $('a#userManagement').addClass('active');
 
     {% if messages %}
     {% for message in messages %}

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('#id_installation-0-daterangepicker').daterangepicker({
+    $('#id_campaign-0-daterangepicker').daterangepicker({
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
             format: 'DD/MM/YYYY',
@@ -24,13 +24,13 @@ $(document).ready(function () {
     });
 });
 
-$('.daterangefilter').on('apply.daterangepicker', function (ev, picker) {
-    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-});
+// $('.daterangefilter').on('apply.daterangepicker', function (ev, picker) {
+//     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+// });
 
-$('.daterangefilter').on('cancel.daterangepicker', function (ev, picker) {
-    $(this).val('');
-});
+// $('.daterangefilter').on('cancel.daterangepicker', function (ev, picker) {
+//     $(this).val('');
+// });
 
 $('#app_select').change(function () {
     var url = $('#installationForm').attr("data-page-url");
@@ -73,6 +73,62 @@ $('#page_select').change(function () {
     }
 
 });
+
+function check_campaign_code_available_add(input){
+    // var url = $('#installationForm').attr("data-check-campaign_code-url");
+    // var id = $(input).attr('id').slice(12, 14);
+    // var app_id = $('#app_select option:selected').val();
+    // var value = $(input).val();
+    
+    // if (id.includes('-')) {
+    //     var id = $(input).attr('id').slice(12, 13);
+    // }
+
+    // console.log(value)
+    
+    // $.ajax({
+    //     url: url,
+    //     data: {
+    //         'app_id': app_id,
+    //         'value' : value,
+    //     },
+    //     success: function (data) {
+    //         console.log(data);
+    //         if(data == 'True'){
+    //             $('#id_campaign-code-warning-' + id).show()
+    //         }else{
+    //             $('#id_campaign-code-warning-' + id).hide()
+    //         }
+    //     }
+    // });
+}
+
+function check_priority_available(input){
+    var url = $('#installationForm').attr("data-check-priority-url");
+    var id = $(input).attr('id').slice(12, 14);
+    var value = $(input).val();
+    
+    if (id.includes('-')) {
+        var id = $(input).attr('id').slice(12, 13);
+    }
+    
+    var loc_id = $('#id_location-select-' + id + ' option:selected').val();
+    
+    $.ajax({
+        url: url,
+        data: {
+            'loc_id': loc_id,
+            'value' : value,
+        },
+        success: function (data) {
+            if(data == 'True'){
+                $('#id_campaign-priority-warning-' + id).show()
+            }else{
+                $('#id_campaign-priority-warning-' + id).hide()
+            }
+        }
+    });
+}
 
 function load_banner(input) {
     var url = $('#installationForm').attr("data-banner-url");
@@ -189,22 +245,25 @@ function cloneInstall(selector){
     newElement.find('#id_location-select-' + (totalInstall - 1)).attr('id', 'id_location-select-' + totalInstall);
     newElement.find('#id_location-select-' + totalInstall).attr('name', 'location-select-' + totalInstall);
 
-    newElement.find('#id_installation-' + (totalInstall - 1) + '-priority').attr('id', 'id_installation-' + totalInstall + '-priority');
-    newElement.find('#id_installation-' + totalInstall + '-priority').attr('name', 'installation-' + totalInstall + '-priority');
+    newElement.find('#id_campaign-priority-warning-' + (totalInstall - 1)).attr('id', 'id_banner-priority-' + totalInstall);
+    newElement.find('#id_campaign-code-warning-' + (totalInstall - 1)).attr('id', 'id_banner-priority-' + totalInstall);
 
-    newElement.find('#id_installation-' + (totalInstall - 1) + '-campaign_code').attr('id', 'id_installation-' + totalInstall + '-campaign_code');
-    newElement.find('#id_installation-' + totalInstall + '-campaign_code').attr('name', 'installation-' + totalInstall + '-campaign_code');
+    newElement.find('#id_campaign-' + (totalInstall - 1) + '-priority').attr('id', 'id_campaign-' + totalInstall + '-priority');
+    newElement.find('#id_campaign-' + totalInstall + '-priority').attr('name', 'campaign-' + totalInstall + '-priority');
 
-    newElement.find('#id_installation-' + (totalInstall - 1) + '-daterangepicker').attr('id', 'id_installation-' + totalInstall + '-daterangepicker');
-    newElement.find('#id_installation-' + totalInstall + '-daterangepicker').attr('name', 'installation-' + totalInstall + '-daterangepicker');
+    newElement.find('#id_campaign-' + (totalInstall - 1) + '-campaign_code').attr('id', 'id_campaign-' + totalInstall + '-campaign_code');
+    newElement.find('#id_campaign-' + totalInstall + '-campaign_code').attr('name', 'campaign-' + totalInstall + '-campaign_code');
 
-    newElement.find('#id_installation-' + totalInstall + '-daterangepicker').daterangepicker({
+    newElement.find('#id_campaign-' + (totalInstall - 1) + '-daterangepicker').attr('id', 'id_campaign-' + totalInstall + '-daterangepicker');
+    newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').attr('name', 'campaign-' + totalInstall + '-daterangepicker');
+
+    newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').daterangepicker({
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
             format: 'DD/MM/YYYY',
         }
     });
-    $('#id_installation-' + (totalInstall - 1) + '-daterangepicker').daterangepicker({
+    $('#id_campaign-' + (totalInstall - 1) + '-daterangepicker').daterangepicker({
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
             format: 'DD/MM/YYYY',
@@ -237,7 +296,7 @@ function cloneInstall(selector){
 
     newElement.find('img').attr('src', '');
 
-    newElement.find('small:not(.banner_priority)').html('');
+    newElement.find('small:not(.campaign_warning)').html('');
 
     newElement.find('.banner-div').not(':first').remove();
 
@@ -348,6 +407,7 @@ function cloneInstall(selector){
     }
 
     $('#id_installation-TOTAL_FORMS').val(totalInstall);
+    $('#id_campaign-TOTAL_FORMS').val(totalInstall);
 
     $('#id_installation-TOTAL_FIELDSETS').val($('fieldset').length);
 
@@ -369,6 +429,7 @@ function removeInstall(selector) {
 
     var totalInstall = $('.banner-div').length;
     $('#id_installation-TOTAL_FORMS').val(totalInstall);
+    $('#id_campaign-TOTAL_FORMS').val(totalInstall);
 
     $('#id_installation-TOTAL_FIELDSETS').val($('fieldset').length);
 

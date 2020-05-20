@@ -8,10 +8,12 @@
     
 {% block content %}
 <form id="installationForm" action="{% url 'app:update_install' pk=campaign.pk %}" method="POST"
-    data-banner-url="{% url 'app:ajax_load_banner' %}">
+    data-banner-url="{% url 'app:ajax_load_banner' %}"
+    data-check-priority-url="{% url 'app:ajax_check_priority_available_update' %}">
     {% csrf_token %}
 
     {{ formset_installation.management_form }}
+    {{ formset_campaign.management_form }}
 
     <div id="card-field" class="container-fluid mt-3">
 
@@ -76,26 +78,27 @@
                             </div>
                         </div>
 
-                    <input type="hidden" id="id_campaign-id" name="campaign-id" value="{{campaign.id}}">
-
+                    
+                    {% for campaign in formset_campaign %}
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="{{installation.campaign_code.id_for_label}}">{{installation.campaign_code.label}}</label>
+                        <label class="col-sm-2 col-form-label" for="{{ campaign.campaign_code.id_for_label }}">{{ campaign.campaign_code.label }}</label>
                         <div class="col-sm-10">
-                            {{installation.campaign_code}}
+                            {{ campaign.campaign_code }}
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="{{installation.priority.id_for_label}}">{{installation.priority.label}}</label>
-                        <div class="col-sm-10">
-                            {{installation.priority}}
+                        <label class="col-sm-2 col-form-label" for="{{ campaign.priority.id_for_label }}">{{ campaign.priority.label }}</label>
+                        <div class="col-sm-1">
+                            {{ campaign.priority }}
+                            <input id="id_priority-value" type="hidden" value="{{ campaign.priority.value }}">
                         </div>
                     </div>
 
                     <div class="form-group row mb-4 banner-name">
-                        <label class="col-sm-2 col-form-label" for="{{ installation.daterangepicker.id_for_label }}">{{ installation.daterangepicker.label }}</label>
+                        <label class="col-sm-2 col-form-label" for="{{ campaign.daterangepicker.id_for_label }}">{{ campaign.daterangepicker.label }}</label>
                         <div class="input-group col-sm-10">
-                            {{ installation.daterangepicker }}
+                            {{ campaign.daterangepicker }}
                             <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
@@ -103,6 +106,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
 
                     <hr>
                         

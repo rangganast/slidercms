@@ -95,7 +95,7 @@
             <th scope="col">Tanggal Dibuat</th>
             <th scope="col">Tanggal Diupdate</th>
             <th scope="col">Tanggal Berlaku</th>
-            <th scope="col">Aktif/Non-Aktif</th>
+            <!-- <th scope="col">Aktif/Non-Aktif</th> -->
             <th scope="col">Aksi</th>
         </tr>
     </thead>
@@ -104,23 +104,23 @@
         
         {% for content in contents %}
         <tr>
-            <td style="vertical-align: middle;">{{content.loc_id}}</td>
-            <td style="vertical-align: middle;">{{content.app}}</td>
-            <td style="vertical-align: middle;">{{content.page}}</td>
-            <td style="vertical-align: middle;">{{content.location}}</td>
-            <td style="vertical-align: middle;">{{content.campaign_code}}</td>
-            <td style="vertical-align: middle;">{{content.priority}}</td>
-            <td style="vertical-align: middle;">
+            <td style="vertical-align: middle; text-align: center;">{{content.loc_id}}</td>
+            <td style="vertical-align: middle; text-align: center;">{{content.app}}</td>
+            <td style="vertical-align: middle; text-align: center;">{{content.page}}</td>
+            <td style="vertical-align: middle; text-align: center;">{{content.location}}</td>
+            <td style="vertical-align: middle; text-align: center;">{% if content.campaign_code == None %}{% else %}{{content.campaign_code}}{% endif %}</td>
+            <td style="vertical-align: middle; text-align: center;">{{content.priority}}</td>
+            <td style="vertical-align: middle; text-align: center;">
                 <ul>
                     {% for banner in content.banners %}
                     <li>{{banner}}</li>
                     {% endfor %}  
                 </ul>
             </td>
-            <td style="vertical-align: middle;">{{content.created_date}}</td>
-            <td style="vertical-align: middle;">{% if content.updated_date == None %}{% else %}{{content.updated_date}}{% endif %}</td>
-            <td style="vertical-align: middle;">{{content.valid_date}}</td>
-            <td style="text-align:center; vertical-align: middle;">
+            <td style="vertical-align: middle; text-align: center;">{{content.created_date}}</td>
+            <td style="vertical-align: middle; text-align: center;">{% if content.updated_date == None %}{% else %}{{content.updated_date}}{% endif %}</td>
+            <td style="vertical-align: middle; text-align: center;">{% if content.valid_date == None %}{% else %}{{content.valid_date}}{% endif %}</td>
+            <!-- <td style="text-align:center; vertical-align: middle;">
                 {% if content.is_active == False %}
                 <form id="switch-form-{{forloop.counter}}" method="POST" action="{% url 'app:active_install' pk=content.campaign_id %}">
                     {% csrf_token %}
@@ -140,7 +140,7 @@
                     </div>
                 </form>
                 {% endif %}
-            </td>
+            </td> -->
             <td style="vertical-align: middle;">
                 <span class="spanFormat">
                     <form action="{% url 'app:detail_install' pk=content.campaign_id %}" method="GET">
@@ -177,6 +177,9 @@
 <script src="{% static 'js/installation.js' %}"></script>
 
 <script type="text/javascript">
+    $('#sliderManagement').addClass('menu-open');
+    $('a#installManagement').addClass('active');
+    
     $('#app_filter').change(function () {
         var url = $('#filterDiv').attr("data-page-url");
         var app_id = $(this).val();

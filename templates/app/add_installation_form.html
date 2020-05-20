@@ -10,10 +10,13 @@
 {% block content %}
 <form id="installationForm" method="POST" data-page-url="{% url 'app:ajax_load_pages' %}"
     data-location-url="{% url 'app:ajax_load_locations' %}" data-banner-url="{% url 'app:ajax_load_banner' %}"
-    data-location-size-url="{% url 'app:ajax_load_location_size' %}">
+    data-location-size-url="{% url 'app:ajax_load_location_size' %}"
+    data-check-priority-url="{% url 'app:ajax_check_priority_available_add' %}"
+    data-check-campaign_code-url="{% url 'app:ajax_check_campaign_code_available_add' %}">
     {% csrf_token %}
 
     {{ formset_installation.management_form }}
+    {{ formset_campaign.management_form }}
 
     <div id="card-field" class="container-fluid mt-3">
 
@@ -88,31 +91,37 @@
                             <small style="color: red;" id="id_location-size-0"></small>
                         </div>
                     </div>
+
                     
-                    <div class="form-group row mb-4 banner-name">
-                        <label class="col-sm-2 col-form-label" for="{{ installation.campaign_code.id_for_label }}">{{ installation.campaign_code.label }}</label>
+                    {% for campaign in formset_campaign %}
+                    <div class="form-group row mb-4 campaign-codediv">
+                        <label class="col-sm-2 col-form-label" for="{{ campaign.campaign_code.id_for_label }}">{{ campaign.campaign_code.label }}</label>
                         <div class="col-sm-10">
-                            {{ installation.campaign_code }}
+                            {{ campaign.campaign_code }}
+                            <small id="id_campaign-code-warning-0" class="campaign_warning" style="color: red; display: none;">Kode Campaign telah digunakan pada aplikasi ini.</small>
                         </div>
                     </div>
                     
-                    <div class="form-group row mb-4 banner-name">
-                        <label class="col-sm-2 col-form-label" for="{{ installation.priority.id_for_label }}">{{ installation.priority.label }}</label>
+                    <div class="form-group row mb-4 prioritydiv">
+                        <label class="col-sm-2 col-form-label" for="{{ campaign.priority.id_for_label }}">{{ campaign.priority.label }}</label>
                         <div class="col-sm-1">
-                            {{ installation.priority }}
+                            {{ campaign.priority }}
+                        </div>
+                        <div class="col-sm-9 my-auto">
+                            <small id="id_campaign-priority-warning-0" class="campaign_warning" style="color: red; display: none;">Prioritas ini telah dipakai. Silahkan masukkan angka prioritas yang lain.</small>
                         </div>
                     </div>
                     
                     <div class="form-group row mb-4">
                         <div class="col-sm-10">
-                            <small class="banner_priority" style="color: red;">*Prioritas Banner dapat diisi nilai 0-100. Nilai prioritas dalam satu lokasi pemasangan tidak boleh sama.</small>
+                            <small class="campaign_warning" style="color: red;">*Prioritas Banner dapat diisi nilai 1-100. Nilai prioritas dalam satu lokasi pemasangan tidak boleh sama.</small>
                         </div>
                     </div>
 
-                    <div class="form-group row mb-4 banner-name">
-                        <label class="col-sm-2 col-form-label" for="{{ installation.daterangepicker.id_for_label }}">{{ installation.daterangepicker.label }}</label>
+                    <div class="form-group row mb-4 daterangepickerdiv">
+                        <label class="col-sm-2 col-form-label" for="{{ campaign.daterangepicker.id_for_label }}">{{ campaign.daterangepicker.label }}</label>
                         <div class="input-group col-sm-10">
-                            {{ installation.daterangepicker }}
+                            {{ campaign.daterangepicker }}
                             <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
@@ -120,6 +129,10 @@
                             </div>
                         </div>
                     </div>
+                        
+                    {% endfor %}
+                        
+                    
 
                     <hr>
                     

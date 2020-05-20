@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from app.models import Location, Banner, Installation, Campaign
 from django.conf import settings
+from django.db.models import Max
+import datetime
 
 class InstallationSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField('get_id')
@@ -49,7 +51,14 @@ class LocationSerializer(serializers.ModelSerializer):
         return obj.page.name
 
     def get_installation(self, obj):
-        campaign_obj = Campaign.objects.filter(location_id=obj.id, priority=100)
-        inst_obj = Installation.objects.filter(campaign_id__in=campaign_obj.id)
+        today = datetime.date.today()
+        campaigns = Campaign.objects.filter(location_id=obj.id, valid_date_start__lte=today, valid_date_end__gte=today)
+        
+        if not campaigns:
+            campaign_obj = Campaign.objects.get(location_id=obj.id, priority=0)
+            inst_obj = Installation.objects.get(campaign_id=campaign_obj.id)
+        else:
+            inst_obj = Installation.objects.filter(campaign_id=campaigns.order_by('-priority')[0].id)
+
         serializer = InstallationSerializer(inst_obj, many=True, context=self.context)
         return serializer.data

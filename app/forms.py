@@ -1,6 +1,6 @@
 from django import forms
 from PIL import Image
-from .models import Application, Page, Location, Banner, Installation, User
+from .models import Application, Page, Location, Banner, Installation, Campaign, User
 from django.forms import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
@@ -106,14 +106,29 @@ class BannerForm(forms.ModelForm):
 
         return image
 
+class CampaignForm(forms.ModelForm):
+    daterangepicker = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'oninput': 'load_datepicker(this);'}), label='Tanggal Berlaku', required=False)
+
+    class Meta:
+        model = Campaign
+        fields = ['campaign_code', 'priority']
+        labels = {
+            'campaign_code' : _('Kode Campaign'),
+            'priority' : _('Prioritas Banner'),
+        }
+        widgets = {
+            'campaign_code' : forms.TextInput(attrs={'class' : 'form-control', 'required' : 'true', 'oninput' : 'check_campaign_code_available_add(this);'}),
+            'priority' : forms.NumberInput(attrs={'class' : 'form-control', 'required' : True, 'max' : '100', 'min' : '1', 'onchange': 'check_priority_available(this);', 'oninput': 'check_priority_available(this);'}),
+        }
+
+CampaignFormSet = modelformset_factory(Campaign, form=CampaignForm, extra=1, can_delete=True)
+
 class InstallationForm(forms.ModelForm):
     banner_names = forms.ModelChoiceField(queryset=Banner.objects.filter(is_archived=False), widget=forms.Select(attrs={'class' : 'form-control banner-select', 'onchange' : 'load_banner(this);', 'required' : True}), label='Nama Banner', empty_label='Pilih Banner')
-    campaign_code = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control', 'maxfield' : '30', 'required' : True}), label='Kode Campaign')
-    priority = forms.CharField(widget=forms.NumberInput(attrs={'class' : 'form-control', 'required' : True, 'max' : '100', 'min' : '0'}), label='Prioritas Banner')
-    daterangepicker = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'oninput': 'load_datepicker(this);'}), label='Tanggal Berlaku')
+
     class Meta:
         model = Installation
-        fields = ['banner_names', 'redirect', 'campaign_code', 'priority', 'daterangepicker']
+        fields = ['banner_names', 'redirect']
         labels = {
             'redirect' : _('Link Tujuan Banner'),
         }

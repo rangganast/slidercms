@@ -50,7 +50,7 @@
 </fieldset>
 
 <table id="keywordTable" class="table table-sm table-striped table-bordered">
-    <thead class="thead-dark">
+    <thead>
         <tr>                    
             <th>Keyword</th>
             <th>Jumlah Pencarian</th>
@@ -70,9 +70,8 @@
 {% block script %}
 <script src="{% static 'js/keyword.js' %}"></script>
 <script>
-    $(document).ready(function () {
-        $('a#keywordCounter').addClass('active');
-    });
+    $('#sliderManagement').removeClass('menu-open');
+    $('a#keywordCounter').addClass('active');
 
     $('#datepicker1').datepicker({
         uiLibrary: 'bootstrap4',

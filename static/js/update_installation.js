@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('.daterangefilter').daterangepicker({
+    $('#id_campaign-0-daterangepicker').daterangepicker({
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
             format: 'DD/MM/YYYY'
@@ -22,7 +22,39 @@ $(document).ready(function () {
         theme: 'bootstrap4',
         placeholder: 'Pilih banner',
     });
+
+    if($('#id_priority-value').val() == '0'){
+        $('#id_campaign-0-priority').prop('disabled', true)
+        $('#id_campaign-0-daterangepicker').prop('disabled', true)
+    }
 });
+
+function check_priority_available(input) {
+    var url = $('#installationForm').attr("data-check-priority-url");
+    var id = $(input).attr('id').slice(12, 14);
+    var value = $(input).val();
+
+    if (id.includes('-')) {
+        var id = $(input).attr('id').slice(12, 13);
+    }
+
+    var loc_id = $('#id_location-select-' + id + ' option:selected').val();
+
+    $.ajax({
+        url: url,
+        data: {
+            'loc_id': loc_id,
+            'value': value,
+        },
+        success: function (data) {
+            if (data == 'True') {
+                $('#id_campaign-priority-warning-' + id).show()
+            } else {
+                $('#id_campaign-priority-warning-' + id).hide()
+            }
+        }
+    });
+}
 
 function load_banner(input) {
     var url = $('#installationForm').attr("data-banner-url");

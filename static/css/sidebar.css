@@ -1,3 +1,6 @@
-.nav-link .active {
-  color: #007bff;
+[class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link.active,
+[class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link.active:focus,
+[class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link.active:hover {
+  color: white !important;
+  background-color: #007BFF !important;
 }

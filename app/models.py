@@ -105,15 +105,18 @@ class Banner(models.Model):
 
 class Campaign(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='campaign_location')
-    campaign_code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='locations')
+    campaign_code = models.CharField(max_length=30, null=True, blank=True)
     priority = models.IntegerField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    date_created = models.DateField(null=True, blank=True)
+    date_updated = models.DateField(null=True, blank=True)
     valid_date_start = models.DateField(null=True, blank=True)
     valid_date_end = models.DateField(null=True, blank=True)
 
     def save(self, **kwargs):
         if not self.id:
-            max = Installation.objects.aggregate(id_max=Max('id'))['id_max']
+            max = Campaign.objects.aggregate(id_max=Max('id'))['id_max']
             if max is not None:
                 max = max[-3:]
                 max = int(max)
@@ -125,10 +128,8 @@ class Campaign(models.Model):
 
 class Installation(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
-    banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='banners')
+    banner = models.ForeignKey(Banner, on_delete=models.CASCADE, related_name='banners', blank=True, null=True)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='campaigns')
-    date_created = models.DateField(null=True, blank=True)
-    date_updated = models.DateField(null=True, blank=True)
     redirect = models.URLField(null=True, blank=True)
 
     def save(self, **kwargs):
