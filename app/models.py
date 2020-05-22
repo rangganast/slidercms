@@ -108,7 +108,6 @@ class Campaign(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='locations')
     campaign_code = models.CharField(max_length=30, null=True, blank=True)
     priority = models.IntegerField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
     date_created = models.DateField(null=True, blank=True)
     date_updated = models.DateField(null=True, blank=True)
     valid_date_start = models.DateField(null=True, blank=True)

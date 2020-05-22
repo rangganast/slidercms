@@ -23,7 +23,8 @@ legend.page-border {
 .btn-secondary:hover,
 .btn-secondary:active,
 .btn-secondary:visited,
-.btn-secondary:focus {
+.btn-secondary:focus,
+.btn-secondary:disabled {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }
@@ -32,7 +33,8 @@ legend.page-border {
 .btn-primary:hover,
 .btn-primary:active,
 .btn-primary:visited,
-.btn-primary:focus {
+.btn-primary:focus,
+.btn-primary:disabled {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }
@@ -41,7 +43,8 @@ legend.page-border {
 .btn-danger:hover,
 .btn-danger:active,
 .btn-danger:visited,
-.btn-danger:focus {
+.btn-danger:focus,
+.btn-danger:disabled {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }

@@ -5,7 +5,7 @@
 {% block title %}Update Pengguna{% endblock title %}
 
 {% block style %}
-<link rel="stylesheet" href="{% static 'css/add_banner.css' %}">
+<link rel="stylesheet" href="{% static 'css/update_user.css' %}">
 {% endblock style %}
 
 {% block content %}
@@ -215,9 +215,11 @@
 {% endblock content %}
 
 {% block script %}
-<script src="{% static 'js/add_banner.js' %}"></script>
 
 <script>
+    $('#sliderManagement').removeClass('menu-open');
+    $('a#userManagement').addClass('active');
+
     $('#modalPassword form').submit(function() {
         if($('#newPasswordConfirm').val() != $('#newPasswordInput').val()){
             $('.password-warning-text').show();

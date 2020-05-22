@@ -41,6 +41,7 @@ urlpatterns = [
     path('ajax/check-priority-available-add/', views.check_priority_available_add, name='ajax_check_priority_available_add'),
     path('ajax/check-priority-available-update/', views.check_priority_available_update, name='ajax_check_priority_available_update'),
     path('ajax/check-campaign-code-available-add/', views.check_campaign_code_available_add, name='ajax_check_campaign_code_available_add'),
+    path('ajax/check-campaign-code-available-update/', views.check_campaign_code_available_update, name='ajax_check_campaign_code_available_update'),
     path('ajax/load-pages/', views.load_pages, name='ajax_load_pages'),
     path('ajax/load-locations/', views.load_locations, name='ajax_load_locations'),
     path('ajax/load-banner/', views.load_banner, name='ajax_load_banner'),

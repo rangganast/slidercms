@@ -107,7 +107,7 @@ class BannerForm(forms.ModelForm):
         return image
 
 class CampaignForm(forms.ModelForm):
-    daterangepicker = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'oninput': 'load_datepicker(this);'}), label='Tanggal Berlaku', required=False)
+    daterangepicker = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'oninput': 'load_datepicker(this);', 'disabled' : True}), label='Tanggal Berlaku', required=False)
 
     class Meta:
         model = Campaign
@@ -117,14 +117,14 @@ class CampaignForm(forms.ModelForm):
             'priority' : _('Prioritas Banner'),
         }
         widgets = {
-            'campaign_code' : forms.TextInput(attrs={'class' : 'form-control', 'required' : 'true', 'oninput' : 'check_campaign_code_available_add(this);'}),
-            'priority' : forms.NumberInput(attrs={'class' : 'form-control', 'required' : True, 'max' : '100', 'min' : '1', 'onchange': 'check_priority_available(this);', 'oninput': 'check_priority_available(this);'}),
+            'campaign_code' : forms.TextInput(attrs={'class' : 'form-control campaign-campaign_code', 'required' : 'true', 'oninput' : 'check_campaign_code_available(this);', 'disabled' : True}),
+            'priority' : forms.NumberInput(attrs={'class' : 'form-control campaign-priority', 'required' : True, 'max' : '100', 'min' : '1', 'onchange': 'check_priority_available(this);', 'oninput': 'check_priority_available(this);', 'disabled' : True}),
         }
 
 CampaignFormSet = modelformset_factory(Campaign, form=CampaignForm, extra=1, can_delete=True)
 
 class InstallationForm(forms.ModelForm):
-    banner_names = forms.ModelChoiceField(queryset=Banner.objects.filter(is_archived=False), widget=forms.Select(attrs={'class' : 'form-control banner-select', 'onchange' : 'load_banner(this);', 'required' : True}), label='Nama Banner', empty_label='Pilih Banner')
+    banner_names = forms.ModelChoiceField(queryset=Banner.objects.filter(is_archived=False), widget=forms.Select(attrs={'class' : 'form-control banner-select', 'onchange' : 'load_banner(this);', 'required' : True, 'disabled' : True}), label='Nama Banner', empty_label='Pilih Banner')
 
     class Meta:
         model = Installation

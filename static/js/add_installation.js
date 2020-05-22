@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    $('#sliderManagement').addClass('menu-open');
+    $('a#installManagement').addClass('active');
+
     $('#id_campaign-0-daterangepicker').daterangepicker({
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
@@ -74,33 +77,50 @@ $('#page_select').change(function () {
 
 });
 
-function check_campaign_code_available_add(input){
-    // var url = $('#installationForm').attr("data-check-campaign_code-url");
-    // var id = $(input).attr('id').slice(12, 14);
-    // var app_id = $('#app_select option:selected').val();
-    // var value = $(input).val();
-    
-    // if (id.includes('-')) {
-    //     var id = $(input).attr('id').slice(12, 13);
-    // }
+function check_campaign_code_available(input) {
+    var url = $('#installationForm').attr("data-check-campaign_code-url");
+    var id = $(input).attr('id').slice(12, 14);
+    var value = $(input).val();
 
-    // console.log(value)
-    
-    // $.ajax({
-    //     url: url,
-    //     data: {
-    //         'app_id': app_id,
-    //         'value' : value,
-    //     },
-    //     success: function (data) {
-    //         console.log(data);
-    //         if(data == 'True'){
-    //             $('#id_campaign-code-warning-' + id).show()
-    //         }else{
-    //             $('#id_campaign-code-warning-' + id).hide()
-    //         }
-    //     }
-    // });
+    if (id.includes('-')) {
+        var id = $(input).attr('id').slice(12, 13);
+    }
+
+    var loc_id = $('#id_location-select-' + id + ' option:selected').val();
+
+    $.ajax({
+        url: url,
+        data: {
+            'loc_id': loc_id,
+            'value': value,
+        },
+        success: function (data) {
+            if (data == 'True') {
+                $('#id_campaign-code-warning-' + id).show();
+                $('button[type="submit"]').prop('disabled', true);
+            } else {
+                if ($('.campaign-campaign_code:not(#' + $(input).attr('id') + ')').length > 0) {
+                    $('.campaign-campaign_code:not(#' + $(input).attr('id') + ')').each(function () {
+                        if ($(this).val() == value) {
+                            $('#id_campaign-code-warning-' + id).show();
+                            $('button[type="submit"]').prop('disabled', true);
+                        } else {
+                            $('#id_campaign-code-warning-' + id).hide();
+                            if($('.code_warning:visible').length === 0 ){
+                                $('button[type="submit"]').prop('disabled', false);
+                            }else{
+                                $('button[type="submit"]').prop('disabled', true);
+
+                            }
+                        }
+                    });
+                } else {
+                    $('#id_campaign-code-warning-' + id).hide();
+                    $('button[type="submit"]').prop('disabled', false);
+                }
+            }
+        }
+    });
 }
 
 function check_priority_available(input){
@@ -122,9 +142,28 @@ function check_priority_available(input){
         },
         success: function (data) {
             if(data == 'True'){
-                $('#id_campaign-priority-warning-' + id).show()
+                $('#id_campaign-priority-warning-' + id).show();
+                $('button[type="submit"]').prop('disabled', true);
             }else{
-                $('#id_campaign-priority-warning-' + id).hide()
+                if ($('.campaign-priority:not(#' + $(input).attr('id') + ')').length > 0) {
+                    $('.campaign-priority:not(#' + $(input).attr('id') + ')').each(function () {
+                        if ($(this).val() == value) {
+                            $('#id_campaign-priority-warning-' + id).show();
+                            $('button[type="submit"]').prop('disabled', true);
+                        }else{
+                            $('#id_campaign-priority-warning-' + id).hide();
+                            if ($('.priority_warning:visible').length === 0) {
+                                $('button[type="submit"]').prop('disabled', false);
+                            } else {
+                                $('button[type="submit"]').prop('disabled', true);
+
+                            }
+                        }
+                    });
+                }else{
+                    $('#id_campaign-priority-warning-' + id).hide();
+                    $('button[type="submit"]').prop('disabled', false);
+                }
             }
         }
     });
@@ -181,6 +220,16 @@ function load_size(input) {
 
     var prev = $('#id_location-previous-value-' + id).val();
 
+    if (location_id) {
+        $('#id_install-' + id + '-fieldset').find('#id_campaign-' + id + '-campaign_code').prop('disabled', false);
+        $('#id_install-' + id + '-fieldset').find('#id_campaign-' + id + '-priority').prop('disabled', false);
+        $('#id_install-' + id + '-fieldset').find('#id_campaign-' + id + '-daterangepicker').prop('disabled', false);
+        $('#id_install-' + id + '-fieldset').find('.banner-select').prop('disabled', false);
+        $('#id_install-' + id + '-fieldset').find('#id_banner-' + id + '-is_redirect_0').prop('disabled', false);
+        $('#id_install-' + id + '-fieldset').find('#id_banner-' + id + '-is_redirect_1').prop('disabled', false);
+        $('#id_install-' + id + '-fieldset').find('#id_banner-add-' + id).prop('disabled', false);
+    }
+
     $.ajax({
         url: url,
         data: {
@@ -211,17 +260,17 @@ function load_size(input) {
 
     });
 
-    $('#id_location-previous-value-' + id).val(location_id);
+    // $('#id_location-previous-value-' + id).val(location_id);
 
-    if (location_id) {
-        $('.location-select:not(#' + $(input).attr('id') + ')').each(function () {
-            $(this).find('option[value="' + location_id + '"]').attr('disabled', true);
+    // if (location_id) {
+    //     $('.location-select:not(#' + $(input).attr('id') + ')').each(function () {
+    //         $(this).find('option[value="' + location_id + '"]').attr('disabled', true);
 
-            if (prev !== '') {
-                $(this).find('option[value="' + prev + '"]').attr('disabled', false);
-            }
-        });
-    }
+    //         if (prev !== '') {
+    //             $(this).find('option[value="' + prev + '"]').attr('disabled', false);
+    //         }
+    //     });
+    // }
 }
 
 function cloneInstall(selector){
@@ -245,17 +294,22 @@ function cloneInstall(selector){
     newElement.find('#id_location-select-' + (totalInstall - 1)).attr('id', 'id_location-select-' + totalInstall);
     newElement.find('#id_location-select-' + totalInstall).attr('name', 'location-select-' + totalInstall);
 
-    newElement.find('#id_campaign-priority-warning-' + (totalInstall - 1)).attr('id', 'id_banner-priority-' + totalInstall);
-    newElement.find('#id_campaign-code-warning-' + (totalInstall - 1)).attr('id', 'id_banner-priority-' + totalInstall);
+    newElement.find('#id_campaign-priority-warning-' + (totalInstall - 1)).attr('id', 'id_campaign-priority-warning-' + totalInstall);
+    newElement.find('#id_campaign-code-warning-' + (totalInstall - 1)).attr('id', 'id_campaign-code-warning-' + totalInstall);
 
     newElement.find('#id_campaign-' + (totalInstall - 1) + '-priority').attr('id', 'id_campaign-' + totalInstall + '-priority');
     newElement.find('#id_campaign-' + totalInstall + '-priority').attr('name', 'campaign-' + totalInstall + '-priority');
+    newElement.find('#id_campaign-' + totalInstall + '-priority').val('');
+    newElement.find('#id_campaign-' + totalInstall + '-priority').prop('disabled', true);
 
     newElement.find('#id_campaign-' + (totalInstall - 1) + '-campaign_code').attr('id', 'id_campaign-' + totalInstall + '-campaign_code');
     newElement.find('#id_campaign-' + totalInstall + '-campaign_code').attr('name', 'campaign-' + totalInstall + '-campaign_code');
+    newElement.find('#id_campaign-' + totalInstall + '-campaign_code').val('');
+    newElement.find('#id_campaign-' + totalInstall + '-campaign_code').prop('disabled', true);
 
     newElement.find('#id_campaign-' + (totalInstall - 1) + '-daterangepicker').attr('id', 'id_campaign-' + totalInstall + '-daterangepicker');
     newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').attr('name', 'campaign-' + totalInstall + '-daterangepicker');
+    newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').prop('disabled', true);
 
     newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').daterangepicker({
         cancelButtonClasses: 'btn btn-secondary',
@@ -270,9 +324,9 @@ function cloneInstall(selector){
         }
     });
 
-    newElement.find('#id_location-previous-value-' + (totalInstall - 1)).attr('id', 'id_location-previous-value-' + totalInstall);
-    newElement.find('#id_location-previous-value-' + totalInstall).attr('name', 'location-previous-value-' + totalInstall);
-    newElement.find('#id_location-previous-value-' + totalInstall).val('');
+    // newElement.find('#id_location-previous-value-' + (totalInstall - 1)).attr('id', 'id_location-previous-value-' + totalInstall);
+    // newElement.find('#id_location-previous-value-' + totalInstall).attr('name', 'location-previous-value-' + totalInstall);
+    // newElement.find('#id_location-previous-value-' + totalInstall).val('');
 
     newElement.find('#id_location-is_slider-status-' + (totalInstall - 1)).attr('id', 'id_location-is_slider-status-' + totalInstall);
     newElement.find('#id_location-is_slider-status-' + totalInstall).attr('name', 'location-is_slider-status-' + totalInstall);
@@ -283,7 +337,7 @@ function cloneInstall(selector){
     var forLabel = 'id_location-select-' + (totalInstall - 1);
     newElement.find('label[for="' + forLabel + '"]').attr('for', 'id_location-select-' + totalInstall);
 
-    newElement.find('.banner-select > option').attr('disabled', false);;
+    newElement.find('.banner-select > option').attr('disabled', false);
 
     newElement.find('#id_banner-' + (totalInstall - 1) + '-min').attr('id', 'id_banner-' + totalInstall + '-min');
     newElement.find('#id_banner-' + totalInstall + '-min').attr('name', 'banner-' + totalInstall + '-min');
@@ -292,11 +346,21 @@ function cloneInstall(selector){
     newElement.find('#id_banner-' + totalInstall + '-max').attr('name', 'banner-' + totalInstall + '-max');
     
     newElement.find('#id_banner-add-' + (totalInstall - 1)).attr('id', 'id_banner-add-' + totalInstall);
+    newElement.find('#id_banner-add-' + (totalInstall - 1)).prop('disabled', true);
     newElement.find('#id_banner-delete-' + (totalInstall - 1)).attr('id', 'id_banner-delete-' + totalInstall).hide();
+
+    newElement.find('.banner-select').prop('disabled', true);
+    newElement.find('#id_banner-' + (totalInstall - 1) + '-is_redirect_0').prop('checked', false);
+    newElement.find('#id_banner-' + (totalInstall - 1) + '-is_redirect_0').prop('disabled', true);
+    newElement.find('#id_banner-' + (totalInstall - 1) + '-is_redirect_1').prop('checked', true);
+    newElement.find('#id_banner-' + (totalInstall - 1) + '-is_redirect_1').prop('disabled', true);
+    newElement.find('#id_installation-' + (totalInstall - 1) + '-redirect').hide();
 
     newElement.find('img').attr('src', '');
 
     newElement.find('small:not(.campaign_warning)').html('');
+    newElement.find('.priority_warning').hide();
+    newElement.find('.code_warning').hide();
 
     newElement.find('.banner-div').not(':first').remove();
 

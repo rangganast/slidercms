@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    $('#sliderManagement').addClass('menu-open');
+    $('a#installManagement').addClass('active');
+
     $('#id_campaign-0-daterangepicker').daterangepicker({
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
@@ -22,6 +25,11 @@ $(document).ready(function () {
         theme: 'bootstrap4',
         placeholder: 'Pilih banner',
     });
+    
+    $('#id_campaign-0-campaign_code').prop('disabled', false);
+    $('#id_campaign-0-priority').prop('disabled', false);
+    $('#id_campaign-0-daterangepicker').prop('disabled', false);
+    $('.banner-select').prop('disabled', false);
 
     if($('#id_priority-value').val() == '0'){
         $('#id_campaign-0-priority').prop('disabled', true)
@@ -29,10 +37,11 @@ $(document).ready(function () {
     }
 });
 
-function check_priority_available(input) {
-    var url = $('#installationForm').attr("data-check-priority-url");
+function check_campaign_code_available(input) {
+    var url = $('#installationForm').attr("data-check-campaign_code-url");
     var id = $(input).attr('id').slice(12, 14);
     var value = $(input).val();
+    var default_value = $('#id_campaign_code-value').val()
 
     if (id.includes('-')) {
         var id = $(input).attr('id').slice(12, 13);
@@ -45,12 +54,46 @@ function check_priority_available(input) {
         data: {
             'loc_id': loc_id,
             'value': value,
+            'default_value': default_value,
         },
         success: function (data) {
             if (data == 'True') {
-                $('#id_campaign-priority-warning-' + id).show()
+                $('#id_campaign-code-warning-' + id).show();
+                $('button[type="submit"]').prop('disabled', true);
             } else {
-                $('#id_campaign-priority-warning-' + id).hide()
+                $('#id_campaign-code-warning-' + id).hide();
+                $('button[type="submit"]').prop('disabled', false);
+            }
+        }
+    });
+}
+
+function check_priority_available(input) {
+    var url = $('#installationForm').attr("data-check-priority-url");
+    var id = $(input).attr('id').slice(12, 14);
+    var value = $(input).val();
+    var default_value = $('#id_priority-value').val()
+
+    if (id.includes('-')) {
+        var id = $(input).attr('id').slice(12, 13);
+    }
+
+    var loc_id = $('#id_location-select-' + id + ' option:selected').val();
+
+    $.ajax({
+        url: url,
+        data: {
+            'loc_id': loc_id,
+            'value': value,
+            'default_value': default_value,
+        },
+        success: function (data) {
+            if (data == 'True') {
+                $('#id_campaign-priority-warning-' + id).show();
+                $('button[type="submit"]').prop('disabled', true);
+            } else {
+                $('#id_campaign-priority-warning-' + id).hide();
+                $('button[type="submit"]').prop('disabled', false);
             }
         }
     });

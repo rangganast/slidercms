@@ -1,5 +1,29 @@
 {% load static %}
-    
+
+<style>
+    .wrapper-icon {
+        display: flex;
+        height: 50%;
+        margin-top:-11px;
+    }
+    .wrapper-icon p {
+        margin:0;
+        padding:0;
+    }
+    .icon-update-profile{
+        background-color: lightgrey;
+        width: 300px;
+        padding: 50px;
+    }
+
+    .spanFormat {
+        text-align: left;
+        display: table-cell;
+        min-width: 10px;
+        padding-right: 10px;
+    }
+</style>
+
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-light">
     <!-- Left navbar links -->
@@ -10,12 +34,76 @@
     </ul>
 
     <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">     
-        <!-- <li class="nav-item">
-            <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
-                <i class="fas fa-th-large"></i>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
+                <div class="wrapper-icon">
+                    <div class="icon mr-2">
+                        <i class="fas fa-2x fa-user-circle mt-2"></i>
+                    </div>
+                    <div class="">
+                        <p>
+                            <strong>
+                                {% if request.user.is_superuser == True %}
+                                    Super Admin
+                                {% endif %}
+                                
+                                {% if request.user.is_marketing == True %}
+                                   Marketing 
+                                {% endif %}
+                                
+                                {% if request.user.is_developer == True %}
+                                    Developer
+                                {% endif %}
+                                <i class="fa fa-caret-down"></i>
+                            </strong>
+                        </p>
+                        <p style="margin-bottom: 100px; !important">{{ request.user.username }}</p>
+                    </div>
+                </div>
             </a>
-        </li> -->
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
+                <div class="icon-update-profile text-center">
+                    <i class="fas fa-6x fa-user-circle"></i>
+                    <p>
+                        <strong>
+                            {% if request.user.is_superuser == True %}
+                            Super Admin
+                            {% endif %}
+                            
+                            {% if request.user.is_marketing == True %}
+                            Marketing
+                            {% endif %}
+                            
+                            {% if request.user.is_developer == True %}
+                            Developer
+                            {% endif %}
+                        </strong>
+                    </p>
+                    <p>
+                        {{ request.user.username }}
+                    </p>
+                    <div class="mt-4 mb-4">
+                        <table>
+                            <tr>
+                                <form action="{% url 'app:update_user' %}" method="GET">
+                                    <button type="submit" class="btn btn-primary float-left">Profile</button>
+                                </form>
+                            </tr>
+                            <tr>
+                                <button type="submit" class="btn btn-danger float-right" onclick="logout();">Keluar</button>
+                            </tr>
+                        </table>
+
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </li>
     </ul>
 </nav>
 <!-- /.navbar -->
+
+
+<script src="{% static 'js/navbar.js' %}"></script>
+    

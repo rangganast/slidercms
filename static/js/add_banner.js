@@ -1,3 +1,8 @@
+$(document).ready(function(){
+    $('#sliderManagement').addClass('menu-open');
+    $('a#bannerManagement').addClass('active');
+});
+
 function upload_img(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();

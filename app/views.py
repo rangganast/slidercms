@@ -246,11 +246,18 @@ class BannerView(View):
         contents = []
 
         for i in range(len(banners)):
-            contents.append({'id': banners[i].id, 'name': banners[i].name, 'description': banners[i].description, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].image, 'is_archived': banners[i].is_archived, 'is_active': None})
+            contents.append({'id': banners[i].id, 'name': banners[i].name, 'description': banners[i].description, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].image, 'is_archived': banners[i].is_archived, 'is_active': False})
             for installation in installations:
                 if installation['banner_id'] == banners[i].id:
                     campaign = Campaign.objects.get(pk=installation['campaign_id'])
-                    contents[i]['is_active'] = campaign.is_active
+                    campaigns = Campaign.objects.filter(location_id=campaign.location_id).order_by('-priority')
+
+                    print('campaign priority ' + str(campaign.priority))
+                    print('campaigns priority ' + str(campaigns[0].priority))
+
+                    if campaign.priority == campaigns[0].priority:
+                        contents[i]['is_active'] = True
+
 
         context = {
             'contents': contents,
@@ -938,28 +945,42 @@ class KeywordListPage(View):
         return render(request, self.template_name, context)
 
 @login_required
+@marketing_required
+@superuser_required
 def check_campaign_code_available_add(request):
-    app_id = request.GET.get('app_id')
+    loc_id = request.GET.get('loc_id')
     value = request.GET.get('value')
     check = False
 
-    print(value)
-    print(app_id)
-
-    if value == '':
-        return HttpResponse(check)
-
-    pages = Page.objects.filter(application_id=app_id)
-    locations = Location.objects.filter(page_id__in=pages)
-
-    if Campaign.objects.filter(location_id__in=locations, campaign_code=value).exists():
+    if Campaign.objects.filter(location_id=loc_id, campaign_code=value).exists():
         check = True
     else:
-        check
+        check = False
 
     return HttpResponse(check)
 
 @login_required
+@marketing_required
+@superuser_required
+def check_campaign_code_available_update(request):
+    loc_id = request.GET.get('loc_id')
+    value = request.GET.get('value')
+    default_value = request.GET.get('default_value')
+    check = False
+
+    if value == '':
+        return HttpResponse(check)
+
+    if Campaign.objects.filter(location_id=loc_id, campaign_code=value).exclude(campaign_code=default_value).exists():
+        check = True
+    else:
+        check = False
+
+    return HttpResponse(check)
+
+@login_required
+@marketing_required
+@superuser_required
 def check_priority_available_add(request):
     loc_id = request.GET.get('loc_id')
     value = request.GET.get('value')
@@ -976,18 +997,21 @@ def check_priority_available_add(request):
     return HttpResponse(check)
 
 @login_required
+@marketing_required
+@superuser_required
 def check_priority_available_update(request):
     loc_id = request.GET.get('loc_id')
     value = request.GET.get('value')
+    default_value = request.GET.get('default_value')
     check = False
 
     if value == '':
         return HttpResponse(check)
 
-    if Campaign.objects.filter(location_id=loc_id, priority=int(value)).exists():
+    if Campaign.objects.filter(location_id=loc_id, priority=int(value)).exclude(priority=int(default_value)).exists():
         check = True
     else:
-        check
+        check = False
 
     return HttpResponse(check)
 

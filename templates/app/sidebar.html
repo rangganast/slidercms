@@ -8,7 +8,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="{% url 'app:home' %}" class="brand-link">
-
+        <strong class="ml-4">Admin Holahalo</strong>
     </a>
 
     <!-- Sidebar -->
@@ -39,7 +39,7 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-calendar-alt"></i>
                         <p>
-                            Manajemen Slider
+                            Manajemen Campaign
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -69,14 +69,6 @@
                         <i class="nav-icon fas fa-user"></i>
                         <p>
                             Manajemen Pengguna
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="logout();">
-                        <i class="nav-icon fas fa-sign-out-alt"></i>
-                        <p>
-                            Logout
                         </p>
                     </a>
                 </li>
@@ -208,5 +200,3 @@
     <!-- /.sidebar -->
 </aside>
 {% endif %}
-
-<script src="{% static 'js/sidebar.js' %}"></script>

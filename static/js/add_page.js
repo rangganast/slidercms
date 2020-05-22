@@ -1,3 +1,23 @@
+$(document).ready(function () {
+    $('#sliderManagement').addClass('menu-open');
+    $('a#pageManagement').addClass('active');
+
+    $('#id_names').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih aplikasi',
+    });
+
+    $('#id_names').change(function () {
+        $('.page-name').prop('disabled', false);
+        //$('#id_location-0-is_slider_0').prop('disabled', false);
+        //$('#id_location-0-is_slider_1').prop('disabled', false);
+        //$('#id_location-0-name').prop('disabled', false);
+        //$('#id_location-0-width').prop('disabled', false);
+        //$('#id_location-0-height').prop('disabled', false);
+        $('#id_page-add-button').prop('disabled', false);
+    });
+});
+
 function clonePage(selector){
     var originalRadio = $(selector).find('input:checked');
 

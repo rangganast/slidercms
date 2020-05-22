@@ -36,7 +36,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ('id', 'name', 'application', 'application_name', 'page', 'page_name', 'is_slider', 'width', 'height', 'banners',)
+        fields = ('id', 'name', 'application', 'application_name', 'page', 'page_name', 'is_slider', 'width', 'height', 'is_active', 'banners',)
 
     def get_application(self, obj):
         return obj.page.application.id
@@ -56,9 +56,9 @@ class LocationSerializer(serializers.ModelSerializer):
         
         if not campaigns:
             campaign_obj = Campaign.objects.get(location_id=obj.id, priority=0)
-            inst_obj = Installation.objects.get(campaign_id=campaign_obj.id)
+            inst_obj = Installation.objects.filter(campaign_id=campaign_obj.id).order_by('id')
         else:
-            inst_obj = Installation.objects.filter(campaign_id=campaigns.order_by('-priority')[0].id)
+            inst_obj = Installation.objects.filter(campaign_id=campaigns.order_by('-priority')[0].id).order_by('id')
 
         serializer = InstallationSerializer(inst_obj, many=True, context=self.context)
         return serializer.data

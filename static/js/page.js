@@ -39,7 +39,20 @@ $('#resetFilter').click(function(){
     $('#app_filter').val('').trigger('change');
     $('#page_filter').val('').trigger('change');
     $('#page_filter').prop('disabled', true);
-    var table = $('#pageTable').DataTable();
+
+    table.destroy()
+
+    table = $('#pageTable').DataTable({
+        bInfo: false,
+        ordering: [
+            [0, "asc"]
+        ],
+        responsive: true,
+        dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
+    })
+
+    $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/page/add_page"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Halaman</button></a></div>');
+
     table.draw();
 })
 

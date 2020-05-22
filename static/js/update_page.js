@@ -1,3 +1,29 @@
+$(document).ready(function () {
+    $('#sliderManagement').addClass('menu-open');
+    $('a#pageManagement').addClass('active');
+
+    $('#id_names').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih aplikasi',
+    });
+
+    $('input').prop('disabled', false);
+
+    $('fieldset:last').remove();
+    $('.page-div:last').remove();
+
+    if ($('fieldset').length == 1) {
+        $('#id_location-delete-0').hide();
+    }
+
+    $('#id_page-TOTAL_FORMS').val(1);
+    var totalLocation = $('#id_location-TOTAL_FORMS').val();
+    var totalLocation = Number(totalLocation);
+    var totalLocation = totalLocation - 1;
+
+    $('#id_location-TOTAL_FORMS').val(totalLocation);
+});
+
 function cloneLocation() {
 
     var totalLocation = $('#id_location-TOTAL_FORMS').val();

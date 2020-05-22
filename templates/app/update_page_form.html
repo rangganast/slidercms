@@ -115,36 +115,5 @@
 </form>
 {% endblock content %}
 
-{% block script %}
-
-<script src="{% static 'js/update_page.js' %}"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#id_names').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih aplikasi',
-        });
-
-        $('input').prop('disabled', false);
-
-        $('fieldset:last').remove();
-        $('.page-div:last').remove();
-    
-        if ($('fieldset').length == 1) {
-            $('#id_location-delete-0').hide();
-        }
-        
-        $('#id_page-TOTAL_FORMS').val(1);
-        var totalLocation = $('#id_location-TOTAL_FORMS').val();
-        var totalLocation = Number(totalLocation);
-        var totalLocation = totalLocation - 1;
-    
-        $('#id_location-TOTAL_FORMS').val(totalLocation);
-    })
-</script>
-    
-{% endblock script %}
+{% block script %}<script src="{% static 'js/update_page.js' %}"></script>{% endblock script %}
     

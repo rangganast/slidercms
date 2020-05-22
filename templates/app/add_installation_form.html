@@ -82,7 +82,7 @@
                             <input id="id_banner-0-min" name="banner-0-min" type="hidden" value="0">
                             <input id="id_banner-0-max" name="banner-0-max" type="hidden" value="0">
                         </div>
-                        <input type="hidden" id="id_location-previous-value-0" name="location-previous-value-0" value="">
+                        <!-- <input type="hidden" id="id_location-previous-value-0" name="location-previous-value-0" value=""> -->
                         <input type="hidden" id="id_location-is_slider-status-0" name="location-is_slider-0" value="">
                     </div>
                     
@@ -98,7 +98,7 @@
                         <label class="col-sm-2 col-form-label" for="{{ campaign.campaign_code.id_for_label }}">{{ campaign.campaign_code.label }}</label>
                         <div class="col-sm-10">
                             {{ campaign.campaign_code }}
-                            <small id="id_campaign-code-warning-0" class="campaign_warning" style="color: red; display: none;">Kode Campaign telah digunakan pada aplikasi ini.</small>
+                            <small id="id_campaign-code-warning-0" class="campaign_warning code_warning" style="color: red; display: none;">Kode Campaign telah digunakan pada lokasi ini.</small>
                         </div>
                     </div>
                     
@@ -108,7 +108,7 @@
                             {{ campaign.priority }}
                         </div>
                         <div class="col-sm-9 my-auto">
-                            <small id="id_campaign-priority-warning-0" class="campaign_warning" style="color: red; display: none;">Prioritas ini telah dipakai. Silahkan masukkan angka prioritas yang lain.</small>
+                            <small id="id_campaign-priority-warning-0" class="campaign_warning priority_warning" style="color: red; display: none;">Prioritas ini telah dipakai. Silahkan masukkan angka prioritas yang lain.</small>
                         </div>
                     </div>
                     
@@ -131,9 +131,7 @@
                     </div>
                         
                     {% endfor %}
-                        
                     
-
                     <hr>
                     
                     <div id="banner-div-0" class="banner-div">        
@@ -169,12 +167,12 @@
                                         halaman lain?</label>
                                     <label class="radio-inline" style="color: #007bff;">
                                         <input id="id_banner-0-is_redirect_0" name="banner-0-is_redirect"
-                                            type="radio" class="ml-2" onchange="showRedirect(this);">
+                                            type="radio" class="ml-2" onchange="showRedirect(this);" disabled>
                                         <label for="id_banner-0-is_redirect_0">Ya</label>
                                     </label>
                                     <label class="radio-inline" style="color: #007bff;">
                                         <input id="id_banner-0-is_redirect_1" name="banner-0-is_redirect"
-                                            type="radio" class="ml-2" onchange="hideRedirect(this);" checked>
+                                            type="radio" class="ml-2" onchange="hideRedirect(this);" checked disabled> 
                                         <label for="id_banner-0-is_redirect_1" class="ml-2">Tidak</label>
                                     </label>
                                 </strong>
@@ -192,7 +190,7 @@
                     </div>
 
                     <button id="id_banner-add-0" type="button" class="btn btn-sm btn-primary float-right"
-                        onclick="cloneBanner(this);">Tambah Banner</button>
+                        onclick="cloneBanner(this);" disabled>Tambah Banner</button>
                     <button id="id_banner-delete-0" type="button" class="btn btn-sm btn-danger float-right mr-2"
                         onclick="removeBanner(this);" style="display: none;">Hapus Banner</button>
 

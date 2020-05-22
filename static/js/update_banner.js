@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    $('#sliderManagement').addClass('menu-open');
+    $('a#bannerManagement').addClass('active');
     $('#id_image').removeAttr('required');
 })
 

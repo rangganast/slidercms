@@ -33,7 +33,8 @@ legend.page-border {
 .btn-primary:hover,
 .btn-primary:active,
 .btn-primary:visited,
-.btn-primary:focus {
+.btn-primary:focus,
+.btn-primary:disabled {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }

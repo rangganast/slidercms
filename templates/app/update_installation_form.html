@@ -9,7 +9,8 @@
 {% block content %}
 <form id="installationForm" action="{% url 'app:update_install' pk=campaign.pk %}" method="POST"
     data-banner-url="{% url 'app:ajax_load_banner' %}"
-    data-check-priority-url="{% url 'app:ajax_check_priority_available_update' %}">
+    data-check-priority-url="{% url 'app:ajax_check_priority_available_update' %}"
+    data-check-campaign_code-url="{% url 'app:ajax_check_campaign_code_available_update' %}">
     {% csrf_token %}
 
     {{ formset_installation.management_form }}
@@ -55,13 +56,12 @@
         </div>
 
         <div class="container-fluid mb-5">
-            {% for installation in formset_installation %}
             <fieldset id="id_install-0-fieldset" class="page-border fieldset">
-
+                
                 <legend class="page-border">Detail Lokasi Pemasangan</legend>
-
+                
                 <div class="container">
-
+                    
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" for="id_location-select-0">Nama Lokasi</label>
                         <div class="col-sm-10">
@@ -78,23 +78,30 @@
                             </div>
                         </div>
 
-                    
-                    {% for campaign in formset_campaign %}
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="{{ campaign.campaign_code.id_for_label }}">{{ campaign.campaign_code.label }}</label>
-                        <div class="col-sm-10">
-                            {{ campaign.campaign_code }}
+                        
+                        {% for campaign in formset_campaign %}
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="{{ campaign.campaign_code.id_for_label }}">{{ campaign.campaign_code.label }}</label>
+                            <div class="col-sm-10">
+                                {{ campaign.campaign_code }}
+                                <input id="id_campaign_code-value" type="hidden" value="{{ campaign.campaign_code.value }}">
+                                <small id="id_campaign-code-warning-0" class="campaign_warning code_warning" style="color: red; display: none;">Kode Campaign telah digunakan pada lokasi ini.</small>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="{{ campaign.priority.id_for_label }}">{{ campaign.priority.label }}</label>
+                        
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="{{ campaign.priority.id_for_label }}">{{ campaign.priority.label }}</label>
                         <div class="col-sm-1">
                             {{ campaign.priority }}
                             <input id="id_priority-value" type="hidden" value="{{ campaign.priority.value }}">
                         </div>
+                        <div class="col-sm-9 my-auto">
+                            <small id="id_campaign-priority-warning-0" class="campaign_warning priority_warning"
+                                style="color: red; display: none;">Prioritas ini telah dipakai. Silahkan masukkan angka
+                                prioritas yang lain.</small>
+                        </div>
                     </div>
-
+                    
                     <div class="form-group row mb-4 banner-name">
                         <label class="col-sm-2 col-form-label" for="{{ campaign.daterangepicker.id_for_label }}">{{ campaign.daterangepicker.label }}</label>
                         <div class="input-group col-sm-10">
@@ -107,9 +114,10 @@
                         </div>
                     </div>
                     {% endfor %}
-
+                    
                     <hr>
-                        
+                    
+                    {% for installation in formset_installation %}
                     <div id="banner-div-{{ forloop.counter0 }}" class="banner-div">
                         {{installation.id}}
                         {{installation.DELETE}}
@@ -177,6 +185,7 @@
                         <hr>
 
                     </div>
+                    {% endfor %}
                     
                     <button id="id_banner-add-0" type="button" class="btn btn-sm btn-primary float-right"
                         onclick="cloneBanner();">Tambah Banner</button>
@@ -184,7 +193,6 @@
                 </div>
                 
             </fieldset>
-            {% endfor %}
 
         </div>
 

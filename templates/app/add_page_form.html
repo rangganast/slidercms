@@ -125,28 +125,4 @@
 </div>
 {% endblock content %}
 
-{% block script %}
-<script src="{% static 'js/add_page.js' %}"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#id_names').select2({
-            theme: 'bootstrap4',
-            placeholder: 'Pilih aplikasi',
-        });
-        
-        $('#id_names').change(function () {
-            $('.page-name').prop('disabled', false);
-            //$('#id_location-0-is_slider_0').prop('disabled', false);
-            //$('#id_location-0-is_slider_1').prop('disabled', false);
-            //$('#id_location-0-name').prop('disabled', false);
-            //$('#id_location-0-width').prop('disabled', false);
-            //$('#id_location-0-height').prop('disabled', false);
-            $('#id_page-add-button').prop('disabled', false);
-        });
-    });
-</script>
-    
-{% endblock script %}
+{% block script %}<script src="{% static 'js/add_page.js' %}"></script>{% endblock script %}
