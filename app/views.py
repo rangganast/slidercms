@@ -252,9 +252,6 @@ class BannerView(View):
                     campaign = Campaign.objects.get(pk=installation['campaign_id'])
                     campaigns = Campaign.objects.filter(location_id=campaign.location_id).order_by('-priority')
 
-                    print('campaign priority ' + str(campaign.priority))
-                    print('campaigns priority ' + str(campaigns[0].priority))
-
                     if campaign.priority == campaigns[0].priority:
                         contents[i]['is_active'] = True
 
