@@ -110,7 +110,7 @@
             <td style="vertical-align: middle; text-align: center;">{{content.location}}</td>
             <td style="vertical-align: middle; text-align: center;">{% if content.campaign_code == None %}{% else %}{{content.campaign_code}}{% endif %}</td>
             <td style="vertical-align: middle; text-align: center;">{{content.priority}}</td>
-            <td style="vertical-align: middle; text-align: center;">
+            <td style="vertical-align: middle;">
                 <ul>
                     {% for banner in content.banners %}
                     <li class="table_li">{{banner}}</li>
@@ -120,27 +120,6 @@
             <td style="vertical-align: middle; text-align: center;">{{content.created_date}}</td>
             <td style="vertical-align: middle; text-align: center;">{% if content.updated_date == None %}{% else %}{{content.updated_date}}{% endif %}</td>
             <td style="vertical-align: middle; text-align: center;">{% if content.valid_date == None %}{% else %}{{content.valid_date}}{% endif %}</td>
-            <!-- <td style="text-align:center; vertical-align: middle;">
-                {% if content.is_active == False %}
-                <form id="switch-form-{{forloop.counter}}" method="POST" action="{% url 'app:active_install' pk=content.campaign_id %}">
-                    {% csrf_token %}
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="switch-{{forloop.counter}}"
-                            value="{{content.is_active}}" onchange="active(this);">
-                        <label class="custom-control-label" for="switch-{{forloop.counter}}"></label>
-                    </div>
-                </form>
-                {% else %}
-                <form id="switch-form-{{forloop.counter}}" method="POST" action="{% url 'app:active_install' pk=content.campaign_id %}">
-                    {% csrf_token %}
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="switch-{{forloop.counter}}"
-                            value="{{content.is_active}}" onchange="active(this);" checked>
-                        <label class="custom-control-label" for="switch-{{forloop.counter}}"></label>
-                    </div>
-                </form>
-                {% endif %}
-            </td> -->
             <td style="vertical-align: middle;">
                 <span class="spanFormat">
                     <form action="{% url 'app:detail_install' pk=content.campaign_id %}" method="GET">

@@ -123,6 +123,12 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a id="pageManagement" href="{% url 'app:page' %}" class="nav-link">
+                                <i class="fas fa-file-alt nav-icon"></i>
+                                <p>Manajemen Halaman</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a id="bannerManagement" href="{% url 'app:banner' %}" class="nav-link">
                                 <i class="far fa-file-image nav-icon"></i>
                                 <p>Manajemen Banner</p>
@@ -135,14 +141,6 @@
                             </a>
                         </li>
                     </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="logout();">
-                        <i class="nav-icon fas fa-sign-out-alt"></i>
-                        <p>
-                            Logout
-                        </p>
-                    </a>
                 </li>
             </ul>
         </nav>
@@ -182,14 +180,6 @@
                         <i class="nav-icon fas fa-user"></i>
                         <p>
                             Manajemen Halaman
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="logout();">
-                        <i class="nav-icon fas fa-sign-out-alt"></i>
-                        <p>
-                            Logout
                         </p>
                     </a>
                 </li>

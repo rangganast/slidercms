@@ -123,7 +123,7 @@ function check_campaign_code_available(input) {
     });
 }
 
-function check_priority_available(input){
+function check_priority_available(input) {
     var url = $('#installationForm').attr("data-check-priority-url");
     var id = $(input).attr('id').slice(12, 14);
     var value = $(input).val();
@@ -273,7 +273,7 @@ function load_size(input) {
     // }
 }
 
-function cloneInstall(selector){
+function cloneInstall(selector) {
 
     var originalRadio = $(selector).find('input:checked');
     var originalOption = $(selector).find('select > option:selected').val();
@@ -338,6 +338,8 @@ function cloneInstall(selector){
     newElement.find('label[for="' + forLabel + '"]').attr('for', 'id_location-select-' + totalInstall);
 
     newElement.find('.banner-select > option').attr('disabled', false);
+
+    newElement.find('.banner-previous-value').attr('data-fieldset-id', totalInstall);
 
     newElement.find('#id_banner-' + (totalInstall - 1) + '-min').attr('id', 'id_banner-' + totalInstall + '-min');
     newElement.find('#id_banner-' + totalInstall + '-min').attr('name', 'banner-' + totalInstall + '-min');
@@ -409,7 +411,6 @@ function cloneInstall(selector){
     $('.banner-previous-value').each(function (index) {
         $(this).attr("id", "id_banner-previous-value-" + index);
         $(this).attr("name", "banner-previous-value-" + index);
-        $(this).attr("data-fieldset-id", totalInstall);
     });
 
 

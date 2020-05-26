@@ -59,6 +59,9 @@ function cloneLocation() {
     newElement.find('#id_location-' + (totalLocation - 1) + '-name').attr('name', 'location-' + totalLocation + '-name');
     newElement.find('#id_location-' + (totalLocation - 1) + '-name').val('');
     newElement.find('#id_location-' + (totalLocation - 1) + '-name').attr('id', 'id_location-' + totalLocation + '-name');
+
+    newElement.find('#id_warning-text-location-' + (totalLocation - 1)).hide();
+    newElement.find('#id_warning-text-location-' + (totalLocation - 1)).attr('id', 'id_warning-text-location-' + totalLocation);
     
     newElement.find('.location-name label').attr('for', 'id_location-' + totalLocation + '-name');
 
@@ -147,12 +150,68 @@ function checkSimilarPage(input) {
         success: function (data) {
             if (data == 'True') {
                 $('#id_warning-text-page').hide();
-                $('#submitUpdatePage').prop('disabled', false);
+                if ($('.location-warning-text:visible').length == 0) {
+                    $('#submitUpdatePage').prop('disabled', false);
+                } else {
+                    $('#submitUpdatePage').prop('disabled', true);
+                }
             } else {
                 $('#id_warning-text-page').show();
                 $('#submitUpdatePage').prop('disabled', true);
             }
         }
     });
+}
 
+function checkSimilarLocation(input) {
+    var url = $('#pageForm').attr("data-check-similar-location-url");
+    var inputId = $(input).attr('id');
+    var id = inputId.slice(12, 14);
+    
+    if (id.includes('-')) {
+        var id = inputId.slice(12, 13);
+    }
+    
+    var value = $(input).val();
+    var app_id = $('#id_names').val();
+    var loc_id = $('#id_location-' + id + '-id').val();
+
+    $.ajax({
+        url: url,
+        data: {
+            'value': value,
+            'app_id': app_id,
+            'loc_id': loc_id,
+        },
+        success: function (data) {
+            if (data == 'True') {
+                if ($('.location-name-input:not(#' + inputId + ')').length > 0) {
+                    $('.location-name-input:not(#' + inputId + ')').each(function () {
+                        if ($(this).val() == value) {
+                            $('#id_warning-text-location-' + id).show();
+                            $('#submitUpdatePage').prop('disabled', true);
+                            return false;
+                        } else {
+                            $('#id_warning-text-location-' + id).hide();
+                            if ($('#id_warning-text-page:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                                $('#submitUpdatePage').prop('disabled', false);
+                            } else {
+                                $('#submitUpdatePage').prop('disabled', true);
+                            }
+                        }
+                    });
+                } else {
+                    $('#id_warning-text-location-' + id).hide();
+                    if ($('#id_warning-text-page:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                        $('#submitUpdatePage').prop('disabled', false);
+                    } else {
+                        $('#submitUpdatePage').prop('disabled', true);
+                    }
+                }
+            } else {
+                $('#id_warning-text-location-' + id).show();
+                $('#submitUpdatePage').prop('disabled', true);
+            }
+        }
+    });
 }

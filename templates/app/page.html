@@ -4,7 +4,12 @@
 
 {% block title %}Manajemen Halaman{% endblock title %}
 
-{% block style %}<link rel="stylesheet" href="{% static 'css/page.css' %}">{% endblock style %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/page.css' %}">
+{% if request.user.is_marketing == True %}
+<link rel="stylesheet" href="{% static 'css/page_switch.css' %}">
+{% endif %}
+{% endblock style %}
 
 {% block contentheader %}Manajemen Halaman{% endblock contentheader %}
 
@@ -51,14 +56,18 @@
 
 </fieldset>
 
+{% if request.user.is_superuser == True or request.user.is_developer == True %}
 <table id="pageTable" class="table table-striped table-bordered mt-3">
     <thead>
         <tr>
             <th scope="col">No</th>
             <th scope="col">Nama Aplikasi</th>
             <th scope="col">Nama Halaman</th>
-            <th scope="col">Nama Lokasi Pemasangan</th>
+            <th scope="col" style="width: auto;">Nama Lokasi Pemasangan</th>
             <th scope="col">Ukuran Gambar</th>
+            {% if request.user.is_superuser == True %}
+            <th scope="col">Aktif/Non-Aktif</th>
+            {% endif %}
             <th scope="col">Aksi</th>
         </tr>
     </thead>
@@ -89,10 +98,41 @@
             <td>
                 <ul>
                     {% for size in content.location_sizes %}
-                        <li>{{size}}</li>
+                        <li class="table_li">{{size}}</li>
                     {% endfor %}
                 </ul>
             </td>
+            {% if request.user.is_superuser == True %}
+            <td>
+                <ul>
+                    {% with forloop.counter as start  %}
+                    {% for is_active in content.location_is_active %}
+                    <li>
+                        {% if is_active == False %}
+                        <form id="switch-form-{{start}}-{{forloop.counter}}" method="POST" action="">
+                            {% csrf_token %}
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="switch-{{start}}-{{forloop.counter}}"
+                                value="" onchange="active(this);">
+                                <label class="custom-control-label" for="switch-{{start}}-{{forloop.counter}}"></label>
+                                </div>
+                            </form>
+                        {% else %}
+                        <form id="switch-form-{{start}}-{{forloop.counter}}" method="POST" action="">
+                            {% csrf_token %}
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="switch-{{start}}-{{forloop.counter}}"
+                                value="" onchange="active(this);" checked>
+                                <label class="custom-control-label" for="switch-{{start}}-{{forloop.counter}}"></label>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                    {% endwith %}
+                </ul>
+            </td>
+            {% endif %}
             <td>
                 <span class="spanFormat">
                     <form action="{% url 'app:update_page' pk=content.page_id %}" method="GET">
@@ -123,7 +163,6 @@
                 </span>
 
                 {% endif %}
-
                 
                 {% if request.user.is_superuser == True %}
                                         
@@ -142,7 +181,87 @@
         {% endfor %}
     </tbody>     
 </table>
-    
+{% endif %}
+
+{% if request.user.is_marketing == True %}
+<table id="pageTable" class="table table-striped table-bordered mt-3">
+    <thead>
+        <tr>
+            <th scope="col">No</th>
+            <th scope="col">Nama Aplikasi</th>
+            <th scope="col">Nama Halaman</th>
+            <th scope="col">Nama Lokasi Pemasangan</th>
+            <th scope="col">Ukuran Gambar</th>
+            <th scope="col">Aktif/Non-Aktifkan</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for content in contents %}    
+    {% for is_active in content.location_is_active %}
+    <tr>
+        <td>
+            {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
+            {% with counterSlice=""|add:start|add:":"|add:end  %}
+
+            {% for counter in content.location_counters|slice:counterSlice %}
+                {{counter|add:"1"}}
+            {% endfor %}
+
+            {% endwith %}
+            {% endwith %}
+        </td>
+        <td>{{content.app}}</td>
+        <td>{{content.page_name}}</td>
+        <td>
+            {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
+            {% with nameSlice=""|add:start|add:":"|add:end  %}
+            
+            {% for name in content.location_names|slice:nameSlice %}
+                {{name}}
+            {% endfor %}
+            
+            {% endwith %}
+            {% endwith %}
+        </td>
+        <td>
+            {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
+            {% with sizeSlice=""|add:start|add:":"|add:end  %}
+            
+            {% for size in content.location_sizes|slice:sizeSlice %}
+                {{size}}
+            {% endfor %}
+            
+            {% endwith %}
+            {% endwith %}
+        </td>
+        <td>
+            {% if is_active == False %}
+            <form id="switch-form-{{start}}-{{forloop.counter}}" method="POST" action="">
+                {% csrf_token %}
+                <div class="custom-control custom-switch custom-big-switch">
+                    <input type="checkbox" class="custom-control-input custom-control-switch custom-big-switch-input" id="switch-{{start}}-{{forloop.counter}}" value="" onchange="active(this);">
+                    <label class="custom-control-label custom-big-switch-label" for="switch-{{start}}-{{forloop.counter}}"></label>
+                </div>
+            </form>
+            {% else %}
+            <form id="switch-form-{{start}}-{{forloop.counter}}" method="POST" action="">
+                {% csrf_token %}
+                <div class="custom-control custom-switch custom-big-switch">
+                    <input type="checkbox" class="custom-control-input custom-big-switch-input" id="switch-{{start}}-{{forloop.counter}}" value="" onchange="active(this);" checked>
+                    <label class="custom-control-label custom-big-switch-label" for="switch-{{start}}-{{forloop.counter}}"></label>
+                </div>
+            </form>
+            {% endif %}
+        </td>
+    </tr>
+        
+    {% endfor %}
+    {% endfor %}
+    </tbody>     
+</table>
+{% endif %}
+
 {% endblock content %}
 
 {% block script %}

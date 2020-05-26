@@ -10,7 +10,8 @@
     
 {% block content %}
 <form id="pageForm" method="POST" action="{% url 'app:update_page' pk=page.id %}"
-    data-check-similar-page-url="{% url 'app:ajax_check_similar_page_update' %}">
+    data-check-similar-page-url="{% url 'app:ajax_check_similar_page_update' %}"
+    data-check-similar-location-url="{% url 'app:ajax_check_similar_location_update' %}">
     {% csrf_token %}
 
     {{ formset_page.management_form }}
@@ -88,7 +89,11 @@
 
                         <div class="form-group row location-name">
                             <label class="col-sm-3 col-form-label" for="{{ location.name.id_for_label }}">{{ location.name.label }}</label>
-                            <div class="col-sm-9">{{ location.name }}</div>
+                            <div class="col-sm-9">
+                                {{ location.name }}
+                                <small id="id_warning-text-location-{{ forloop.counter0 }}" class="location-warning-text" style="color: red; display: none;">
+                                    Nama Lokasi telah dipakai. Silahkan masukkan nama lain.</small>
+                            </div>
                         </div>
 
                         <div class="form-group row location-size">

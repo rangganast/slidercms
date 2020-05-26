@@ -25,7 +25,6 @@ urlpatterns = [
 
     path('installation/', views.InstallationView.as_view(), name='install'),
     path('installation/add_installation/', views.AddInstallationView.as_view(), name='add_install'),
-    path('installation/active_installation/<str:pk>/', views.ActiveInstallationView.as_view(), name='active_install'),
     path('installation/detail_installation/<str:pk>/', views.DetailInstallationView.as_view(), name='detail_install'),
     path('installation/update_installation/<str:pk>/', views.UpdateInstallationView.as_view(), name='update_install'),
     path('installation/delete_installation/<str:pk>/', views.DeleteInstallationView.as_view(), name='delete_install'),
@@ -48,7 +47,8 @@ urlpatterns = [
     path('ajax/load-location-size/', views.load_location_size, name='ajax_load_location_size'),
     path('ajax/check-similar-page-add/', views.check_similar_page_add, name='ajax_check_similar_page_add'),
     path('ajax/check-similar-page-update/', views.check_similar_page_update, name='ajax_check_similar_page_update'),
-    path('ajax/check-similar-location/', views.check_similar_location_add, name='ajax_check_similar_location_add'),
+    path('ajax/check-similar-location-add/', views.check_similar_location_add, name='ajax_check_similar_location_add'),
+    path('ajax/check-similar-location-update/', views.check_similar_location_update, name='ajax_check_similar_location_update'),
 
     path('login/', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

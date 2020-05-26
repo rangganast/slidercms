@@ -14,30 +14,34 @@ from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, Ca
 from .models import Application, Page, Location, Banner, Campaign, Installation, User
 
 # Create your views here.
-@method_decorator([login_required, developer_required], name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class PageView(View):
     template_name = 'app/page.html'
 
     def get(self, request):
         apps = Application.objects.all().order_by('name')
         pages = Page.objects.all().order_by('pk')
-        locations = Location.objects.all().order_by('pk')
+        locations = Location.objects.all().order_by('page_id')
         campaigns = Campaign.objects.all().order_by('pk')
 
         contents = []
 
         for i in range(len(pages)):
-            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_ids' : [], 'location_names' : [], 'location_sizes' : [], 'location_is_active': []})
+            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_counters' : [], 'location_ids' : [], 'location_names' : [], 'location_sizes' : [], 'location_is_active': [], 'is_active' : True})
             for app in apps:
                 if pages[i].application_id == app.id:
                     contents[i]['app'] = app.name
             
-            for location in locations:
-                if location.page_id == pages[i].id:
-                    contents[i]['location_ids'].append(location.id)
-                    contents[i]['location_names'].append(location.name)
-                    contents[i]['location_sizes'].append(str(location.width) + " x " + str(location.height))
-                    contents[i]['location_is_active'].append(location.is_active)
+            for j in range(len(locations)):
+                if locations[j].page_id == pages[i].id:
+                    contents[i]['location_counters'].append(j)
+                    contents[i]['location_ids'].append(locations[j].id)
+                    contents[i]['location_names'].append(locations[j].name)
+                    contents[i]['location_sizes'].append(str(locations[j].width) + " x " + str(locations[j].height))
+                    contents[i]['location_is_active'].append(locations[j].is_active)
+
+                    if locations[j].is_active == False:
+                        contents[i]['is_active'] = False
 
         context = {
             'contents' : contents,
@@ -685,26 +689,6 @@ class DetailInstallationView(View):
         return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
-class ActiveInstallationView(View):
-    def post(self, request, pk):
-        campaign_instance = Campaign.objects.get(pk=pk)
-
-        if campaign_instance.is_active == True:
-            campaign_instance.is_active = False
-            campaign_instance.save()
-
-            messages.add_message(request, messages.INFO, "Pemasangan berhasil dinonaktifkan!", extra_tags="install_activated")
-
-            return HttpResponseRedirect(reverse('app:install'))
-        else:
-            campaign_instance.is_active = True
-            campaign_instance.save()
-
-            messages.add_message(request, messages.INFO, "Pemasangan berhasil diaktifkan!", extra_tags="install_unactivated")
-
-            return HttpResponseRedirect(reverse('app:install'))
-
-@method_decorator([login_required, marketing_required], name='dispatch')
 class DeleteInstallationView(View):
     def post(self, request, pk):
         installation_instances = Installation.objects.filter(campaign_id=pk)
@@ -770,6 +754,8 @@ class AddUserView(View):
             email = form_user.cleaned_data['email']
             username = form_user.cleaned_data['username']
             password = form_user.cleaned_data['password']
+
+            print(email)
 
             if role == '1':
                 user_instance = User(email=email, username=username, is_developer=True)
@@ -1063,13 +1049,26 @@ def check_similar_page_update(request):
 @login_required
 def check_similar_location_add(request):
     value = request.GET.get('value')
-    # page_value = request.GET.get('page_value')
-    # app_value = request.GET.get('app_value')
+    app_value = request.GET.get('app_value')
     check = True
 
-    # page = Page.objects.filter(name=page_value, application_id=app_value)
+    pages = Page.objects.filter(application_id=app_value)
 
-    if Location.objects.filter(name=value).exists():
+    if Location.objects.filter(name=value, page_id__in=pages).exists():
+        check = False
+
+    return HttpResponse(check)
+
+@login_required
+def check_similar_location_update(request):
+    value = request.GET.get('value')
+    app_id = request.GET.get('app_id')
+    loc_id = request.GET.get('loc_id')
+    check = True
+
+    pages = Page.objects.filter(application_id=app_id)
+
+    if Location.objects.filter(name=value, page_id__in=pages).exclude(id=loc_id).exists():
         check = False
 
     return HttpResponse(check)

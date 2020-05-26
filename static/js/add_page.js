@@ -263,6 +263,7 @@ function cloneLocation(input) {
 
     newElement.find('input:checked').prop('checked', false);
     newElement.find('input:not(:radio)').val('');
+    newElement.find('.location-name small').hide();
 
     $(selector).after(newElement);
 
@@ -451,58 +452,63 @@ function removeLocation(input) {
 
 }
 
-// function checkSimilarLocation(input) {
-//     var url = $('#pageForm').attr("data-check-similar-location-url");
-//     var value = $(input).val();
-//     var fieldset = $(input).parent().parent().parent().parent().parent();
+function checkSimilarLocation(input) {
+    var url = $('#pageForm').attr("data-check-similar-location-url");
+    var value = $(input).val();
+    var fieldset = $(input).parent().parent().parent().parent().parent();
+    var app_value = $('#id_names').val();
 
-//     var fieldId = fieldset.attr('id').slice(8, 10)
+    var fieldId = fieldset.attr('id').slice(8, 10)
 
-//     if(fieldId.includes('-')) {
-//        var fieldId = fieldset.attr('id').slice(8, 9);
-//     }
+    if(fieldId.includes('-')) {
+       var fieldId = fieldset.attr('id').slice(8, 9);
+    }
 
-//     var page_value = $('#id_page-' + fieldId + '-name')
-//     var app_value = $('#id_names').val();
+    var inputId = $(input).attr('id');
+    var id = inputId.slice(12, 14);
 
-//     var inputId = $(input).attr('id');
-//     var id = inputId.slice(12, 14);
+    if (id.includes('-')) {
+        var id = inputId.slice(12, 13);
+    }
 
-//     if (id.includes('-')) {
-//         var id = inputId.slice(12, 13);
-//     }
-
-//     $.ajax({
-//         url: url,
-//         data: {
-//             'value': value,
-//             //'page_value' : page_value,
-//             //'app_value' : app_value,
-//         },
-//         success: function (data) {
-//             if (data == 'True') {
-//                 if ($('.location-name-input:not(#' + inputId + ')').length > 0) {
-//                     $('.location-name-input:not(#' + inputId + ')').each(function () {
-//                         if ($(this).val() == value) {
-//                             $('#id_warning-text-location-' + id).show();
-//                             $('#submitAddPage').prop('disabled', true);
-//                             return false;
-//                         } else {
-//                             $('#id_warning-text-location-' + id).hide();
-//                             $('#submitAddPage').prop('disabled', false);
-//                         }
-//                     });
-//                 } else {
-//                     $('#id_warning-text-location-' + id).hide();
-//                     $('#submitAddPage').prop('disabled', false);
-//                 }
-//             } else {
-//                 $('#id_warning-text-location-' + id).show();
-//                 $('#submitAddPage').prop('disabled', true);
-//             }
-//         }
-//     });
-// }
+    $.ajax({
+        url: url,
+        data: {
+            'value': value,
+            'app_value' : app_value,
+        },
+        success: function (data) {
+            if (data == 'True') {
+                if ($('.location-name-input:not(#' + inputId + ')').length > 0) {
+                    $('.location-name-input:not(#' + inputId + ')').each(function () {
+                        if ($(this).val() == value) {
+                            $('#id_warning-text-location-' + id).show();
+                            $('#submitAddPage').prop('disabled', true);
+                            return false;
+                        } else {
+                            $('#id_warning-text-location-' + id).hide();
+                            if($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0){
+                                $('#submitAddPage').prop('disabled', false);
+                            }else{
+                                $('#submitAddPage').prop('disabled', true);
+                            }
+                        }
+                    });
+                } else {
+                    $('#id_warning-text-location-' + id).hide();
+                    if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                        $('#submitAddPage').prop('disabled', false);
+                    } else {
+                        $('#submitAddPage').prop('disabled', true);
+                    }
+                }
+            } else {
+                $('#id_warning-text-location-' + id).show();
+                $('#submitAddPage').prop('disabled', true);
+            }
+        }
+    });
+}
 
 function checkSimilarPage(input) {
 
@@ -539,12 +545,20 @@ function checkSimilarPage(input) {
                             return false;
                         } else {
                             $('#id_warning-text-page-' + id).hide();
-                            $('#submitAddPage').prop('disabled', false);
+                            if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                                $('#submitAddPage').prop('disabled', false);
+                            }else{
+                                $('#submitAddPage').prop('disabled', true);
+                            }
                         }
                     });
                 } else {
                     $('#id_warning-text-page-' + id).hide();
-                    $('#submitAddPage').prop('disabled', false);
+                    if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                        $('#submitAddPage').prop('disabled', false);
+                    } else {
+                        $('#submitAddPage').prop('disabled', true);
+                    }
                 }
 
             } else {

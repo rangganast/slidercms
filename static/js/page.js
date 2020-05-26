@@ -56,6 +56,65 @@ $('#resetFilter').click(function(){
     table.draw();
 })
 
+function active(input) {
+    var pk = $(input).attr('id');
+    var pk = pk.slice(-1);
+    var value = $(input).attr('value');
+
+    if (value == 'True') {
+        Swal.fire({
+            title: 'Nonaktivasi Pemasangan Banner',
+            icon: 'info',
+            html: 'Anda yakin ingin menonaktifkan pemasangan banner ini?',
+            showCancelButton: true,
+            showCloseButton: true,
+            focusConfirm: false,
+            cancelButtonText: 'Tidak',
+            cancelButtonClass: 'btn btn-secondary',
+            confirmButtonText: 'Ya',
+            confirmButtonClass: 'btn btn-primary',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                $('#switch-form-' + pk).submit();
+            } else {
+                if ($('#switch-' + pk + ':checked').length > 0) {
+                    $('#switch-' + pk).prop('checked', false)
+                } else {
+                    $('#switch-' + pk).prop('checked', true)
+                }
+            }
+        });
+
+    } else {
+        Swal.fire({
+            title: 'Aktivasi Pemasangan Banner',
+            icon: 'info',
+            html: 'Anda yakin ingin mengaktifkan pemasangan banner ini?',
+            showCancelButton: true,
+            showCloseButton: true,
+            focusConfirm: false,
+            cancelButtonText: 'Tidak',
+            cancelButtonClass: 'btn btn-secondary',
+            confirmButtonText: 'Ya',
+            confirmButtonClass: 'btn btn-primary',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                $('#switch-form-' + pk).submit();
+            } else {
+                if ($('#switch-' + pk + ':checked').length > 0) {
+                    $('#switch-' + pk).prop('checked', false)
+                } else {
+                    $('#switch-' + pk).prop('checked', true)
+                }
+            }
+        });
+
+    }
+
+};
+
 function archive(input) {
     var pk = $(input).attr('id').split('-')[0];
     Swal.fire({

@@ -1,3 +1,8 @@
+.select2-results .select2-disabled,
+.select2-results__option[aria-disabled=true] {
+    display: none;
+}
+
 input[type=checkbox] {
     display: none;
 }

@@ -9,6 +9,14 @@ $(document).ready(function () {
         }
     });
 
+    $('.banner-select').each(function (){
+        var thisId = $(this).attr('id');
+        $('.banner-select:not(#' + thisId + ')').each(function () {
+            var value = $(this).find('option:selected').val();
+            $('#' + thisId).find('option[value="' + value + '"]').prop('disabled', true);
+        });
+    });
+    
     $('#app_select').select2({
         theme: 'bootstrap4',
         placeholder: 'Pilih aplikasi',
@@ -25,13 +33,26 @@ $(document).ready(function () {
         theme: 'bootstrap4',
         placeholder: 'Pilih banner',
     });
-    
+
     $('#id_campaign-0-campaign_code').prop('disabled', false);
     $('#id_campaign-0-priority').prop('disabled', false);
     $('#id_campaign-0-daterangepicker').prop('disabled', false);
     $('.banner-select').prop('disabled', false);
 
-    if($('#id_priority-value').val() == '0'){
+    if($('.banner-div').length > 1){
+        if($('#location-is_slider').val() == 'True') {
+            $('.delete-btn').hide();
+        }
+    }else{
+        $('.delete-btn').hide();
+    }
+
+    if($('#id_priority-value').val() == '0') {
+        if($('#location-is_slider').val() == 'True') {
+            $('#id_banner-add-0').click();
+            $('.delete-btn').hide();
+        }
+
         $('#id_campaign-0-priority').prop('disabled', true)
         $('#id_campaign-0-daterangepicker').prop('disabled', true)
     }
@@ -108,17 +129,33 @@ function load_banner(input) {
         var id = $(input).attr('id').slice(16, 17);
     }
 
+    var prev = $('#id_banner-previous-value-' + id).val();
+
     $.ajax({
         url: url,
         data: {
             'banner_id': banner_id
         },
         success: function (data) {
-            // var imageUrl = 'http://127.0.0.1:8000' + data;
-            var imageUrl = 'https://banner-slider-qa.holahalo.dev' + data;
+            var arr = data.split(',')
+            // var imageUrl = 'http://127.0.0.1:8000' + arr[1];
+            var imageUrl = 'https://banner-slider-qa.holahalo.dev' + arr[1];
             $('#img-' + id).attr('src', imageUrl);
+            $('#id_banner-size-' + id).html('*Ukuran gambar ini adalah ' + arr[0]);
         }
     });
+
+    $('#id_banner-previous-value-' + id).val(banner_id);
+
+    if (banner_id) {
+        $('.banner-select:not(#' + $(input).attr('id') + ')').each(function () {
+            $(this).find('option[value="' + banner_id + '"]').attr('disabled', true);
+
+            if (prev !== '') {
+                $(this).find('option[value="' + prev + '"]').attr('disabled', false);
+            }
+        });
+    }
 }
 
 function cloneBanner() {
@@ -128,6 +165,8 @@ function cloneBanner() {
     var selector = '.banner-div:last';
 
     var originalRadio = $(selector).find('input:checked');
+    var originalOption = $(selector).find('option:selected').val();
+
     $(selector).find('.banner-select').select2('destroy');
 
     newElement = $(selector).clone(true, true);
@@ -140,15 +179,24 @@ function cloneBanner() {
     newElement.find('#id_installation-' + (total - 1) + '-id').attr('id', 'id_installation-' + total + '-id');
 
     newElement.find('#id_installation-' + (total - 1) + '-banner_names').attr('name', 'installation-' + total + '-banner_names');
+    newElement.find('#id_installation-' + (total - 1) + '-banner_names').find('option[value="' + originalOption + '"]').prop('disabled', true);
+    newElement.find('#id_installation-' + (total - 1) + '-banner_names').val('');
     newElement.find('#id_installation-' + (total - 1) + '-banner_names').attr('id', 'id_installation-' + total + '-banner_names');
 
     newElement.find('#id_installation-' + (total - 1) + '-redirect').attr('name', 'installation-' + total + '-redirect');
+    newElement.find('#id_installation-' + (total - 1) + '-redirect').val('');
     newElement.find('#id_installation-' + (total - 1) + '-redirect').attr('id', 'id_installation-' + total + '-redirect');
 
+    newElement.find('#id_banner-size-' + (total - 1)).html('');
+    newElement.find('#id_banner-size-' + (total - 1)).attr('id', 'id_banner-size-' + total);
+    newElement.find('#id_banner-previous-value-' + (total - 1)).attr('id', 'id_banner-previous-value-' + total);
+
     newElement.find('#id_banner-' + (total - 1) + '-is_redirect_0').attr('name', 'banner-' + total + '-is_redirect');
+    newElement.find('#id_banner-' + (total - 1) + '-is_redirect_0').prop('checked', false);
     newElement.find('#id_banner-' + (total - 1) + '-is_redirect_0').attr('id', 'id_banner-' + total + '-is_redirect_0');
 
     newElement.find('#id_banner-' + (total - 1) + '-is_redirect_1').attr('name', 'banner-' + total + '-is_redirect');
+    newElement.find('#id_banner-' + (total - 1) + '-is_redirect_1').prop('checked', true);
     newElement.find('#id_banner-' + (total - 1) + '-is_redirect_1').attr('id', 'id_banner-' + total + '-is_redirect_1');
 
     newElement.find('.redirect-toggle label:first').attr('for', 'id_banner-' + total + '-is_redirect_0')
@@ -179,38 +227,57 @@ function cloneBanner() {
     total_forms = $('.banner-div').length;
 
     if (total_forms > 1) {
-        $('.delete-btn:first').show();
+        $('.delete-btn').show();
     }
 
     $('#id_installation-TOTAL_FORMS').val(total_forms);
 }
 
 function removeBanner(input) {
-    
     var inputId = $(input).attr("id");
     var id = inputId.slice(-2);
-
+    
     if(inputId.includes('-')) {
         var id = inputId.slice(-1);
     }
-
+    
     var selector = '#banner-div-' + id;
+
+    var originalOption = $(selector).find('select > option:selected').val();
+
+    $('.banner-div:not(' + selector + ')').each(function(){
+        $(this).find('select > option[value="' + originalOption + '"]').prop('disabled', false);
+    });
+
     if ($('#id_installation-' + id + '-DELETE').length > 0) {
         $('#id_installation-' + id + '-DELETE').prop('checked', true);
         $(selector).hide();
 
         var total_forms = $('.banner-div:visible').length;
 
-        if (total_forms == 1) {
-            $('.delete-btn:first').hide();
+        if ($('#location-is_slider').val() == 'True') {
+            if (total_forms == 2) {
+                $('.delete-btn').hide();
+            }
+        } else {
+            if (total_forms == 1) {
+                $('.delete-btn').hide();
+            }
         }
     }else{
         $(selector).remove();
         var total_forms = $('.banner-div:visible').length;
 
-        if(total_forms == 1){
-            $('.delete-btn:first').hide();
+        if($('#location-is_slider').val() == 'True'){
+            if(total_forms == 2){
+                $('.delete-btn').hide();
+            }            
+        }else{
+            if (total_forms == 1) {
+                $('.delete-btn').hide();
+            }
         }
+
 
         $('#id_installation-TOTAL_FORMS').val(total_forms);
 
