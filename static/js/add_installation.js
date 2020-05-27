@@ -3,9 +3,12 @@ $(document).ready(function () {
     $('a#installManagement').addClass('active');
 
     $('#id_campaign-0-daterangepicker').daterangepicker({
+        autoUpdateInput: false,
         cancelButtonClasses: 'btn btn-secondary',
+        minDate: new Date(),
         locale: {
             format: 'DD/MM/YYYY',
+            cancelLabel: 'Clear'
         }
     });
 
@@ -26,14 +29,6 @@ $(document).ready(function () {
         placeholder: 'Pilih Banner',
     });
 });
-
-// $('.daterangefilter').on('apply.daterangepicker', function (ev, picker) {
-//     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-// });
-
-// $('.daterangefilter').on('cancel.daterangepicker', function (ev, picker) {
-//     $(this).val('');
-// });
 
 $('#app_select').change(function () {
     var url = $('#installationForm').attr("data-page-url");
@@ -76,6 +71,18 @@ $('#page_select').change(function () {
     }
 
 });
+
+function load_datepicker(input) {
+    var inputId = $(input).attr('id');
+
+    $('#' + inputId).on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+    });
+
+    $('#' + inputId).on('cancel.daterangepicker', function (ev, picker) {
+        $(this).val('');
+    });
+}
 
 function check_campaign_code_available(input) {
     var url = $('#installationForm').attr("data-check-campaign_code-url");
@@ -218,15 +225,13 @@ function load_size(input) {
         var id = $(input).attr('id').slice(-1);
     }
 
-    var prev = $('#id_location-previous-value-' + id).val();
-
     if (location_id) {
         $('#id_install-' + id + '-fieldset').find('#id_campaign-' + id + '-campaign_code').prop('disabled', false);
         $('#id_install-' + id + '-fieldset').find('#id_campaign-' + id + '-priority').prop('disabled', false);
         $('#id_install-' + id + '-fieldset').find('#id_campaign-' + id + '-daterangepicker').prop('disabled', false);
         $('#id_install-' + id + '-fieldset').find('.banner-select').prop('disabled', false);
-        $('#id_install-' + id + '-fieldset').find('#id_banner-' + id + '-is_redirect_0').prop('disabled', false);
-        $('#id_install-' + id + '-fieldset').find('#id_banner-' + id + '-is_redirect_1').prop('disabled', false);
+        $('#id_install-' + id + '-fieldset').find('.redirect-yes').prop('disabled', false);
+        $('#id_install-' + id + '-fieldset').find('.redirect-no').prop('disabled', false);
         $('#id_install-' + id + '-fieldset').find('#id_banner-add-' + id).prop('disabled', false);
     }
 
@@ -259,18 +264,6 @@ function load_size(input) {
         }
 
     });
-
-    // $('#id_location-previous-value-' + id).val(location_id);
-
-    // if (location_id) {
-    //     $('.location-select:not(#' + $(input).attr('id') + ')').each(function () {
-    //         $(this).find('option[value="' + location_id + '"]').attr('disabled', true);
-
-    //         if (prev !== '') {
-    //             $(this).find('option[value="' + prev + '"]').attr('disabled', false);
-    //         }
-    //     });
-    // }
 }
 
 function cloneInstall(selector) {
@@ -307,6 +300,7 @@ function cloneInstall(selector) {
     newElement.find('#id_campaign-' + totalInstall + '-campaign_code').val('');
     newElement.find('#id_campaign-' + totalInstall + '-campaign_code').prop('disabled', true);
 
+    newElement.find('#id_campaign-' + (totalInstall - 1) + '-daterangepicker').val('');
     newElement.find('#id_campaign-' + (totalInstall - 1) + '-daterangepicker').attr('id', 'id_campaign-' + totalInstall + '-daterangepicker');
     newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').attr('name', 'campaign-' + totalInstall + '-daterangepicker');
     newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').prop('disabled', true);
@@ -323,10 +317,6 @@ function cloneInstall(selector) {
             format: 'DD/MM/YYYY',
         }
     });
-
-    // newElement.find('#id_location-previous-value-' + (totalInstall - 1)).attr('id', 'id_location-previous-value-' + totalInstall);
-    // newElement.find('#id_location-previous-value-' + totalInstall).attr('name', 'location-previous-value-' + totalInstall);
-    // newElement.find('#id_location-previous-value-' + totalInstall).val('');
 
     newElement.find('#id_location-is_slider-status-' + (totalInstall - 1)).attr('id', 'id_location-is_slider-status-' + totalInstall);
     newElement.find('#id_location-is_slider-status-' + totalInstall).attr('name', 'location-is_slider-status-' + totalInstall);
@@ -348,7 +338,7 @@ function cloneInstall(selector) {
     newElement.find('#id_banner-' + totalInstall + '-max').attr('name', 'banner-' + totalInstall + '-max');
     
     newElement.find('#id_banner-add-' + (totalInstall - 1)).attr('id', 'id_banner-add-' + totalInstall);
-    newElement.find('#id_banner-add-' + (totalInstall - 1)).prop('disabled', true);
+    newElement.find('#id_banner-add-' + totalInstall).prop('disabled', true);
     newElement.find('#id_banner-delete-' + (totalInstall - 1)).attr('id', 'id_banner-delete-' + totalInstall).hide();
 
     newElement.find('.banner-select').prop('disabled', true);
@@ -356,7 +346,7 @@ function cloneInstall(selector) {
     newElement.find('#id_banner-' + (totalInstall - 1) + '-is_redirect_0').prop('disabled', true);
     newElement.find('#id_banner-' + (totalInstall - 1) + '-is_redirect_1').prop('checked', true);
     newElement.find('#id_banner-' + (totalInstall - 1) + '-is_redirect_1').prop('disabled', true);
-    newElement.find('#id_installation-' + (totalInstall - 1) + '-redirect').hide();
+    newElement.find('.banner-url').hide();
 
     newElement.find('img').attr('src', '');
 

@@ -16,6 +16,7 @@ urlpatterns = [
     path('page/update_page/<str:pk>/', views.UpdatePageView.as_view(), name='update_page'),
     path('page/archive_page/<str:pk>/', views.ArchivePageView.as_view(), name='archive_page'),
     path('page/delete_page/<str:pk>/', views.DeletePageView.as_view(), name='delete_page'),
+    path('location/active_location/<str:pk>/', views.ActiveLocationView.as_view(), name='active_location'),
 
     path('banner/', views.BannerView.as_view(), name='banner'),
     path('banner/add_banner/', views.AddBannerView.as_view(), name='add_banner'),

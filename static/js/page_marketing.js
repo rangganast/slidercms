@@ -12,8 +12,6 @@ table = $('#pageTable').DataTable({
     dom : "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
 })
 
-$("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/page/add_page"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Halaman</button></a></div>');
-
 $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
 })
@@ -49,9 +47,7 @@ $('#resetFilter').click(function(){
         ],
         responsive: true,
         dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
-    })
-
-    $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/page/add_page"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Halaman</button></a></div>');
+    });
 
     table.draw();
 })
@@ -64,10 +60,7 @@ function active(input) {
         var pk = inputId.slice(-2);
     }
 
-    var index = inputId.slice(7, 9);
-    if(index.includes('-')) {
-        var index = inputId.slice(7, 8);
-    }
+    console.log(pk);
 
     var value = $(input).attr('value');
 
@@ -86,12 +79,12 @@ function active(input) {
             reverseButtons: true
         }).then((result) => {
             if (result.value) {
-                $('#switch-form-' + index + '-' + pk).submit();
+                $('#switch-form-' + pk).submit();
             } else {
-                if ($('#switch-' + index + '-' + pk + ':checked').length > 0) {
-                    $('#switch-' + index + '-' + pk).prop('checked', false)
+                if ($('#switch-' + pk + ':checked').length > 0) {
+                    $('#switch-' + pk).prop('checked', false)
                 } else {
-                    $('#switch-' + index + '-' + pk).prop('checked', true)
+                    $('#switch-' + pk).prop('checked', true)
                 }
             }
         });
@@ -111,79 +104,16 @@ function active(input) {
             reverseButtons: true
         }).then((result) => {
             if (result.value) {
-                $('#switch-form-' + index + '-' + pk).submit();
+                $('#switch-form-' + pk).submit();
             } else {
-                if ($('#switch-' + index + '-' + pk + ':checked').length > 0) {
-                    $('#switch-' + index + '-' + pk).prop('checked', false)
+                if ($('#switch-' + pk + ':checked').length > 0) {
+                    $('#switch-' + pk).prop('checked', false)
                 } else {
-                    $('#switch-' + index + '-' + pk).prop('checked', true)
+                    $('#switch-' + pk).prop('checked', true)
                 }
             }
         });
 
     }
 
-};
-
-function archive(input) {
-    var pk = $(input).attr('id').split('-')[0];
-    Swal.fire({
-        title: 'Archive',
-        icon: 'info',
-        html: 'Anda yakin ingin meng-archive halaman ini?',
-        showCancelButton: true,
-        showCloseButton: true,
-        focusConfirm: false,
-        cancelButtonText: 'Batal',
-        cancelButtonClass: 'btn btn-secondary',
-        confirmButtonText: 'Archive',
-        confirmButtonClass: 'btn btn-success',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.value) {
-            $('#form_page_archive_' + pk).submit();
-        };
-    });
-};
-
-function unarchive(input) {
-    var pk = $(input).attr('id').split('-')[0];
-    Swal.fire({
-        title: 'Unarchive',
-        icon: 'info',
-        html: 'Anda yakin ingin meng-unarchive halaman ini?',
-        showCancelButton: true,
-        showCloseButton: true,
-        focusConfirm: false,
-        cancelButtonText: 'Batal',
-        cancelButtonClass: 'btn btn-secondary',
-        confirmButtonText: 'Unarchive',
-        confirmButtonClass: 'btn btn-success',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.value) {
-            $('#form_page_archive_' + pk).submit();
-        };
-    });
-};
-
-function deletePage(input) {
-    var pk = $(input).attr('id').split('-')[0];
-    Swal.fire({
-        title: 'Hapus',
-        icon: 'info',
-        html: 'Anda yakin ingin menghapus halaman ini?',
-        showCancelButton: true,
-        showCloseButton: true,
-        focusConfirm: false,
-        cancelButtonText: 'Batal',
-        cancelButtonClass: 'btn btn-secondary',
-        confirmButtonText: 'Hapus',
-        confirmButtonClass: 'btn btn-danger',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.value) {
-            $('#form_page_delete_' + pk).submit();
-        };
-    });
 };

@@ -107,7 +107,7 @@ class BannerForm(forms.ModelForm):
         return image
 
 class CampaignForm(forms.ModelForm):
-    daterangepicker = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'oninput': 'load_datepicker(this);', 'disabled' : True}), label='Tanggal Berlaku', required=False)
+    daterangepicker = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'onclick': 'load_datepicker(this);', 'disabled' : True}), label='Tanggal Berlaku', required=False)
 
     class Meta:
         model = Campaign
@@ -133,7 +133,7 @@ class InstallationForm(forms.ModelForm):
             'redirect' : _('Link Tujuan Banner'),
         }
         widgets = {
-            'redirect' : forms.TextInput(attrs={'class' : 'form-control'}),
+            'redirect' : forms.URLInput(attrs={'class' : 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):

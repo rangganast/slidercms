@@ -7,26 +7,33 @@ $(document).ready(function () {
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
             format: 'DD/MM/YYYY',
-            cancelLabel: 'Clear'
+            cancelLabel: 'Cancel'
         }
     });
+
+    $('#createDateFilter').attr("placeholder", "DD/MM/YYYY - DD/MM/YYYY");
 
     $('#updateDateFilter').daterangepicker({
         autoUpdateInput: false,
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
             format: 'DD/MM/YYYY',
-            cancelLabel: 'Clear'
+            cancelLabel: 'Cancel'
         }
-    })
+    });
+
+    $('#updateDateFilter').attr("placeholder", "DD/MM/YYYY - DD/MM/YYYY");
+
     $('#validDateFilter').daterangepicker({
         autoUpdateInput: false,
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
             format: 'DD/MM/YYYY',
-            cancelLabel: 'Clear'
+            cancelLabel: 'Cancel'
         }
-    })
+    });
+
+    $('#validDateFilter').attr("placeholder", "DD/MM/YYYY - DD/MM/YYYY");
 
     $('#app_filter').select2({
         theme: 'bootstrap4',
@@ -38,71 +45,87 @@ $(document).ready(function () {
         placeholder: 'Cari Halaman',
     });
 
-});
+    $('#location_filter').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Cari Lokasi',
+    });
 
-$(document).on("click", ".open-imgModal", function () {
-    var imageURL = $(this).data('url');
-    $('#imgModal').find('img').attr('src', imageURL);
-    $('#imgModal').modal('handleUpdate')
 });
 
 // DATATABLES
-table = $('#pageTable').DataTable({
+table = $('#installTable').DataTable({
     bInfo : false,
     sScrollX: true,
-    ordering : [
-        [ 0, "asc" ],
-        [ 5, "asc" ],
-    ],
     responsive : true,
+    aaSorting: [],
     dom : "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
 });
 
 $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/installation/add_installation"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Pemasangan</button></a></div>');
 // DATATABLES
 
-
 // DATE FILTERS
 $('#createDateFilter').on('apply.daterangepicker', function (ev, picker) {
     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-});
-
-$('#createDateFilter').on('cancel.daterangepicker', function (ev, picker) {
-    $(this).val('');
+    createDateRangeFilter();
+    table.draw();
 });
 
 $('#updateDateFilter').on('apply.daterangepicker', function (ev, picker) {
     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-});
-
-$('#updateDateFilter').on('cancel.daterangepicker', function (ev, picker) {
-    $(this).val('');
+    updateDateRangeFilter();
+    table.draw();
 });
 
 $('#validDateFilter').on('apply.daterangepicker', function (ev, picker) {
     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
     table.column(9).search(picker.startDate.format('DD/MM/YYYY') + ' s/d ' + picker.endDate.format('DD/MM/YYYY')).draw();
 });
-
-$('#validDateFilter').on('cancel.daterangepicker', function (ev, picker) {
-    $(this).val('');
-});
 // DATE FILTERS
-
 
 $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
 });
 
-
 $('#app_filter').change(function () {
-    var appname = $('#app_filter option:selected').text().toLowerCase();
+    var url = $('#filterDiv').attr("data-page-url");
+    var app_id = $(this).val();
+
+    if (app_id) {
+        $.ajax({
+            url: url,
+            data: {
+                'app_id': app_id
+            },
+            success: function (data) {
+                $("#page_filter").html(data);
+                $("#page_filter").prop('disabled', false);
+            }
+        });
+    }
+
+    var appname = $(this).find('option:selected').text().toLowerCase();
     var regex = '\\b' + appname + '\\b';
     table.column(1).search(regex, true, false).draw();
 });
 
-
 $('#page_filter').change(function () {
+    var url = $('#filterDiv').attr("data-location-url");
+    var page_id = $(this).val();
+
+    if (page_id) {
+        $.ajax({
+            url: url,
+            data: {
+                'page_id': page_id,
+            },
+            success: function (data) {
+                $("#location_filter").html(data);
+                $("#location_filter").prop('disabled', false);
+            }
+        });
+    }
+
     var appname = $('#app_filter option:selected').text().toLowerCase();
     var pagename = $(this).find('option:selected').text().toLowerCase();
     var app_regex = '\\b' + appname + '\\b';
@@ -110,69 +133,142 @@ $('#page_filter').change(function () {
 
     table.column(1).search(app_regex, true, false).draw();
     table.column(2).search(page_regex, true, false).draw();
-})
+});
 
-function active(input) {
-    var pk = $(input).attr('id');
-    var pk = pk.slice(-1);
-    var value = $(input).attr('value');
+$('#location_filter').change(function () {
+    var appname = $('#app_filter option:selected').text().toLowerCase();
+    var pagename = $('#page_filter option:selected').text().toLowerCase();
+    var locationname = $(this).find('option:selected').text().toLowerCase();
+    var app_regex = '\\b' + appname + '\\b';
+    var page_regex = '\\b' + pagename + '\\b';
+    var location_regex = '\\b' + locationname + '\\b';
 
-    if (value == 'True') {
-        Swal.fire({
-            title: 'Nonaktivasi Pemasangan Banner',
-            icon: 'info',
-            html: 'Anda yakin ingin menonaktifkan pemasangan banner ini?',
-            showCancelButton: true,
-            showCloseButton: true,
-            focusConfirm: false,
-            cancelButtonText: 'Tidak',
-            cancelButtonClass: 'btn btn-secondary',
-            confirmButtonText: 'Ya',
-            confirmButtonClass: 'btn btn-primary',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.value) {
-                $('#switch-form-' + pk).submit();
-            }else{
-                if ($('#switch-' + pk + ':checked').length > 0) {
-                    $('#switch-' + pk).prop('checked', false)
-                }else{
-                    $('#switch-' + pk).prop('checked', true)
+    table.column(1).search(app_regex, true, false).draw();
+    table.column(2).search(page_regex, true, false).draw();
+    table.column(3).search(location_regex, true, false).draw();
+});
+
+$('#resetFilter').click(function () {
+    $('#myInputTextField').val('');
+    $('#validDateFilter').val('');
+    $('#updateDateFilter').val('');
+    $('#createDateFilter').val('');
+    $('#app_filter').val('').trigger('change');
+    $('#page_filter').val('').trigger('change');
+    $('#page_filter').prop('disabled', true);
+    $('#location_filter').val('').trigger('change');
+    $('#location_filter').prop('disabled', true);
+    
+    $.fn.dataTable.ext.search = [];
+    table.destroy();
+    
+    table = $('#installTable').DataTable({
+        bInfo: false,
+        sScrollX: true,
+        aaSorting: [],
+        responsive: true,
+        dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
+    });
+    
+    $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/installation/add_installation"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Pemasangan</button></a></div>');
+
+    table.draw();
+});
+
+function createDateRangeFilter() {
+    $.fn.dataTable.ext.search = [];
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var value = $('#createDateFilter').val()
+            if(value){
+                var value = value.split(' - ');
+                var min = value[0];
+                var max = value[1];
+    
+                var min = min.split('/');
+                var max = max.split('/');
+    
+                var min = new Date(min[2] + '-' + min[1] + '-' + min[0]);
+                var max = new Date(max[2] + '-' + max[1] + '-' + max[0]);
+    
+                var createDate = data[7].split('/');
+                var createDate = new Date(createDate[2] + '-' + createDate[1] + '-' + createDate[0]);
+    
+                if (min == null && max == null) {
+                    return true;
                 }
+                if (min == null && createDate <= max) {
+                    return true;
+                }
+                if (max == null && createDate >= min) {
+                    return true;
+                }
+                if (createDate <= max && createDate >= min) {
+                    return true;
+                }
+                return false;
+            }else{
+                $.fn.dataTable.ext.search = [];
+                table.destroy();
+
+                table = $('#installTable').DataTable({
+                    bInfo: false,
+                    sScrollX: true,
+                    aaSorting: [],
+                    responsive: true,
+                    dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
+                });
+
+                $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/installation/add_installation"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Pemasangan</button></a></div>');
+
+                table.draw();
             }
-        });
+        }
+    )
+};
+
+function updateDateRangeFilter() {
+    $.fn.dataTable.ext.search = [];
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var value = $('#updateDateFilter').val();
+            if(value){
+                var value = value.split(' - ')
+                var min = value[0];
+                var max = value[1];
         
-    }else{
-        Swal.fire({
-            title: 'Aktivasi Pemasangan Banner',
-            icon: 'info',
-            html: 'Anda yakin ingin mengaktifkan pemasangan banner ini?',
-            showCancelButton: true,
-            showCloseButton: true,
-            focusConfirm: false,
-            cancelButtonText: 'Tidak',
-            cancelButtonClass: 'btn btn-secondary',
-            confirmButtonText: 'Ya',
-            confirmButtonClass: 'btn btn-primary',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.value) {
-                $('#switch-form-' + pk).submit();
-            }else{
-                if ($('#switch-' + pk + ':checked').length > 0) {
-                    $('#switch-' + pk).prop('checked', false)
-                }else{
-                    $('#switch-' + pk).prop('checked', true)
+                var min = min.split('/');
+                var max = max.split('/');
+        
+                var min = new Date(min[2] + '-' + min[1] + '-' + min[0]);
+                var max = new Date(max[2] + '-' + max[1] + '-' + max[0]);
+        
+                var updateDate = data[8].split('/');
+                var updateDate = new Date(updateDate[2] + '-' + updateDate[1] + '-' + updateDate[0]);
+        
+                if (min == null && max == null) {
+                    return true;
                 }
+                if (min == null && updateDate <= max) {
+                    return true;
+                }
+                if (max == null && updateDate >= min) {
+                    return true;
+                }
+                if (updateDate <= max && updateDate >= min) {
+                    return true;
+                }
+                return false;
             }
-        });
-
-    }
-
+        }
+    )
 };
 
 function deleteInstall(input) {
-    var pk = $(input).attr('id');
+    var pk = $(input).attr('id').split('-');
+    var counter = pk[0];
+    var id = pk[1];
+
     Swal.fire({
         title: 'Hapus',
         icon: 'info',
@@ -187,7 +283,7 @@ function deleteInstall(input) {
         reverseButtons: true
     }).then((result) => {
         if (result.value) {
-            $('#form_install_delete_' + pk).submit();
+            $('#form_install_delete_' + counter + '-' + id).submit();
         };
     });
 };

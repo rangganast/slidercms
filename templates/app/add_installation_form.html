@@ -75,7 +75,7 @@
 
                     <div class="form-group row location-div">
                         <label class="col-sm-2 col-form-label" for="id_location-select-0">Nama Lokasi</label>
-                        <div class="col-sm-10">
+                        <div class="col-sm-10 input-group">
                             <select id="id_location-select-0" name="location-select-0" class="form-control location-select" onchange="load_size(this);" disabled required>
                                 {% include 'app/locations_dropdown_list_options.html' %}
                             </select>
@@ -139,7 +139,7 @@
                         <div class="form-group row mb-4 banner-name">
                             <label class="col-sm-2 col-form-label"
                                 for="{{ installation.banner_names.id_for_label }}">{{ installation.banner_names.label }}</label>
-                            <div class="col-sm-10">
+                            <div class="col-sm-10 input-group">
                                 {{ installation.banner_names }}
                             </div>
                         </div>
@@ -167,12 +167,12 @@
                                         halaman lain?</label>
                                     <label class="radio-inline" style="color: #007bff;">
                                         <input id="id_banner-0-is_redirect_0" name="banner-0-is_redirect"
-                                            type="radio" class="ml-2" onchange="showRedirect(this);" disabled>
+                                            type="radio" class="ml-2 redirect-no" onchange="showRedirect(this);" disabled>
                                         <label for="id_banner-0-is_redirect_0">Ya</label>
                                     </label>
                                     <label class="radio-inline" style="color: #007bff;">
                                         <input id="id_banner-0-is_redirect_1" name="banner-0-is_redirect"
-                                            type="radio" class="ml-2" onchange="hideRedirect(this);" checked disabled> 
+                                            type="radio" class="ml-2 redirect-yes" onchange="hideRedirect(this);" checked disabled> 
                                         <label for="id_banner-0-is_redirect_1" class="ml-2">Tidak</label>
                                     </label>
                                 </strong>

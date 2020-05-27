@@ -3,6 +3,7 @@ $(document).ready(function () {
     $('a#installManagement').addClass('active');
 
     $('#id_campaign-0-daterangepicker').daterangepicker({
+        minDate: new Date(),
         cancelButtonClasses: 'btn btn-secondary',
         locale: {
             format: 'DD/MM/YYYY'

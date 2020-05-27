@@ -24,22 +24,28 @@
             <div class="row">
                 <div class="col-sm-3 no-padding">
                     <label for="app_filter"><small>Cari Nama Aplikasi</small></label>
-                    <select id="app_filter" class="form-control">
-                        <option value="">Cari Aplikasi</option>
-                        {% for app in apps %}
-                        <option value="{{app.id}}">{{app.name}}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="input-group">
+                        <select id="app_filter" class="form-control">
+                            <option value="">Cari Aplikasi</option>
+                            {% for app in apps %}
+                            <option value="{{app.id}}">{{app.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
                 <div class="col-sm-3 no-padding">
                     <label for="page_filter"><small>Cari Nama Halaman</small></label>
-                    <select id="page_filter" class="form-control" disabled>
-                        {% include 'app/pages_dropdown_list_options.html' %}
-                    </select>
+                    <div class="input-group">
+                        <select id="page_filter" class="form-control" disabled>
+                            {% include 'app/pages_dropdown_list_options.html' %}
+                        </select>
+                    </div>
                 </div>
                 <div class="col-sm-2 no-padding">
-                    <label style="color: white;" for="page_filter">Tombol Reset Filter</label>
-                    <button id="resetFilter" name="reset" type="button" class="btn btn-secondary ml-2">Reset Filter</button>
+                    <label style="color: white;"><small>Reset Filter</small></label>
+                    <div class="input-group">
+                        <button id="resetFilter" name="reset" type="button" class="btn btn-secondary ml-2">Reset Filter</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -64,7 +70,7 @@
             <th scope="col">Nama Aplikasi</th>
             <th scope="col">Nama Halaman</th>
             <th scope="col" style="width: auto;">Nama Lokasi Pemasangan</th>
-            <th scope="col">Ukuran Gambar</th>
+            <th scope="col">Ukuran Lokasi</th>
             {% if request.user.is_superuser == True %}
             <th scope="col">Aktif/Non-Aktif</th>
             {% endif %}
@@ -105,29 +111,35 @@
             {% if request.user.is_superuser == True %}
             <td>
                 <ul>
-                    {% with forloop.counter as start  %}
+                    {% with index=forloop.counter %}
                     {% for is_active in content.location_is_active %}
+                    {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
+                    {% with idSlice=""|add:start|add:":"|add:end %}
+                    {% with loc_id=content.location_ids|slice:idSlice %}
                     <li>
                         {% if is_active == False %}
-                        <form id="switch-form-{{start}}-{{forloop.counter}}" method="POST" action="">
+                        <form id="switch-form-{{index}}-{{forloop.counter}}" method="POST" action="{% url 'app:active_location' pk=loc_id.0 %}">
                             {% csrf_token %}
                             <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="switch-{{start}}-{{forloop.counter}}"
-                                value="" onchange="active(this);">
-                                <label class="custom-control-label" for="switch-{{start}}-{{forloop.counter}}"></label>
+                                <input type="checkbox" class="custom-control-input" id="switch-{{index}}-{{forloop.counter}}"
+                                value="{{is_active}}" onchange="active(this);">
+                                <label class="custom-control-label" for="switch-{{index}}-{{forloop.counter}}"></label>
                                 </div>
                             </form>
                         {% else %}
-                        <form id="switch-form-{{start}}-{{forloop.counter}}" method="POST" action="">
+                        <form id="switch-form-{{index}}-{{forloop.counter}}" method="POST" action="{% url 'app:active_location' pk=loc_id.0 %}">
                             {% csrf_token %}
                             <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="switch-{{start}}-{{forloop.counter}}"
-                                value="" onchange="active(this);" checked>
-                                <label class="custom-control-label" for="switch-{{start}}-{{forloop.counter}}"></label>
+                                <input type="checkbox" class="custom-control-input" id="switch-{{index}}-{{forloop.counter}}"
+                                value="{{is_active}}" onchange="active(this);" checked>
+                                <label class="custom-control-label" for="switch-{{index}}-{{forloop.counter}}"></label>
                             </div>
                         </form>
                         {% endif %}
                     </li>
+                    {% endwith %}
+                    {% endwith %}
+                    {% endwith %}
                     {% endfor %}
                     {% endwith %}
                 </ul>
@@ -191,7 +203,7 @@
             <th scope="col">Nama Aplikasi</th>
             <th scope="col">Nama Halaman</th>
             <th scope="col">Nama Lokasi Pemasangan</th>
-            <th scope="col">Ukuran Gambar</th>
+            <th scope="col">Ukuran Lokasi</th>
             <th scope="col">Aktif/Non-Aktifkan</th>
         </tr>
     </thead>
@@ -218,7 +230,9 @@
             {% with nameSlice=""|add:start|add:":"|add:end  %}
             
             {% for name in content.location_names|slice:nameSlice %}
-                {{name}}
+            {% with loc_id=content.location_ids|slice:nameSlice %}
+                {{name}} ({{loc_id.0}})
+            {% endwith %}
             {% endfor %}
             
             {% endwith %}
@@ -236,23 +250,31 @@
             {% endwith %}
         </td>
         <td>
+            {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
+            {% with idSlice=""|add:start|add:":"|add:end %}
+            {% with loc_id=content.location_ids|slice:idSlice %}
+            {% with counter=content.location_counters|slice:idSlice %}
             {% if is_active == False %}
-            <form id="switch-form-{{start}}-{{forloop.counter}}" method="POST" action="">
+            <form id="switch-form-{{counter.0}}" method="POST" action="{% url 'app:active_location' pk=loc_id.0 %}">
                 {% csrf_token %}
-                <div class="custom-control custom-switch custom-big-switch">
-                    <input type="checkbox" class="custom-control-input custom-control-switch custom-big-switch-input" id="switch-{{start}}-{{forloop.counter}}" value="" onchange="active(this);">
-                    <label class="custom-control-label custom-big-switch-label" for="switch-{{start}}-{{forloop.counter}}"></label>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="switch-{{counter.0}}" value="{{is_active}}" onchange="active(this);">
+                    <label class="custom-control-label" for="switch-{{counter.0}}"></label>
                 </div>
             </form>
             {% else %}
-            <form id="switch-form-{{start}}-{{forloop.counter}}" method="POST" action="">
+            <form id="switch-form-{{counter.0}}" method="POST" action="{% url 'app:active_location' pk=loc_id.0 %}">
                 {% csrf_token %}
-                <div class="custom-control custom-switch custom-big-switch">
-                    <input type="checkbox" class="custom-control-input custom-big-switch-input" id="switch-{{start}}-{{forloop.counter}}" value="" onchange="active(this);" checked>
-                    <label class="custom-control-label custom-big-switch-label" for="switch-{{start}}-{{forloop.counter}}"></label>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="switch-{{counter.0}}" value="{{is_active}}" onchange="active(this);" checked>
+                    <label class="custom-control-label" for="switch-{{counter.0}}"></label>
                 </div>
             </form>
             {% endif %}
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
         </td>
     </tr>
         
@@ -265,8 +287,13 @@
 {% endblock content %}
 
 {% block script %}
-<script src="{% static 'js/page.js' %}"></script>
 
+{% if request.user.is_marketing == True %}
+<script src="{% static 'js/page_marketing.js' %}"></script>
+{% else %}
+<script src="{% static 'js/page.js' %}"></script>
+{% endif %}
+    
 <script type="text/javascript">
     $(document).ready(function () {
         $('#sliderManagement').addClass('menu-open');
@@ -341,6 +368,24 @@
     {% endif %}
     
     {% if 'page_deleted' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'location_inactivated' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'location_activated' in message.tags %}
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',

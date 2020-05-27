@@ -19,7 +19,7 @@ class PageView(View):
     template_name = 'app/page.html'
 
     def get(self, request):
-        apps = Application.objects.all().order_by('name')
+        apps = Application.objects.all().order_by('pk')
         pages = Page.objects.all().order_by('pk')
         locations = Location.objects.all().order_by('page_id')
         campaigns = Campaign.objects.all().order_by('pk')
@@ -27,7 +27,7 @@ class PageView(View):
         contents = []
 
         for i in range(len(pages)):
-            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_counters' : [], 'location_ids' : [], 'location_names' : [], 'location_sizes' : [], 'location_is_active': [], 'is_active' : True})
+            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_counters' : [], 'location_ids' : [], 'location_names' : [], 'location_sizes' : [], 'location_is_active': [], 'is_active' : False})
             for app in apps:
                 if pages[i].application_id == app.id:
                     contents[i]['app'] = app.name
@@ -40,8 +40,8 @@ class PageView(View):
                     contents[i]['location_sizes'].append(str(locations[j].width) + " x " + str(locations[j].height))
                     contents[i]['location_is_active'].append(locations[j].is_active)
 
-                    if locations[j].is_active == False:
-                        contents[i]['is_active'] = False
+                    if locations[j].is_active == True:
+                        contents[i]['is_active'] = True
 
         context = {
             'contents' : contents,
@@ -239,6 +239,24 @@ class DeletePageView(View):
         messages.add_message(request, messages.INFO, "Halaman berhasil dihapus!", extra_tags="page_deleted")
         return redirect(reverse('app:page'))
 
+@method_decorator(login_required, name='dispatch')
+class ActiveLocationView(View):
+    def post(self, request, pk):
+        location_instance = Location.objects.get(pk=pk)
+
+        if location_instance.is_active == True:
+            location_instance.is_active = False
+            location_instance.save()
+            messages.add_message(request, messages.INFO, "Lokasi berhasil di-nonaktifkan!", extra_tags="location_inactivated")
+
+            return redirect(reverse('app:page'))
+        else:
+            location_instance.is_active = True
+            location_instance.save()
+            messages.add_message(request, messages.INFO, "Lokasi berhasil diaktifkan!", extra_tags="location_activated")
+
+            return redirect(reverse('app:page'))
+
 @method_decorator([login_required, marketing_required], name='dispatch')
 class BannerView(View):
     template_name = 'app/banner.html'
@@ -404,9 +422,65 @@ class InstallationView(View):
         apps = Application.objects.all().order_by('pk')
         pages = Page.objects.all().order_by('pk')
         locations = Location.objects.all().order_by('pk')
-        campaigns = Campaign.objects.all().order_by('pk')
+        campaigns_0 = Campaign.objects.filter(priority=0).order_by('pk')
+        campaigns = Campaign.objects.all().exclude(priority=0).order_by('pk')
         banners = Banner.objects.all().order_by('pk')
         installations = Installation.objects.all().order_by('pk')
+
+        contents_0 = []
+
+        for i in range(len(campaigns_0)):
+            if Installation.objects.filter(campaign_id=campaigns_0[i].id).exists():
+
+                # Validate Valid Date
+                valid_date = None
+                if campaigns_0[i].valid_date_start != None:
+                    start = campaigns_0[i].valid_date_start.strftime('%d/%m/%Y')
+                    valid_date = start + ' s/d '
+                else:
+                    valid_date = None
+
+                if campaigns_0[i].valid_date_end != None:
+                    end = campaigns_0[i].valid_date_end.strftime('%d/%m/%Y')
+                    valid_date = valid_date + end
+                else:
+                    valid_date = None
+
+                # Validate Created Date
+                if campaigns_0[i].date_created != None:
+                    date_created = campaigns_0[i].date_created.strftime('%d/%m/%Y')
+                else:
+                    date_created = None
+
+                # Validate Updated Date
+                if campaigns_0[i].date_updated != None:
+                    date_updated = campaigns_0[i].date_updated.strftime('%d/%m/%Y')
+                else:
+                    date_updated = None
+
+                contents_0.append({'loc_id' : None, 'page_id' : None, 'app' : None, 'app_id' : None, 'page' : None, 'location' : None, 'banners' : [], 'campaign_id' : campaigns_0[i].id, 'campaign_code' : campaigns_0[i].campaign_code, 'priority' : campaigns_0[i].priority, 'created_date' : date_created, 'updated_date' : date_updated, 'valid_date' : valid_date})
+
+                installs = Installation.objects.filter(campaign_id=contents_0[-1]['campaign_id'])
+                for install in installs:
+                    if install.banner_id != None:
+                        contents_0[-1]['banners'].append(Banner.objects.get(pk=install.banner_id))
+
+                for location in locations:
+                    if campaigns_0[i].location_id == location.id:
+                        contents_0[i]['loc_id'] = location.id
+                        contents_0[i]['location'] = location.name
+                        contents_0[i]['page_id'] = location.page_id
+
+                for page in pages:
+                    for j in range(len(contents_0)):
+                        if contents_0[j]['page_id'] == page.id:
+                            contents_0[j]['page'] = page.name
+                            contents_0[j]['app_id'] = page.application_id
+
+                for app in apps:
+                    for j in range(len(contents_0)):
+                        if contents_0[j]['app_id'] == app.id:
+                            contents_0[j]['app'] = app.name
 
         contents = []
 
@@ -464,6 +538,7 @@ class InstallationView(View):
                             contents[j]['app'] = app.name
 
         context = {
+            'contents_0' : contents_0,
             'contents' : contents,
             'apps' : apps,
             'pages' : pages,
@@ -1007,7 +1082,8 @@ def load_pages(request):
 @login_required
 def load_locations(request):
     page_id = request.GET.get('page_id')
-    locations = Location.objects.filter(page_id=page_id)
+    print(page_id)
+    locations = Location.objects.filter(page_id=page_id, is_active=True)
 
     return render(request, 'app/locations_dropdown_list_options.html', {'locations': locations})
 
