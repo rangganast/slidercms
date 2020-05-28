@@ -900,22 +900,23 @@ class UpdateUsernameView(View):
         new_username = request.POST.get('newUsernameInput')
         confirm_password = request.POST.get('passwordConfirm')
 
-        if not new_username.isalnum():
-            messages.add_message(request, messages.INFO, "Username tidak valid", extra_tags="username_error")
-            return redirect(reverse('app:update_user'))
-
         if user.check_password('{}'.format(confirm_password)):
-            try:
-                user = User.objects.exclude(pk=pk).get(username=new_username)
-                messages.add_message(request, messages.INFO, "Username telah dipakai!", extra_tags="username_used")
 
+            if not new_username.isalnum():
+                messages.add_message(request, messages.INFO, "Username tidak valid", extra_tags="username_error")
                 return redirect(reverse('app:update_user'))
-            except User.DoesNotExist:
-                user.username = new_username
-                user.save()
-                messages.add_message(request, messages.INFO, "Username berhasil diubah!", extra_tags="username_changed")
+            else:
+                try:
+                    user = User.objects.exclude(pk=pk).get(username=new_username)
+                    messages.add_message(request, messages.INFO, "Username telah dipakai!", extra_tags="username_used")
 
-                return redirect(reverse('app:update_user'))
+                    return redirect(reverse('app:update_user'))
+                except User.DoesNotExist:
+                    user.username = new_username
+                    user.save()
+                    messages.add_message(request, messages.INFO, "Username berhasil diubah!", extra_tags="username_changed")
+
+                    return redirect(reverse('app:update_user'))
         else:
             messages.add_message(request, messages.INFO, "Password Salah!", extra_tags="password_wrong")
 
@@ -930,22 +931,22 @@ class UpdateEmailView(View):
         confirm_password = request.POST.get('passwordConfirm')
         pattern = re.compile("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 
-        if not pattern.match(new_email):
-            messages.add_message(request, messages.INFO, "Email tidak valid", extra_tags="email_error")
-            return redirect(reverse('app:update_user'))
-
         if user.check_password('{}'.format(confirm_password)):
-            try:
-                user = User.objects.exclude(pk=pk).get(email=new_email)
-                messages.add_message(request, messages.INFO, "Email telah dipakai!", extra_tags="email_used")
-
+            if not pattern.match(new_email):
+                messages.add_message(request, messages.INFO, "Email tidak valid", extra_tags="email_error")
                 return redirect(reverse('app:update_user'))
-            except User.DoesNotExist:
-                user.email = new_email
-                user.save()
-                messages.add_message(request, messages.INFO, "Email berhasil diubah!", extra_tags="email_changed")
+            else:
+                try:
+                    user = User.objects.exclude(pk=pk).get(email=new_email)
+                    messages.add_message(request, messages.INFO, "Email telah dipakai!", extra_tags="email_used")
 
-                return redirect(reverse('app:update_user'))
+                    return redirect(reverse('app:update_user'))
+                except User.DoesNotExist:
+                    user.email = new_email
+                    user.save()
+                    messages.add_message(request, messages.INFO, "Email berhasil diubah!", extra_tags="email_changed")
+
+                    return redirect(reverse('app:update_user'))
         else:
             messages.add_message(request, messages.INFO, "Password Salah!", extra_tags="password_wrong")
 
@@ -959,21 +960,23 @@ class UpdatePasswordView(View):
         new_password = request.POST.get('newPasswordConfirm')
         confirm_password = request.POST.get('oldPasswordInput')
 
-        if not new_password.isascii():
-            messages.add_message(request, messages.INFO, "Password tidak valid", extra_tags="password_error")
-            return redirect(reverse('app:update_user'))
-
-        if len(new_password) <= 8:
-            messages.add_message(request, messages.INFO, "Password kurang dari 8 karakter", extra_tags="password_less")
-            return redirect(reverse('app:update_user'))
 
         if user.check_password('{}'.format(confirm_password)):
-            user.set_password(new_password)
-            user.save()
+            if not new_password.isascii():
+                messages.add_message(request, messages.INFO, "Password tidak valid", extra_tags="password_error")
+                return redirect(reverse('app:update_user'))
 
-            messages.add_message(request, messages.INFO, "Password berhasil diubah!", extra_tags="password_changed")
+            elif len(new_password) <= 8:
+                messages.add_message(request, messages.INFO, "Password kurang dari 8 karakter", extra_tags="password_less")
+                return redirect(reverse('app:update_user'))
 
-            return redirect(reverse('app:update_user'))
+            else:
+                user.set_password(new_password)
+                user.save()
+
+                messages.add_message(request, messages.INFO, "Password berhasil diubah!", extra_tags="password_changed")
+
+                return redirect(reverse('app:update_user'))
         else:
             messages.add_message(request, messages.INFO, "Password Salah!", extra_tags="password_wrong")
 
@@ -1099,7 +1102,7 @@ def load_pages(request):
 @login_required
 def load_locations(request):
     page_id = request.GET.get('page_id')
-    locations = Location.objects.filter(page_id=page_id, is_active=True)
+    locations = Location.objects.filter(page_id=page_id)
 
     return render(request, 'app/locations_dropdown_list_options.html', {'locations': locations})
 

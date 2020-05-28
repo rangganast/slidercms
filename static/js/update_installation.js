@@ -50,12 +50,19 @@ $(document).ready(function () {
 
     if($('#id_priority-value').val() == '0') {
         if($('#location-is_slider').val() == 'True') {
-            $('#id_banner-add-0').click();
+            if ($('img:visible').length == 0) {
+                $('#id_banner-add-0').click();
+            }
             $('.delete-btn').hide();
         }
 
         $('#id_campaign-0-priority').prop('disabled', true)
         $('#id_campaign-0-daterangepicker').prop('disabled', true)
+    }
+
+    if ($('img:visible').length == 0) {
+        $('img').show();
+        $('#id_banner-size-0').show();
     }
 });
 

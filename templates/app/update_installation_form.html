@@ -140,8 +140,8 @@
                                 <!-- <img id="img-{{ start }}" src="http://127.0.0.1:8000/media/{{ banner.image }}" width="400"> -->
                                 <img id="img-{{ start }}" src="https://banner-slider-qa.holahalo.dev/media/{{ banner.image }}" width="400">
                                 {% endfor %}
-
                                 {% endwith %}
+                                <img style="display: none;" id="img-{{ start }}" src="" width="400">
                                 {% endwith %}
                             </div>
                         </div>
@@ -157,6 +157,7 @@
                                 {% endfor %}
 
                                 {% endwith %}
+                                <small style="color: red;" id="id_banner-size-{{ start }}"></small>
                                 {% endwith %}
                             </div>
                         </div>
