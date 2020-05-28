@@ -35,6 +35,7 @@
         <hr>
 
         <div class="container-fluid mt-5 mb-5">
+            <input type="hidden" id="actives-length" {% if True in actives %}value="True"{% else %}value="False"{% endif %}>
 
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label" for="{{ form_application.names.id_for_label }}">{{ form_application.names.label }}</label>
@@ -62,13 +63,18 @@
                     </span>
                 </h4>
             </div>
-            
             {% for location in formset_location %}
+            {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
+            {% with idSlice=""|add:start|add:":"|add:end %}
+            {% with active=actives|slice:idSlice %}
+                
             <fieldset id="id_location-{{ forloop.counter0 }}-fieldset" class="location-border fieldset">
                 {{ location.DELETE }}
                 {{ location.id }}
                 
                 <legend class="location-border">Lokasi ke-{{ forloop.counter }}</legend>
+
+                <input type="hidden" id="id_location-{{ index }}-is_active" class="location-active" value="{{active.0}}">
 
                 <div class="container">
 
@@ -112,6 +118,9 @@
                 </div>
                 
             </fieldset>
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
             {% endfor %}
 
         </div>

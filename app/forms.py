@@ -190,7 +190,7 @@ class UserForm(forms.ModelForm):
 
         password = self.cleaned_data.get('password', False)
 
-        if len(password) > 8:
+        if len(password) >= 8:
             return password
         else:
             raise forms.ValidationError("Password kurang dari 8 karakter.")

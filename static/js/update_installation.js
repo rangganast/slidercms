@@ -195,6 +195,8 @@ function cloneBanner() {
     newElement.find('#id_installation-' + (total - 1) + '-redirect').val('');
     newElement.find('#id_installation-' + (total - 1) + '-redirect').attr('id', 'id_installation-' + total + '-redirect');
 
+    newElement.find('.banner-url').hide();
+    
     newElement.find('#id_banner-size-' + (total - 1)).html('');
     newElement.find('#id_banner-size-' + (total - 1)).attr('id', 'id_banner-size-' + total);
     newElement.find('#id_banner-previous-value-' + (total - 1)).attr('id', 'id_banner-previous-value-' + total);

@@ -2,11 +2,6 @@ $(document).ready(function () {
     $('#sliderManagement').addClass('menu-open');
     $('a#pageManagement').addClass('active');
 
-    $('#id_names').select2({
-        theme: 'bootstrap4',
-        placeholder: 'Pilih aplikasi',
-    });
-
     $('input').prop('disabled', false);
 
     $('fieldset:last').remove();
@@ -20,6 +15,35 @@ $(document).ready(function () {
     var totalLocation = $('#id_location-TOTAL_FORMS').val();
     var totalLocation = Number(totalLocation);
     var totalLocation = totalLocation - 1;
+
+    if($('#actives-length').val() == 'True' ){
+        appSelector = $('#id_names').clone(true, true);
+        appSelector.hide();
+        $('#id_names').after(appSelector);
+
+        $('#id_names:visible').attr('id', 'id_names-disabled');
+
+        $('#id_names-disabled').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih aplikasi',
+            disabled: true,
+        });
+
+        $('#id_page-0-name').prop('readonly', true);
+    }else{
+        $('#id_names').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih aplikasi',
+        });
+    }
+
+    $('.location-active').each(function (index){
+        if($(this).val() == 'True') {
+            $('#id_location-' + index + '-fieldset').find('input').prop('readonly', true);
+            $('#id_location-' + index + '-fieldset').find(':radio:not(:checked)').prop('disabled', true);
+            $('#id_location-' + index + '-fieldset').find('button').prop('disabled', true);
+        }
+    })
 
     $('#id_location-TOTAL_FORMS').val(totalLocation);
 });
@@ -42,14 +66,17 @@ function cloneLocation() {
 
     newElement.find('#id_location-' + (totalLocation - 1) + '-id').attr('name', 'location-' + totalLocation + '-id');
     newElement.find('#id_location-' + (totalLocation - 1) + '-id').val('');
+    newElement.find('#id_location-' + (totalLocation - 1) + '-id').prop('readonly', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-id').attr('id', 'id_location-' + totalLocation + '-id');
 
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').attr('name', 'location-' + totalLocation + '-is_slider');
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').prop('checked', false);
+    newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').prop('disabled', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').attr('id', 'id_location-' + totalLocation + '-is_slider_0');
 
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').attr('name', 'location-' + totalLocation + '-is_slider');
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').prop('checked', false);
+    newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').prop('disabled', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').attr('id', 'id_location-' + totalLocation + '-is_slider_1');
 
     newElement.find('.location-slider label:first').attr('for', 'id_location-' + totalLocation + '-is_slider_0');
@@ -58,25 +85,29 @@ function cloneLocation() {
     
     newElement.find('#id_location-' + (totalLocation - 1) + '-name').attr('name', 'location-' + totalLocation + '-name');
     newElement.find('#id_location-' + (totalLocation - 1) + '-name').val('');
+    newElement.find('#id_location-' + (totalLocation - 1) + '-name').prop('readonly', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-name').attr('id', 'id_location-' + totalLocation + '-name');
 
     newElement.find('#id_warning-text-location-' + (totalLocation - 1)).hide();
+    newElement.find('#id_warning-text-location-' + (totalLocation - 1)).prop('disabled', false);
     newElement.find('#id_warning-text-location-' + (totalLocation - 1)).attr('id', 'id_warning-text-location-' + totalLocation);
     
     newElement.find('.location-name label').attr('for', 'id_location-' + totalLocation + '-name');
 
     newElement.find('#id_location-' + (totalLocation - 1) + '-width').attr('name', 'location-' + totalLocation + '-width');
     newElement.find('#id_location-' + (totalLocation - 1) + '-width').val('');
+    newElement.find('#id_location-' + (totalLocation - 1) + '-width').prop('readonly', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-width').attr('id', 'id_location-' + totalLocation + '-width');
 
     newElement.find('.location-size label:first').attr('for', 'id_location-' + totalLocation + '-width');
 
     newElement.find('#id_location-' + (totalLocation - 1) + '-height').attr('name', 'location-' + totalLocation + '-height');
-    newElement.find('#id_location-' + (totalLocation - 1) + '-height').val('');
+    newElement.find('#id_location-' + (totalLocation - 1) + '-height').prop('readonly', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-height').attr('id', 'id_location-' + totalLocation + '-height');
 
     newElement.find('.location-size label:last').attr('for', 'id_location-' + totalLocation + '-height');
 
+    newElement.find('#id_location-delete-' + (totalLocation - 1)).prop('disabled', false);
     newElement.find('#id_location-delete-' + (totalLocation - 1)).attr('id', 'id_location-delete-' + totalLocation);
 
     $(selector).after(newElement);

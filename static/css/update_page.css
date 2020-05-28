@@ -42,7 +42,9 @@ legend.location-border {
 .btn-danger:hover,
 .btn-danger:active,
 .btn-danger:visited,
-.btn-danger:focus {
+.btn-danger:focus,
+.btn-danger:disabled,
+.btn-danger:read-only {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }

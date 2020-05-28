@@ -137,6 +137,11 @@ class UpdatePageView(View):
     def get(self, request, pk):
         page_instance = Page.objects.filter(pk=pk)
         location_instance = Location.objects.filter(page_id__in=page_instance)
+        location_actives = Location.objects.filter(page_id__in=page_instance).values_list('is_active')
+        actives = []
+        for location in list(location_actives):
+            actives.append(location[0])
+
         page = Page.objects.get(pk=pk)
         app_instance = Application.objects.get(pk=page.application_id)
 
@@ -146,6 +151,7 @@ class UpdatePageView(View):
 
         context = {
             'page' : page,
+            'actives' : actives,
             'form_application' : form_application,
             'formset_page' : formset_page,
             'formset_location' : formset_location,
@@ -1023,8 +1029,6 @@ class KeywordListPage(View):
         return render(request, self.template_name, context)
 
 @login_required
-@marketing_required
-@superuser_required
 def check_campaign_code_available_add(request):
     loc_id = request.GET.get('loc_id')
     value = request.GET.get('value')
@@ -1038,8 +1042,6 @@ def check_campaign_code_available_add(request):
     return HttpResponse(check)
 
 @login_required
-@marketing_required
-@superuser_required
 def check_campaign_code_available_update(request):
     loc_id = request.GET.get('loc_id')
     value = request.GET.get('value')
@@ -1057,8 +1059,6 @@ def check_campaign_code_available_update(request):
     return HttpResponse(check)
 
 @login_required
-@marketing_required
-@superuser_required
 def check_priority_available_add(request):
     loc_id = request.GET.get('loc_id')
     value = request.GET.get('value')
@@ -1075,8 +1075,6 @@ def check_priority_available_add(request):
     return HttpResponse(check)
 
 @login_required
-@marketing_required
-@superuser_required
 def check_priority_available_update(request):
     loc_id = request.GET.get('loc_id')
     value = request.GET.get('value')
