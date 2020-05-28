@@ -1,5 +1,6 @@
 oTable = $('#keywordTable').DataTable({
     bInfo: false,
+    aaSorting: [],
 });
 $('#myInputTextField').keyup(function () {
     oTable.search($(this).val()).draw();

@@ -34,57 +34,61 @@
 
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" for="{{ form_user.roles.id_for_label }}">{{ form_user.roles.label }}</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-10 input-group">
                         {{ form_user.roles }}
-                        
+                    </div>
+                    <label class="col-sm-2 col-form-label" for=""></label>
+                    <div class="col-sm-10 input-group">                       
                         {% if form_user.errors %}
                         {% for error in form_user.roles.errors %}
                         <small style="color: red;">{{error}}</small>
                         {% endfor %}
                         {% endif %}
-
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" for="{{ form_user.email.id_for_label }}">{{ form_user.email.label }}</label>
-                    <div class="col-sm-10">
-                        {{ form_user.email }}
-
+                    <div class="col-sm-10 input-group">
+                        {{ form_user.email }}                        
+                    </div>
+                    <label class="col-sm-2 col-form-label" for=""></label>
+                    <div class="col-sm-10 input-group">
                         {% if form_user.errors %}
                         {% for error in form_user.email.errors %}
                         <small style="color: red;">{{error}}</small>
                         {% endfor %}
                         {% endif %}
-
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" for="{{ form_user.username.id_for_label }}">{{ form_user.username.label }}</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-10 input-group">
                         {{ form_user.username }}
-
+                    </div>
+                    <label class="col-sm-2 col-form-label" for=""></label>
+                    <div class="col-sm-10 input-group">
                         {% if form_user.errors %}
                         {% for error in form_user.username.errors %}
-                            <small style="color: red;">{{error}}</small>
+                        <small style="color: red;">{{error}}</small>
                         {% endfor %}
                         {% endif %}
-
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" for="{{ form_user.password.id_for_label }}">{{ form_user.password.label }}</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-10 input-group">
                         {{ form_user.password }}
-
+                    </div>
+                    <label class="col-sm-2 col-form-label" for=""></label>
+                    <div class="col-sm-10 input-group">
                         {% if form_user.errors %}
                         {% for error in form_user.password.errors %}
-                            <small style="color: red;">{{error}}</small>
+                        <small style="color: red;">{{error}}</small>
                         {% endfor %}
                         {% endif %}
-
                     </div>
                 </div>
 
@@ -100,6 +104,12 @@
 <script>
     $('#sliderManagement').removeClass('menu-open');
     $('a#userManagement').addClass('active');
+
+    $('#id_roles').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Pilih Role',
+    });
+
 </script>
 {% endblock script %}
     

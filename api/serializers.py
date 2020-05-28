@@ -15,17 +15,29 @@ class InstallationSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description', 'image', 'redirect')
     
     def get_id(self, obj):
-        return obj.banner.id
+        if obj.banner == None:
+            return None
+        else:
+            return obj.banner.id
 
     def get_name(self, obj):
-        return obj.banner.name
+        if obj.banner == None:
+            return None
+        else:
+            return obj.banner.name
     
     def get_description(self, obj):
-        return obj.banner.description
+        if obj.banner == None:
+            return None
+        else:
+            return obj.banner.description
     
     def get_image_url(self, obj):
-        request = self.context.get('request')
-        return request.build_absolute_uri(obj.banner.image.url)
+        if obj.banner == None:
+            return None
+        else:
+            request = self.context.get('request')
+            return request.build_absolute_uri(obj.banner.image.url)
 
 class LocationSerializer(serializers.ModelSerializer):
     application = serializers.SerializerMethodField('get_application')
@@ -56,9 +68,13 @@ class LocationSerializer(serializers.ModelSerializer):
         
         if not campaigns:
             campaign_obj = Campaign.objects.get(location_id=obj.id, priority=0)
-            inst_obj = Installation.objects.filter(campaign_id=campaign_obj.id).order_by('id')
+            inst_obj = Installation.objects.filter(campaign_id=campaign_obj).order_by('id')
+
         else:
             inst_obj = Installation.objects.filter(campaign_id=campaigns.order_by('-priority')[0].id).order_by('id')
 
-        serializer = InstallationSerializer(inst_obj, many=True, context=self.context)
-        return serializer.data
+        if inst_obj[0].banner:
+            serializer = InstallationSerializer(inst_obj, many=True, context=self.context)
+            return serializer.data
+        else:
+            return []

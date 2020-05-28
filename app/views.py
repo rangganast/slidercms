@@ -1,9 +1,10 @@
+import re
+import datetime
 from django.views import View
 from django.urls import reverse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
-import datetime
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from .decorators import developer_required, marketing_required, superuser_required
@@ -21,8 +22,7 @@ class PageView(View):
     def get(self, request):
         apps = Application.objects.all().order_by('pk')
         pages = Page.objects.all().order_by('pk')
-        locations = Location.objects.all().order_by('page_id')
-        campaigns = Campaign.objects.all().order_by('pk')
+        locations = Location.objects.all().order_by('pk')
 
         contents = []
 
@@ -193,9 +193,22 @@ class UpdatePageView(View):
                         else:
                             loc_instance = Location(is_slider=is_slider, name=name, width=width, height=height, page_id=page_instance.id)
                             loc_instance.save()
+
+                            campaign_instance = Campaign(date_created=datetime.date.today(), priority=0, location_id=loc_instance.id)
+                            campaign_instance.save()
+
+                            installation_instance = Installation(campaign_id=campaign_instance.id)
+                            installation_instance.save()
             
             for deleted in deleted_locations:
                 location_instance = Location.objects.get(pk=deleted['id'].value())
+                campaign_instances = Campaign.objects.filter(location_id=location_instance)
+                installation_instances = Installation.objects.filter(campaign_id__in=campaign_instances)
+
+                for installation in installation_instances:
+                    installation.delete()
+                for campaign in campaign_instances:
+                    campaign.delete()
                 location_instance.delete()
 
             messages.add_message(request, messages.INFO, "Halaman berhasil di-update!", extra_tags="page_updated")
@@ -782,7 +795,7 @@ class UserView(View):
     template_name = 'app/user.html'
 
     def get(self, request):
-        users = User.objects.all().exclude(is_superuser=True)
+        users = User.objects.all().order_by('pk')
 
         contents = []
 
@@ -792,13 +805,22 @@ class UserView(View):
             contents[i]['email'] = users[i].email
             contents[i]['username'] = users[i].username
 
-            if users[i].is_developer == True:
+            if users[i].is_superuser == True:
+                contents[i]['role'] = 'Super Admin'
+            elif users[i].is_developer == True:
                 contents[i]['role'] = 'Developer'
             elif users[i].is_marketing == True:
                 contents[i]['role'] = 'Marketing'
 
+        roles = [
+            (1, 'Super Admin'),
+            (2, 'Developer'),
+            (3, 'Marketing'),
+        ]
+
         context = {
             'contents': contents,
+            'roles': roles,
         }
 
         return render(request, self.template_name, context)
@@ -833,8 +855,10 @@ class AddUserView(View):
             print(email)
 
             if role == '1':
+                user_instance = User(email=email, username=username, is_superuser=True)
+            if role == '2':
                 user_instance = User(email=email, username=username, is_developer=True)
-            elif role == '2':
+            elif role == '3':
                 user_instance = User(email=email, username=username, is_marketing=True)
 
             user_instance.set_password(password)
@@ -868,30 +892,6 @@ class UpdateUserView(View):
 
         return render(request, self.template_name, context)
 
-    # def post(self, request):
-    #     form_user = self.form_class['form_user'](request.POST or None)
-
-    #     if form_user.is_valid():
-    #         email = form_user.cleaned_data['email']
-    #         username = form_user.cleaned_data['username']
-    #         password = form_user.cleaned_data['password']
-
-    #         user_instance = User.objects.get(username=username)
-
-    #         user_instance.email = email
-    #         user_instance.username = username
-
-    #         user_instance.set_password(password)
-    #         user_instance.save()
-
-    #         return redirect(reverse('app:login'))
-    #     else:
-    #         context = {
-    #             'form_user' : form_user,
-    #         }
-
-    #         return render(request, self.template_name, context)
-
 @method_decorator([login_required], name='dispatch')
 class UpdateUsernameView(View):
     def post(self, request, pk):
@@ -899,6 +899,10 @@ class UpdateUsernameView(View):
 
         new_username = request.POST.get('newUsernameInput')
         confirm_password = request.POST.get('passwordConfirm')
+
+        if not new_username.isalnum():
+            messages.add_message(request, messages.INFO, "Username tidak valid", extra_tags="username_error")
+            return redirect(reverse('app:update_user'))
 
         if user.check_password('{}'.format(confirm_password)):
             try:
@@ -924,6 +928,11 @@ class UpdateEmailView(View):
 
         new_email = request.POST.get('newEmailInput')
         confirm_password = request.POST.get('passwordConfirm')
+        pattern = re.compile("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+
+        if not pattern.match(new_email):
+            messages.add_message(request, messages.INFO, "Email tidak valid", extra_tags="email_error")
+            return redirect(reverse('app:update_user'))
 
         if user.check_password('{}'.format(confirm_password)):
             try:
@@ -949,6 +958,14 @@ class UpdatePasswordView(View):
 
         new_password = request.POST.get('newPasswordConfirm')
         confirm_password = request.POST.get('oldPasswordInput')
+
+        if not new_password.isascii():
+            messages.add_message(request, messages.INFO, "Password tidak valid", extra_tags="password_error")
+            return redirect(reverse('app:update_user'))
+
+        if len(new_password) <= 8:
+            messages.add_message(request, messages.INFO, "Password kurang dari 8 karakter", extra_tags="password_less")
+            return redirect(reverse('app:update_user'))
 
         if user.check_password('{}'.format(confirm_password)):
             user.set_password(new_password)
@@ -1082,7 +1099,6 @@ def load_pages(request):
 @login_required
 def load_locations(request):
     page_id = request.GET.get('page_id')
-    print(page_id)
     locations = Location.objects.filter(page_id=page_id, is_active=True)
 
     return render(request, 'app/locations_dropdown_list_options.html', {'locations': locations})

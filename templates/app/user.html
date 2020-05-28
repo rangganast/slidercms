@@ -9,15 +9,45 @@
 {% block contentheader %}Manajemen Pengguna{% endblock contentheader %}
 
 {% block content %}
-<div class="control-group mb-3">
-    <div class="row">
+<fieldset class="user-border">
+
+    <legend class="user-border">Filter</legend>
+
+    <div id="filterDiv" class="control-group mb-3" data-page-url="{% url 'app:ajax_load_pages' %}">
         <div class="col input-wrapper">
-            <input id="myInputTextField" type="text"
-                class="form-control form-control-borderless searchinput" placeholder="Cari...">
-            <span class="fas fa-search searchspan"></span>
+            <div class="row">
+                <div class="col-sm-4 no-padding">
+                    <div class="input-group">
+                        <label for="role_filter" class="my-auto mr-3">Role Pengguna</label>
+                        <select id="role_filter" class="form-control">
+                            <option value="">Cari Role</option>
+                            {% for role in roles %}
+                            <option value="{{role.0}}">{{role.1}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-2 no-padding">
+                    <div class="input-group">
+                        <button id="resetFilter" name="reset" type="button" class="btn btn-secondary ml-2">Reset
+                            Filter</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+
+    <div class="control-group mb-3">
+        <div class="row">
+            <div class="col input-wrapper">
+                <input id="myInputTextField" type="text"
+                    class="form-control form-control-borderless searchinput" placeholder="Cari...">
+                <span class="fas fa-search searchspan"></span>
+            </div>
+        </div>
+    </div>
+
+</fieldset>
 
 <table id="userTable" class="table table-striped table-bordered mt-3">
     <thead>
@@ -46,7 +76,7 @@
                 <span class="spanFormat">
                     <form id="form_user_delete_{{content.id}}" action="{% url 'app:delete_user' pk=content.id %}" method="POST">
                         {% csrf_token %}
-                        <button id="{{ content.id }}" type="button" onclick="deleteUser(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Hapus</button>
+                        <button {% if request.user.username == content.username %}style="display: none;" {% else %}{% endif %} id="{{ content.id }}" type="button" onclick="deleteUser(this);" class="btn btn-sm btn-danger" {% if content.is_active %}disabled{% else %}{% endif %}>Hapus</button>
                     </form>
                 </span>
             </td>
@@ -63,6 +93,11 @@
 <script type="text/javascript">
     $('#sliderManagement').removeClass('menu-open');
     $('a#userManagement').addClass('active');
+
+    $('#role_filter').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Cari Role',
+    });
 
     {% if messages %}
     {% for message in messages %}

@@ -56,7 +56,6 @@ $(document).ready(function () {
 table = $('#installTable').DataTable({
     bInfo : false,
     sScrollX: true,
-    responsive : true,
     aaSorting: [],
     dom : "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
 });
@@ -79,7 +78,8 @@ $('#updateDateFilter').on('apply.daterangepicker', function (ev, picker) {
 
 $('#validDateFilter').on('apply.daterangepicker', function (ev, picker) {
     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-    table.column(9).search(picker.startDate.format('DD/MM/YYYY') + ' s/d ' + picker.endDate.format('DD/MM/YYYY')).draw();
+    validDateRangeFilter();
+    table.draw();
 });
 // DATE FILTERS
 
@@ -166,7 +166,6 @@ $('#resetFilter').click(function () {
         bInfo: false,
         sScrollX: true,
         aaSorting: [],
-        responsive: true,
         dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
     });
     
@@ -222,6 +221,43 @@ function createDateRangeFilter() {
                 $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/installation/add_installation"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Pemasangan</button></a></div>');
 
                 table.draw();
+            }
+        }
+    )
+};
+
+function validDateRangeFilter() {
+    $.fn.dataTable.ext.search = [];
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var value = $('#validDateFilter').val();
+            if(value){
+                var value = value.split(' - ')
+                var min = value[0];
+                var max = value[1];
+        
+                var min = min.split('/');
+                var max = max.split('/');
+        
+                var min = new Date(min[2] + '-' + min[1] + '-' + min[0]);
+                var max = new Date(max[2] + '-' + max[1] + '-' + max[0]);
+
+                if (data[9]) {
+                    var validDate = data[9].split(' s/d ');
+                    var startDate = validDate[0].split('/');
+                    var startDate = new Date(startDate[2] + '-' + startDate[1] + '-' + startDate[0]);
+                    var endDate = validDate[1].split('/');
+                    var endDate = new Date(endDate[2] + '-' + endDate[1] + '-' + endDate[0]);
+    
+                    if (min <= startDate && max >= endDate) {
+                        return true;
+                    }
+                    return false;
+
+                }else{
+                    return false;
+                }
+        
             }
         }
     )

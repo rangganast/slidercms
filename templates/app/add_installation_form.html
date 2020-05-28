@@ -41,7 +41,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label" for="app_select">Nama Aplikasi</label>
                 <div class="col-sm-10">
-                    <select id="app_select" class="form-control input-lg">
+                    <select id="app_select" class="form-control input-lg" required>
                         <option value="">Pilih Aplikasi</option>
                         {% for app in apps %}
                         <option value="{{ app.id }}">{{ app.name }}</option>
@@ -55,7 +55,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label" for="page_select">Nama Halaman</label>
                 <div class="col-sm-10">        
-                    <select id="page_select" class="form-control" disabled>
+                    <select id="page_select" class="form-control" disabled required>
                         {% include 'app/pages_dropdown_list_options.html' %}
                     </select>
                 </div>

@@ -82,7 +82,11 @@
                     </label>
                     <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
                     <div class="col-sm-9 no-padding">
+                        {% if installation.redirect == None %}
+                        <input type="text" class="form-control no-border" value="" disabled>
+                        {% else %}
                         <input type="text" class="form-control no-border" value="{{campaign.campaign_code}}" disabled>
+                        {% endif %}
                     </div>
                 </div>
                 

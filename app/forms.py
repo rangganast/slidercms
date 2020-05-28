@@ -143,14 +143,17 @@ class InstallationForm(forms.ModelForm):
 InstallationFormSet = modelformset_factory(Installation, form=InstallationForm, extra=1, can_delete=True)
 
 class UserForm(forms.ModelForm):
-    DEVELOPER = 1
-    MARKETING = 2
+    SUPERUSER = 1
+    DEVELOPER = 2
+    MARKETING = 3
     ROLE_CHOICES = (
+        (None, 'Pilih Role'),
+        (SUPERUSER, 'Super Admin'),
         (DEVELOPER, 'Developer'),
         (MARKETING, 'Marketing'),
     )
 
-    roles = forms.ChoiceField(choices=ROLE_CHOICES, widget=forms.Select(attrs={'class' : 'form-control'}), label='Role', required=False)
+    roles = forms.ChoiceField(choices=ROLE_CHOICES, widget=forms.Select(attrs={'class' : 'form-control'}), label='Role')
 
     class Meta:
         model = User
@@ -161,15 +164,10 @@ class UserForm(forms.ModelForm):
             'password' : _('Password'),
         }
         widgets = {
-            'username' : forms.TextInput(attrs={'class' : 'form-control', 'aria-describedby' : 'inputGroupPrependEmail'}),
-            'email' : forms.EmailInput(attrs={'class' : 'form-control', 'aria-describedby' : 'inputGroupPrependUsername'}),
-            'password' : forms.PasswordInput(attrs={'class' : 'form-control', 'aria-describedby' : 'inputGroupPrependPassword'}, render_value=True),
+            'username' : forms.TextInput(attrs={'class' : 'form-control', 'aria-describedby' : 'inputGroupPrependEmail', 'placeholder' : 'Username'}),
+            'email' : forms.EmailInput(attrs={'class' : 'form-control', 'aria-describedby' : 'inputGroupPrependUsername', 'placeholder' : 'Email'}),
+            'password' : forms.PasswordInput(attrs={'class' : 'form-control', 'aria-describedby' : 'inputGroupPrependPassword', 'min' : 8, 'placeholder' : 'Password'}, render_value=True),
         }
-    
-    def __init__(self, *args, **kwargs):
-        super(UserForm, self).__init__(*args, **kwargs)
-        self.fields['username'].required = False 
-        self.fields['email'].required = False 
 
     def clean_email(self):
         email = self.cleaned_data.get('email', False)
@@ -187,6 +185,15 @@ class UserForm(forms.ModelForm):
             return username
         else:
             raise forms.ValidationError("Username telah dipakai. Silahkan masukkan username lain.")
+
+    def clean_password(self):
+
+        password = self.cleaned_data.get('password', False)
+
+        if len(password) > 8:
+            return password
+        else:
+            raise forms.ValidationError("Password kurang dari 8 karakter.")
 
 class KeywordDateRangeForm(forms.Form):
     date1 = forms.DateField(label='Tanggal Cari:', widget=forms.DateInput(

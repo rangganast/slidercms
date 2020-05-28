@@ -11,9 +11,9 @@
 {% block content %}
 <div id="card-field" class="container-fluid mt-3">
 
-    <h3 class="text-center mb-2">Form Update Pengguna
+    <h3 class="text-center mb-2">Ubah Profile
         <span class="btn-group float-right">
-            <a href="{% url 'app:user' %}" style="color: white; text-decoration: none;">
+            <a href="javascript:history.back()" style="color: white; text-decoration: none;">
                 <button type="button" class="btn btn-secondary mr-2">
                     Batal
                 </button>
@@ -29,12 +29,7 @@
             <label class="col-sm-2 col-form-label" for="{{ form_user.email.id_for_label }}">{{ form_user.email.label }}</label>
             <div class="col-sm-10">
                 <div class="input-group">
-                    {{ form_user.email }}
-                    {% if form_user.email %}
-                    {% for error in form_user.email.errors %}
-                    <small style="color: red;">{{error}}</small>
-                    {% endfor %}
-                    {% endif %}
+                    <input type="text" class="form-control" {% if form_user.email.value == None %}{% else %}value="{{ form_user.email.value }}"{% endif %} disabled>
 
                     <div class="input-group-append">
                         <span class="input-group-text" id="inputGroupPrependEmail">
@@ -53,12 +48,7 @@
             <label class="col-sm-2 col-form-label" for="{{ form_user.username.id_for_label }}">{{ form_user.username.label }}</label>
             <div class="col-sm-10">
                 <div class="input-group">
-                    {{ form_user.username }}
-                    {% if form_user.username %}
-                    {% for error in form_user.username.errors %}
-                    <small style="color: red;">{{error}}</small>
-                    {% endfor %}
-                    {% endif %}
+                    <input type="text" class="form-control" value="{{ form_user.username.value }}" disabled>
 
                     <div class="input-group-append">
                         <span class="input-group-text" id="inputGroupPrependUsername">
@@ -76,12 +66,7 @@
             <label class="col-sm-2 col-form-label" for="{{ form_user.password.id_for_label }}">{{ form_user.password.label }}</label>
             <div class="col-sm-10">
                 <div class="input-group">
-                    {{ form_user.password }}
-                    {% if form_user.errors %}
-                    {% for error in form_user.password.errors %}
-                    <small style="color: red;">{{error}}</small>
-                    {% endfor %}
-                    {% endif %}
+                    <input type="password" class="form-control" value="{{ form_user.password.value }}" disabled>
 
                     <div class="input-group-append">
                         <span class="input-group-text" id="inputGroupPrependPassword">
@@ -98,10 +83,9 @@
     </div>
 
 </div>
-    
 
-<div class="modal fade" id="modalEmail" tabindex="-1" role="dialog" aria-labelledby="modalEmail"
-    aria-hidden="true">
+    
+<div class="modal fade" id="modalEmail" tabindex="-1" role="dialog" aria-labelledby="modalEmail" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <form action="{% url 'app:update_email' pk=request.user.id %}" method="POST">
@@ -117,12 +101,12 @@
                     <div class="form-group">
                         <label for="newEmailInput">Email Baru</label>
                         <input type="email" class="form-control" name="newEmailInput" id="newEmailInput"
-                        placeholder="Email" required>
+                            placeholder="Email" required>
                     </div>
                     <div class="form-group">
                         <label for="passwordConfirm">Konfirmasi Password</label>
                         <input type="password" class="form-control" name="passwordConfirm" id="passwordConfirm"
-                        placeholder="Password" required>
+                            placeholder="Password" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -152,12 +136,18 @@
                     <div class="form-group">
                         <label for="newUsernameInput">Username Baru</label>
                         <input type="text" class="form-control" name="newUsernameInput" id="newUsernameInput"
-                        placeholder="Username" required>
+                            placeholder="Username" required>
+                        {% if username_errors %}
+                            {% for error in username_errors %}
+                                <small style="color: red;">{{error}}</small>
+                            {% endfor %}
+                        {% endif %}
+                            
                     </div>
                     <div class="form-group">
                         <label for="passwordConfirm">Konfirmasi Password</label>
                         <input type="password" class="form-control" name="passwordConfirm" id="passwordConfirm"
-                        placeholder="Password" required>
+                            placeholder="Password" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -217,17 +207,23 @@
 {% block script %}
 
 <script>
-    $('#sliderManagement').removeClass('menu-open');
-    $('a#userManagement').addClass('active');
-
-    $('#modalPassword form').submit(function() {
-        if($('#newPasswordConfirm').val() != $('#newPasswordInput').val()){
-            $('.password-warning-text').show();
-            return false;
-        }else{
-            $('.password-warning-text').hide();
-            $(this).submit();
-        }
+    $(document).ready(function (){
+        $('#sliderManagement').removeClass('menu-open');
+        $('a#userManagement').addClass('active');
+        
+        $('#id_email').val('');
+        $('#id_username').val('');
+        $('#id_password').val('');
+    
+        $('#modalPassword form').submit(function() {
+            if($('#newPasswordConfirm').val() != $('#newPasswordInput').val()){
+                $('.password-warning-text').show();
+                return false;
+            }else{
+                $('.password-warning-text').hide();
+                $(this).submit();
+            }
+        });
     })
 
     {% if messages %}
@@ -266,6 +262,21 @@
         });
     {% endif %}
     
+    {% if 'username_error' in message.tags %}
+        Swal.fire({
+            icon: 'error',
+            title: '{{ message }}',
+            text: 'Silahkan coba username lain!',
+            confirmButtonClass: 'btn btn-primary',
+        }).then((result) => {
+            if (result.value) {
+                $('#modalUsername').modal('show');
+            }else{
+                $('#modalUsername').show('show');
+            }
+        });
+    {% endif %}
+    
     {% if 'email_changed' in message.tags %}
     Swal.fire({
         icon: 'success',
@@ -289,6 +300,21 @@
             }
         });
     {% endif %}
+
+    {% if 'email_error' in message.tags %}
+        Swal.fire({
+            icon: 'error',
+            title: '{{ message }}',
+            text: 'Silahkan coba Email lain!',
+            confirmButtonClass: 'btn btn-primary',
+        }).then((result) => {
+            if (result.value) {
+                $('#modalEmail').modal('show');
+            }else{
+                $('#modalEmail').show('show');
+            }
+        });
+    {% endif %}
     
     {% if 'password_changed' in message.tags %}
         Swal.fire({
@@ -298,6 +324,36 @@
             confirmButtonClass: 'btn btn-primary',
         })
     {% endif %}
+
+    {% if 'password_error' in message.tags %}
+        Swal.fire({
+            icon: 'error',
+            title: '{{ message }}',
+            text: 'Silahkan coba Password lain!',
+            confirmButtonClass: 'btn btn-primary',
+        }).then((result) => {
+            if (result.value) {
+                $('#modalPassword').modal('show');
+            }else{
+                $('#modalPassword').show('show');
+            }
+        });
+    {% endif %} 
+
+    {% if 'password_less' in message.tags %}
+        Swal.fire({
+            icon: 'error',
+            title: '{{ message }}',
+            text: 'Silahkan coba Password lain!',
+            confirmButtonClass: 'btn btn-primary',
+        }).then((result) => {
+            if (result.value) {
+                $('#modalPassword').modal('show');
+            }else{
+                $('#modalPassword').show('show');
+            }
+        });
+    {% endif %} 
         
     {% endfor %}
     {% endif %}
