@@ -136,8 +136,8 @@ class UpdatePageView(View):
 
     def get(self, request, pk):
         page_instance = Page.objects.filter(pk=pk)
-        location_instance = Location.objects.filter(page_id__in=page_instance)
-        location_actives = Location.objects.filter(page_id__in=page_instance).values_list('is_active')
+        location_instance = Location.objects.filter(page_id__in=page_instance).order_by('pk')
+        location_actives = Location.objects.filter(page_id__in=page_instance).values_list('is_active').order_by('pk')
         actives = []
         for location in list(location_actives):
             actives.append(location[0])
@@ -451,33 +451,7 @@ class InstallationView(View):
         for i in range(len(campaigns_0)):
             if Installation.objects.filter(campaign_id=campaigns_0[i].id).exists():
 
-                # Validate Valid Date
-                valid_date = None
-                if campaigns_0[i].valid_date_start != None:
-                    start = campaigns_0[i].valid_date_start.strftime('%d/%m/%Y')
-                    valid_date = start + ' s/d '
-                else:
-                    valid_date = None
-
-                if campaigns_0[i].valid_date_end != None:
-                    end = campaigns_0[i].valid_date_end.strftime('%d/%m/%Y')
-                    valid_date = valid_date + end
-                else:
-                    valid_date = None
-
-                # Validate Created Date
-                if campaigns_0[i].date_created != None:
-                    date_created = campaigns_0[i].date_created.strftime('%d/%m/%Y')
-                else:
-                    date_created = None
-
-                # Validate Updated Date
-                if campaigns_0[i].date_updated != None:
-                    date_updated = campaigns_0[i].date_updated.strftime('%d/%m/%Y')
-                else:
-                    date_updated = None
-
-                contents_0.append({'loc_id' : None, 'page_id' : None, 'app' : None, 'app_id' : None, 'page' : None, 'location' : None, 'banners' : [], 'campaign_id' : campaigns_0[i].id, 'campaign_code' : campaigns_0[i].campaign_code, 'priority' : campaigns_0[i].priority, 'created_date' : date_created, 'updated_date' : date_updated, 'valid_date' : valid_date})
+                contents_0.append({'loc_id' : None, 'page_id' : None, 'app' : None, 'app_id' : None, 'page' : None, 'location' : None, 'banners' : [], 'campaign_id' : campaigns_0[i].id, 'campaign_code' : campaigns_0[i].campaign_code, 'priority' : campaigns_0[i].priority, 'valid_date' : None, 'status' : 'Active'})
 
                 installs = Installation.objects.filter(campaign_id=contents_0[-1]['campaign_id'])
                 for install in installs:
@@ -520,19 +494,18 @@ class InstallationView(View):
                 else:
                     valid_date = None
 
-                # Validate Created Date
-                if campaigns[i].date_created != None:
-                    date_created = campaigns[i].date_created.strftime('%d/%m/%Y')
+                status = None
+                if (campaigns[i].valid_date_start != None) and (campaigns[i].valid_date_start != None):
+                    if (datetime.date.today() >= campaigns[i].valid_date_start) and (datetime.date.today() <= campaigns[i].valid_date_end):
+                        status = 'Active'
+                    elif datetime.date.today() > campaigns[i].valid_date_end:
+                        status = 'Completed'
+                    else:
+                        status = 'Upcoming'
                 else:
-                    date_created = None
+                    status = ''
 
-                # Validate Updated Date
-                if campaigns[i].date_updated != None:
-                    date_updated = campaigns[i].date_updated.strftime('%d/%m/%Y')
-                else:
-                    date_updated = None
-
-                contents.append({'loc_id' : None, 'page_id' : None, 'app' : None, 'app_id' : None, 'page' : None, 'location' : None, 'banners' : [], 'campaign_id' : campaigns[i].id, 'campaign_code' : campaigns[i].campaign_code, 'priority' : campaigns[i].priority, 'created_date' : date_created, 'updated_date' : date_updated, 'valid_date' : valid_date})
+                contents.append({'loc_id' : None, 'page_id' : None, 'app' : None, 'app_id' : None, 'page' : None, 'location' : None, 'banners' : [], 'campaign_id' : campaigns[i].id, 'campaign_code' : campaigns[i].campaign_code, 'priority' : campaigns[i].priority, 'valid_date' : valid_date, 'status' : status})
 
                 installs = Installation.objects.filter(campaign_id=contents[-1]['campaign_id'])
                 for install in installs:
@@ -771,6 +744,19 @@ class DetailInstallationView(View):
         app_instance = Application.objects.get(pk=page_instance.application_id)
         banner_instance = Banner.objects.all()
 
+        status = None
+        if (campaign_instance.valid_date_start != None) and (campaign_instance.valid_date_start != None):
+            if (datetime.date.today() >= campaign_instance.valid_date_start) and (datetime.date.today() <= campaign_instance.valid_date_end):
+                status = 'Active'
+            elif datetime.date.today() > campaign_instance.valid_date_end:
+                status = 'Completed'
+            else:
+                status = 'Upcoming'
+        elif campaign_instance.priority == 0:
+            status = 'Active'
+        else:
+            status = ''
+
         context = {
             'installations' : installation_instance,
             'campaign' : campaign_instance,
@@ -778,6 +764,7 @@ class DetailInstallationView(View):
             'page' : page_instance,
             'app' : app_instance,
             'banners' : banner_instance,
+            'status' : status,
         }
         
         return render(request, self.template_name, context)

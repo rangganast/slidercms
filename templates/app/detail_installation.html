@@ -82,11 +82,7 @@
                     </label>
                     <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
                     <div class="col-sm-9 no-padding">
-                        {% if installation.redirect == None %}
-                        <input type="text" class="form-control no-border" value="" disabled>
-                        {% else %}
                         <input type="text" class="form-control no-border" value="{{campaign.campaign_code}}" disabled>
-                        {% endif %}
                     </div>
                 </div>
                 
@@ -97,6 +93,46 @@
                     <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
                     <div class="col-sm-9 no-padding">
                         <input type="text" class="form-control no-border" value="{{campaign.priority}}" disabled>
+                    </div>
+                </div>
+                
+                <div class="form-group row mt-2">
+                    <label class="col-sm-2 col-form-label" for="">
+                        <strong>Tanggal Dibuat</strong>
+                    </label>
+                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                    <div class="col-sm-9 no-padding">
+                        <input type="text" class="form-control no-border" value="{{campaign.date_created|date:'d/m/Y'}}" disabled>
+                    </div>
+                </div>
+                
+                <div class="form-group row mt-2">
+                    <label class="col-sm-2 col-form-label" for="">
+                        <strong>Tanggal Diupdate</strong>
+                    </label>
+                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                    <div class="col-sm-9 no-padding">
+                        <input type="text" class="form-control no-border" value="{{campaign.date_updated|date:'d/m/Y'}}" disabled>
+                    </div>
+                </div>
+                
+                <div class="form-group row mt-2">
+                    <label class="col-sm-2 col-form-label" for="">
+                        <strong>Tanggal Berlaku</strong>
+                    </label>
+                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                    <div class="col-sm-9 no-padding">
+                        <input type="text" class="form-control no-border" value="{{campaign.valid_date_start|date:'d/m/Y'}} - {{campaign.valid_date_end|date:'d/m/Y'}}" disabled>
+                    </div>
+                </div>
+                
+                <div class="form-group row mt-2">
+                    <label class="col-sm-2 col-form-label" for="">
+                        <strong>Status Pemasangan</strong>
+                    </label>
+                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                    <div class="col-sm-9 no-padding">
+                        <input type="text" class="form-control no-border" value="{{status}}" disabled>
                     </div>
                 </div>
 

@@ -18,7 +18,7 @@
         data-location-url="{% url 'app:ajax_load_locations' %}">
         <div class="col input-wrapper">
             <div class="row">
-                <div class="col-sm-3 no-padding">
+                <!-- <div class="col-sm-3 no-padding">
                     <label for="app_filter"><small>Cari Tanggal Buat</small></label>
                     <div class="input-group">
                         <input type="text" class="form-control float-right" id="createDateFilter">
@@ -40,7 +40,7 @@
                             </span>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="col-sm-3 no-padding">
                     <label for="page_filter"><small>Cari Tanggal Berlaku</small></label>
                     <div class="input-group">
@@ -50,6 +50,17 @@
                                 <i class="far fa-calendar-alt"></i>
                             </span>
                         </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 no-padding">
+                    <label for="page_filter"><small>Cari Status Pemasangan</small></label>
+                    <div class="input-group">
+                        <select id="status_filter" class="form-control">
+                            <option value="">Cari Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Upcoming">Upcoming</option>
+                        </select>
                     </div>
                 </div>
                 <div class="col-sm-2 no-padding">
@@ -119,9 +130,8 @@
             <th scope="col">Kode Campaign</th>
             <th scope="col">Prioritas</th>
             <th scope="col">Nama Banner</th>
-            <th scope="col">Tanggal Dibuat</th>
-            <th scope="col">Tanggal Diupdate</th>
             <th scope="col">Tanggal Berlaku</th>
+            <th scope="col">Status</th>
             <th scope="col">Aksi</th>
         </tr>
     </thead>
@@ -143,9 +153,8 @@
                     {% endfor %}  
                 </ul>
             </td>
-            <td style="vertical-align: middle; text-align: center;">{{content.created_date}}</td>
-            <td style="vertical-align: middle; text-align: center;">{% if content.updated_date == None %}{% else %}{{content.updated_date}}{% endif %}</td>
             <td style="vertical-align: middle; text-align: center;">{% if content.valid_date == None %}{% else %}{{content.valid_date}}{% endif %}</td>
+            <td style="vertical-align: middle; text-align: center;">{% if content.status == None %}{% else %}{{content.status}}{% endif %}</td>
             <td style="vertical-align: middle;">
                 <span class="spanFormat">
                     <form action="{% url 'app:detail_install' pk=content.campaign_id %}" method="GET">
@@ -176,9 +185,8 @@
                     {% endfor %}  
                 </ul>
             </td>
-            <td style="vertical-align: middle; text-align: center;">{{content.created_date}}</td>
-            <td style="vertical-align: middle; text-align: center;">{% if content.updated_date == None %}{% else %}{{content.updated_date}}{% endif %}</td>
             <td style="vertical-align: middle; text-align: center;">{% if content.valid_date == None %}{% else %}{{content.valid_date}}{% endif %}</td>
+            <td style="vertical-align: middle; text-align: center;">{% if content.status == None %}{% else %}{{content.status}}{% endif %}</td>
             <td style="vertical-align: middle;">
                 <span class="spanFormat">
                     <form action="{% url 'app:detail_install' pk=content.campaign_id %}" method="GET">

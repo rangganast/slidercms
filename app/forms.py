@@ -3,7 +3,7 @@ from PIL import Image
 from .models import Application, Page, Location, Banner, Installation, Campaign, User
 from django.forms import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 
 class LoginForm(AuthenticationForm):
     error_messages = {
@@ -12,8 +12,11 @@ class LoginForm(AuthenticationForm):
         )
     }
 
-    username = forms.CharField(widget=forms.TextInput(attrs={'type': 'text', 'id': 'inputEmail', 'class': 'form-control', 'name': 'username', 'placeholder': 'Username', 'required': 'True', 'autofocus': 'True'}))
-    password = forms.CharField(widget=forms.TextInput(attrs={'type': 'password', 'id': 'inputPassword', 'class': 'form-control', 'name': 'password', 'placeholder': 'Password', 'required': 'True',}))
+    username = forms.CharField(widget=forms.TextInput(attrs={'type': 'text', 'id': 'id_username', 'class': 'form-control', 'name': 'username', 'placeholder': 'Username', 'required': 'True', 'autofocus': 'True'}))
+    password = forms.CharField(widget=forms.TextInput(attrs={'type': 'password', 'id': 'id_password', 'class': 'form-control', 'name': 'password', 'placeholder': 'Password', 'required': 'True',}))
+
+class PasswordResetForm(PasswordResetForm):
+    email = forms.CharField(widget=forms.EmailInput(attrs={'type': 'text', 'id': 'id_email', 'class': 'form-control', 'name': 'email', 'placeholder': 'Email', 'required': 'True', 'autofocus': 'True'}))
 
 class ApplicationForm(forms.ModelForm):
     names = forms.ModelChoiceField(queryset=Application.objects.all(), widget=forms.Select(attrs={'class' : 'form-control'}), label='Nama Aplikasi', empty_label='Pilih Aplikasi')

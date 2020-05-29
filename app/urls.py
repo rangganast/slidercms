@@ -1,9 +1,10 @@
 from . import views
-from django.urls import path, include
+from django.urls import reverse_lazy
+from django.urls import path, include, re_path
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
-from .forms import LoginForm
+from .forms import LoginForm, PasswordResetForm
 
 app_name = 'app'
 
@@ -52,5 +53,8 @@ urlpatterns = [
     path('ajax/check-similar-location-update/', views.check_similar_location_update, name='ajax_check_similar_location_update'),
 
     path('login/', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
+    path('password_reset/', auth_views.PasswordResetView.as_view(form_class=PasswordResetForm, success_url=reverse_lazy('app:password_reset_done')), name='password_reset'),
+    path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    re_path(r'password_reset_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

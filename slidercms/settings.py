@@ -76,6 +76,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'slidercms.wsgi.application'
 
+# Email
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '82bc2ad88b3be2'
+EMAIL_HOST_PASSWORD = 'd73513f52d45c6'
+EMAIL_PORT = '2525'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -154,9 +161,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIAFILES_DIRS = [os.path.join(BASE_DIR, 'media')]
 
+# LOGIN URL
+
 LOGIN_URL = 'app:login'
 LOGIN_REDIRECT_URL = 'app:page'
 LOGOUT_REDIRECT_URL = 'app:login'
+
+# DJANGO REST FRAMEWORK
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (

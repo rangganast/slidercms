@@ -35,6 +35,11 @@ $(document).ready(function () {
 
     $('#validDateFilter').attr("placeholder", "DD/MM/YYYY - DD/MM/YYYY");
 
+    $('#status_filter').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Cari Aplikasi',
+    });
+
     $('#app_filter').select2({
         theme: 'bootstrap4',
         placeholder: 'Cari Aplikasi',
@@ -55,8 +60,8 @@ $(document).ready(function () {
 // DATATABLES
 table = $('#installTable').DataTable({
     bInfo : false,
-    sScrollX: true,
     aaSorting: [],
+    responsive: true,
     dom : "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
 });
 
@@ -64,17 +69,17 @@ $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/insta
 // DATATABLES
 
 // DATE FILTERS
-$('#createDateFilter').on('apply.daterangepicker', function (ev, picker) {
-    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-    createDateRangeFilter();
-    table.draw();
-});
+// $('#createDateFilter').on('apply.daterangepicker', function (ev, picker) {
+//     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+//     createDateRangeFilter();
+//     table.draw();
+// });
 
-$('#updateDateFilter').on('apply.daterangepicker', function (ev, picker) {
-    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-    updateDateRangeFilter();
-    table.draw();
-});
+// $('#updateDateFilter').on('apply.daterangepicker', function (ev, picker) {
+//     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+//     updateDateRangeFilter();
+//     table.draw();
+// });
 
 $('#validDateFilter').on('apply.daterangepicker', function (ev, picker) {
     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -85,6 +90,12 @@ $('#validDateFilter').on('apply.daterangepicker', function (ev, picker) {
 
 $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
+});
+
+$('#status_filter').change(function () {
+    var activename = $(this).find('option:selected').text().toLowerCase();
+    var regex = '\\b' + activename + '\\b';
+    table.column(8).search(regex, true, false).draw();
 });
 
 $('#app_filter').change(function () {
@@ -151,8 +162,9 @@ $('#location_filter').change(function () {
 $('#resetFilter').click(function () {
     $('#myInputTextField').val('');
     $('#validDateFilter').val('');
-    $('#updateDateFilter').val('');
-    $('#createDateFilter').val('');
+    // $('#updateDateFilter').val('');
+    // $('#createDateFilter').val('');
+    $('#status_filter').val('').trigger('change');
     $('#app_filter').val('').trigger('change');
     $('#page_filter').val('').trigger('change');
     $('#page_filter').prop('disabled', true);
@@ -164,8 +176,8 @@ $('#resetFilter').click(function () {
     
     table = $('#installTable').DataTable({
         bInfo: false,
-        sScrollX: true,
         aaSorting: [],
+        responsive : true,
         dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
     });
     
@@ -174,57 +186,57 @@ $('#resetFilter').click(function () {
     table.draw();
 });
 
-function createDateRangeFilter() {
-    $.fn.dataTable.ext.search = [];
-    $.fn.dataTable.ext.search.push(
-        function (settings, data, dataIndex) {
-            var value = $('#createDateFilter').val()
-            if(value){
-                var value = value.split(' - ');
-                var min = value[0];
-                var max = value[1];
+// function createDateRangeFilter() {
+//     $.fn.dataTable.ext.search = [];
+//     $.fn.dataTable.ext.search.push(
+//         function (settings, data, dataIndex) {
+//             var value = $('#createDateFilter').val()
+//             if(value){
+//                 var value = value.split(' - ');
+//                 var min = value[0];
+//                 var max = value[1];
     
-                var min = min.split('/');
-                var max = max.split('/');
+//                 var min = min.split('/');
+//                 var max = max.split('/');
     
-                var min = new Date(min[2] + '-' + min[1] + '-' + min[0]);
-                var max = new Date(max[2] + '-' + max[1] + '-' + max[0]);
+//                 var min = new Date(min[2] + '-' + min[1] + '-' + min[0]);
+//                 var max = new Date(max[2] + '-' + max[1] + '-' + max[0]);
     
-                var createDate = data[7].split('/');
-                var createDate = new Date(createDate[2] + '-' + createDate[1] + '-' + createDate[0]);
+//                 var createDate = data[7].split('/');
+//                 var createDate = new Date(createDate[2] + '-' + createDate[1] + '-' + createDate[0]);
     
-                if (min == null && max == null) {
-                    return true;
-                }
-                if (min == null && createDate <= max) {
-                    return true;
-                }
-                if (max == null && createDate >= min) {
-                    return true;
-                }
-                if (createDate <= max && createDate >= min) {
-                    return true;
-                }
-                return false;
-            }else{
-                $.fn.dataTable.ext.search = [];
-                table.destroy();
+//                 if (min == null && max == null) {
+//                     return true;
+//                 }
+//                 if (min == null && createDate <= max) {
+//                     return true;
+//                 }
+//                 if (max == null && createDate >= min) {
+//                     return true;
+//                 }
+//                 if (createDate <= max && createDate >= min) {
+//                     return true;
+//                 }
+//                 return false;
+//             }else{
+//                 $.fn.dataTable.ext.search = [];
+//                 table.destroy();
 
-                table = $('#installTable').DataTable({
-                    bInfo: false,
-                    sScrollX: true,
-                    aaSorting: [],
-                    responsive: true,
-                    dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
-                });
+//                 table = $('#installTable').DataTable({
+//                     bInfo: false,
+//                     sScrollX: true,
+//                     aaSorting: [],
+//                     responsive: true,
+//                     dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
+//                 });
 
-                $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/installation/add_installation"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Pemasangan</button></a></div>');
+//                 $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/installation/add_installation"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Pemasangan</button></a></div>');
 
-                table.draw();
-            }
-        }
-    )
-};
+//                 table.draw();
+//             }
+//         }
+//     )
+// };
 
 function validDateRangeFilter() {
     $.fn.dataTable.ext.search = [];
@@ -263,42 +275,42 @@ function validDateRangeFilter() {
     )
 };
 
-function updateDateRangeFilter() {
-    $.fn.dataTable.ext.search = [];
-    $.fn.dataTable.ext.search.push(
-        function (settings, data, dataIndex) {
-            var value = $('#updateDateFilter').val();
-            if(value){
-                var value = value.split(' - ')
-                var min = value[0];
-                var max = value[1];
+// function updateDateRangeFilter() {
+//     $.fn.dataTable.ext.search = [];
+//     $.fn.dataTable.ext.search.push(
+//         function (settings, data, dataIndex) {
+//             var value = $('#updateDateFilter').val();
+//             if(value){
+//                 var value = value.split(' - ')
+//                 var min = value[0];
+//                 var max = value[1];
         
-                var min = min.split('/');
-                var max = max.split('/');
+//                 var min = min.split('/');
+//                 var max = max.split('/');
         
-                var min = new Date(min[2] + '-' + min[1] + '-' + min[0]);
-                var max = new Date(max[2] + '-' + max[1] + '-' + max[0]);
+//                 var min = new Date(min[2] + '-' + min[1] + '-' + min[0]);
+//                 var max = new Date(max[2] + '-' + max[1] + '-' + max[0]);
         
-                var updateDate = data[8].split('/');
-                var updateDate = new Date(updateDate[2] + '-' + updateDate[1] + '-' + updateDate[0]);
+//                 var updateDate = data[8].split('/');
+//                 var updateDate = new Date(updateDate[2] + '-' + updateDate[1] + '-' + updateDate[0]);
         
-                if (min == null && max == null) {
-                    return true;
-                }
-                if (min == null && updateDate <= max) {
-                    return true;
-                }
-                if (max == null && updateDate >= min) {
-                    return true;
-                }
-                if (updateDate <= max && updateDate >= min) {
-                    return true;
-                }
-                return false;
-            }
-        }
-    )
-};
+//                 if (min == null && max == null) {
+//                     return true;
+//                 }
+//                 if (min == null && updateDate <= max) {
+//                     return true;
+//                 }
+//                 if (max == null && updateDate >= min) {
+//                     return true;
+//                 }
+//                 if (updateDate <= max && updateDate >= min) {
+//                     return true;
+//                 }
+//                 return false;
+//             }
+//         }
+//     )
+// };
 
 function deleteInstall(input) {
     var pk = $(input).attr('id').split('-');
