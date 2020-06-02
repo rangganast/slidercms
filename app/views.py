@@ -7,10 +7,13 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from .decorators import developer_required, marketing_required, superuser_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.core.mail import send_mail
+from django.utils.html import strip_tags
+from django.template.loader import render_to_string
 from . import services
+from .decorators import developer_required, marketing_required, superuser_required
 from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, CampaignFormSet ,InstallationFormSet, UserForm, KeywordDateRangeForm
 from .models import Application, Page, Location, Banner, Campaign, Installation, User
 
@@ -845,17 +848,31 @@ class AddUserView(View):
             username = form_user.cleaned_data['username']
             password = form_user.cleaned_data['password']
 
-            print(email)
+            subject_role = None
 
             if role == '1':
                 user_instance = User(email=email, username=username, is_superuser=True)
+                subject_role = 'Superuser'
             if role == '2':
                 user_instance = User(email=email, username=username, is_developer=True)
+                subject_role = 'Developer'
             elif role == '3':
                 user_instance = User(email=email, username=username, is_marketing=True)
+                subject_role = 'Marketing'
 
             user_instance.set_password(password)
             user_instance.save()
+
+            html_content = render_to_string('app/mail_template.html', {'username' : username, 'email' : email, 'password' : password, 'role' : subject_role})
+
+            send_mail(
+                subject='Super Admin telah menambahkan anda sebagai ' + subject_role,
+                message='',
+                from_email='From <noreply@banner-slider-qa.holahalo.dev>',
+                recipient_list=[email],
+                html_message=html_content,
+                fail_silently=True
+            )
 
             messages.add_message(request, messages.INFO, "User berhasil ditambahkan!", extra_tags="user_added")
 

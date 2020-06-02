@@ -23,12 +23,21 @@
     </div>
     <hr>
     <div class="highlight">
-        <p>Halo, {{ user.get_username }}:</p>
-        <p>Kami menerima permintaan untuk mengatur ulang Password untuk akun CMS Campaign Holahalo.</p>
-        <p>Untuk mengatur ulang password silahkan klik tombol di bawah ini: </p>
+        <p>Halo, {{ username }}:</p>
+        <p>Anda telah ditambahkan oleh Super Admin sebagai {{role}} dengan akun sebagai berikut:</p>
+
+        <br>
+        
+        <p>Nama Akun: {{username}}</p>
+        <p>Email: {{email}}</p>
+        <p>Password: {{password}}</p>
+
+        <br>
+
+        <p>Untuk masuk ke akun anda silahkan klik tombol di bawah ini:</p>
         <div style="text-align: center;">
-            <form action="{{ protocol }}://{{ domain }}{% url 'app:password_reset_confirm' uidb64=uid token=token %}" target="_blank">
-                <button type="submit" class="btn btn-primary">Reset Password</button>
+            <form action="{% url 'app:login' %}" target="_blank">
+                <button type="submit" class="btn btn-primary">Masuk</button>
             </form>
         </div>
         <p>Email ini dibuat secara otomatis. Mohon tidak mengirimkan balasan ke email ini.</p>
