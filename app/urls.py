@@ -55,7 +55,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('password_reset/', auth_views.PasswordResetView.as_view(form_class=PasswordResetForm, success_url=reverse_lazy('app:password_reset_done'), html_email_template_name='registration/password_reset_email.html', from_email='noreply@banner-slider-qa.holahalo.dev'), name='password_reset'),
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    re_path(r'password_reset_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', auth_views.PasswordResetConfirmView.as_view(form_class=SetPasswordForm, success_url=reverse_lazy('app:password_reset_complete')), name='password_reset_confirm'),
-    path('password_reset_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    re_path(r'password_reset_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', auth_views.PasswordResetConfirmView.as_view(form_class=SetPasswordForm, success_url='/login/?resetPassword=yes'), name='password_reset_confirm'),
+    # path('password_reset_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

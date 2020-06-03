@@ -2,27 +2,27 @@ $(document).ready(function () {
     // $('a#sliderManagement').addClass('active');
     $('a#installManagement').addClass('active');
 
-    $('#createDateFilter').daterangepicker({
-        autoUpdateInput: false,
-        cancelButtonClasses: 'btn btn-secondary',
-        locale: {
-            format: 'DD/MM/YYYY',
-            cancelLabel: 'Cancel'
-        }
-    });
+    // $('#createDateFilter').daterangepicker({
+    //     autoUpdateInput: false,
+    //     cancelButtonClasses: 'btn btn-secondary',
+    //     locale: {
+    //         format: 'DD/MM/YYYY',
+    //         cancelLabel: 'Cancel'
+    //     }
+    // });
 
-    $('#createDateFilter').attr("placeholder", "DD/MM/YYYY - DD/MM/YYYY");
+    // $('#createDateFilter').attr("placeholder", "DD/MM/YYYY - DD/MM/YYYY");
 
-    $('#updateDateFilter').daterangepicker({
-        autoUpdateInput: false,
-        cancelButtonClasses: 'btn btn-secondary',
-        locale: {
-            format: 'DD/MM/YYYY',
-            cancelLabel: 'Cancel'
-        }
-    });
+    // $('#updateDateFilter').daterangepicker({
+    //     autoUpdateInput: false,
+    //     cancelButtonClasses: 'btn btn-secondary',
+    //     locale: {
+    //         format: 'DD/MM/YYYY',
+    //         cancelLabel: 'Cancel'
+    //     }
+    // });
 
-    $('#updateDateFilter').attr("placeholder", "DD/MM/YYYY - DD/MM/YYYY");
+    // $('#updateDateFilter').attr("placeholder", "DD/MM/YYYY - DD/MM/YYYY");
 
     $('#validDateFilter').daterangepicker({
         autoUpdateInput: false,
@@ -45,15 +45,15 @@ $(document).ready(function () {
         placeholder: 'Cari Aplikasi',
     });
 
-    // $('#page_filter').select2({
-    //     theme: 'bootstrap4',
-    //     placeholder: 'Cari Halaman',
-    // });
+    $('#page_filter').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Cari Halaman',
+    });
 
-    // $('#location_filter').select2({
-    //     theme: 'bootstrap4',
-    //     placeholder: 'Cari Lokasi',
-    // });
+    $('#location_filter').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Cari Lokasi',
+    });
 
 });
 
@@ -120,44 +120,44 @@ $('#app_filter').change(function () {
     table.column(1).search(regex, true, false).draw();
 });
 
-// $('#page_filter').change(function () {
-//     var url = $('#filterDiv').attr("data-location-url");
-//     var page_id = $(this).val();
+$('#page_filter').change(function () {
+    var url = $('#filterDiv').attr("data-location-url");
+    var page_id = $(this).val();
 
-//     if (page_id) {
-//         $.ajax({
-//             url: url,
-//             data: {
-//                 'page_id': page_id,
-//             },
-//             success: function (data) {
-//                 $("#location_filter").html(data);
-//                 $("#location_filter").prop('disabled', false);
-//             }
-//         });
-//     }
+    if (page_id) {
+        $.ajax({
+            url: url,
+            data: {
+                'page_id': page_id,
+            },
+            success: function (data) {
+                $("#location_filter").html(data);
+                $("#location_filter").prop('disabled', false);
+            }
+        });
+    }
 
-//     var appname = $('#app_filter option:selected').text().toLowerCase();
-//     var pagename = $(this).find('option:selected').text().toLowerCase();
-//     var app_regex = '\\b' + appname + '\\b';
-//     var page_regex = '\\b' + pagename + '\\b';
+    var appname = $('#app_filter option:selected').text().toLowerCase();
+    var pagename = $(this).find('option:selected').text().toLowerCase();
+    var app_regex = '\\b' + appname + '\\b';
+    var page_regex = '\\b' + pagename + '\\b';
 
-//     table.column(1).search(app_regex, true, false).draw();
-//     table.column(2).search(page_regex, true, false).draw();
-// });
+    table.column(1).search(app_regex, true, false).draw();
+    table.column(2).search(page_regex, true, false).draw();
+});
 
-// $('#location_filter').change(function () {
-//     var appname = $('#app_filter option:selected').text().toLowerCase();
-//     var pagename = $('#page_filter option:selected').text().toLowerCase();
-//     var locationname = $(this).find('option:selected').text().toLowerCase();
-//     var app_regex = '\\b' + appname + '\\b';
-//     var page_regex = '\\b' + pagename + '\\b';
-//     var location_regex = '\\b' + locationname + '\\b';
+$('#location_filter').change(function () {
+    var appname = $('#app_filter option:selected').text().toLowerCase();
+    var pagename = $('#page_filter option:selected').text().toLowerCase();
+    var locationname = $(this).find('option:selected').text().toLowerCase();
+    var app_regex = '\\b' + appname + '\\b';
+    var page_regex = '\\b' + pagename + '\\b';
+    var location_regex = '\\b' + locationname + '\\b';
 
-//     table.column(1).search(app_regex, true, false).draw();
-//     table.column(2).search(page_regex, true, false).draw();
-//     table.column(3).search(location_regex, true, false).draw();
-// });
+    table.column(1).search(app_regex, true, false).draw();
+    table.column(2).search(page_regex, true, false).draw();
+    table.column(3).search(location_regex, true, false).draw();
+});
 
 $('#resetFilter').click(function () {
     $('#myInputTextField').val('');

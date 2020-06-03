@@ -6,6 +6,25 @@
 {% block style %}<link rel="stylesheet" href="{% static 'css/login.css' %}">{% endblock style %}
     
 {% block content %}
+<div id="toastDiv" aria-live="polite" aria-atomic="true" style="position: relative;" class="d-flex justify-content-center align-items-center mt-5">
+    <div style="position: absolute;">
+        <div id="loginToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body" style="background-color: #009E0F !important; color: white !important;">
+                <button id="closeToast" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="wrapper-icon">
+                    <div class="icon mr-2">
+                        <i class="fas fa-2x fas fa-check mt-2"></i>
+                    </div>
+                    <div class="">
+                        <p>Reset password berhasil. Silahkan masuk menggunakan password baru anda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container">
     <div class="row">
@@ -44,5 +63,36 @@
 </div>
 
 {% endblock content %}
+
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/js/all.min.js"></script>
+
+<script>
+    $(document).ready(function (){
+        var searchParams = new URLSearchParams(window.location.search)
+        
+        if(searchParams.has('resetPassword')) {
+            if(searchParams.get('resetPassword') == 'yes'){
+                $('#loginToast').toast({autohide: false});
+                $('#loginToast').toast('show');
+            }else{
+                $('#toastDiv').remove();
+            }
+        }else{
+            $('#toastDiv').remove();
+        }
+    });
+
+    $('#closeToast').click(function (){
+        $('#loginToast').toast('dispose');
+        $('#toastDiv').remove();
+    });
+
+    $('.toast').click(function (){
+        $('#loginToast').toast('dispose');
+        $('#toastDiv').remove();
+    });
+</script>    
+{% endblock script %}
     
 

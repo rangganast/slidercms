@@ -1,3 +1,20 @@
+.wrapper-icon {
+    display: flex;
+    height: 50%;
+    margin-top: -11px;
+}
+
+.wrapper-icon p {
+    margin: 0;
+    padding: 0;
+}
+
+.icon-update-profile {
+    background-color: lightgrey;
+    width: 300px;
+    padding: 50px;
+}
+
 :root {
     --input-padding-x: 1.5rem;
     --input-padding-y: .75rem;

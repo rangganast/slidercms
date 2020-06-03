@@ -3,6 +3,7 @@ from PIL import Image
 from .models import Application, Page, Location, Banner, Installation, Campaign, User
 from django.forms import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
 
 class LoginForm(AuthenticationForm):
@@ -19,8 +20,37 @@ class PasswordResetForm(PasswordResetForm):
     email = forms.CharField(widget=forms.EmailInput(attrs={'type': 'email', 'id': 'id_email', 'class': 'form-control', 'name': 'email', 'placeholder': 'Email', 'required': 'True', 'autofocus': 'True'}))
 
 class SetPasswordForm(SetPasswordForm):
+    error_messages = {
+        'password_too_short': _("Password terlalu pendek (min. 8 karakter)"),
+        'password_mismatch': _("Password tidak sama"),
+        'required': _("Field tidak boleh kosong"),
+    }
+
     new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'type': 'password', 'id': 'id_new_password1', 'class': 'form-control', 'name': 'new_password1', 'placeholder': 'Password Baru', 'required': 'True', 'autofocus': 'True'}))
     new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'type': 'password', 'id': 'id_new_password2', 'class': 'form-control', 'name': 'new_password2', 'placeholder': 'Konfirmas Password Baru', 'required': 'True'}))
+
+    def __init__(self, *args, **kwargs):
+        super(SetPasswordForm, self).__init__(*args, **kwargs)
+        self.fields['new_password2'].error_messages['required'] = _("Field tidak boleh kosong")
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if password1 and password2:
+            if password1 != password2:
+                raise ValidationError(
+                    self.error_messages['password_mismatch'],
+                    code='password_mismatch',
+                )
+
+            if len(password2) < 8:
+                raise ValidationError(
+                    "Password tidak boleh kurang dari 8 karakter",
+                    code='password_too_short',
+            )
+
+        return password2
+
 
 class ApplicationForm(forms.ModelForm):
     names = forms.ModelChoiceField(queryset=Application.objects.all(), widget=forms.Select(attrs={'class' : 'form-control'}), label='Nama Aplikasi', empty_label='Pilih Aplikasi')
