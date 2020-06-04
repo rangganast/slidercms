@@ -24,11 +24,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = 0
+# DEBUG = True
+DEBUG = 0
 
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
@@ -90,21 +90,21 @@ EMAIL_PORT = config('EMAIL_PORT')
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME' : 'slidercmsDB',
-        'USER' : 'postgres',
-        'PASSWORD' : 'root',
-        'HOST' : 'localhost',
-    }   
     # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME' : config('DB_NAME'),
-    #     'USER' : config('DB_USER'),
-    #     'PASSWORD' : config('DB_PASSWORD'),
-    #     'HOST' : config('DB_HOST'),
-    #     'PORT' : '',
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME' : 'slidercmsDB',
+    #     'USER' : 'postgres',
+    #     'PASSWORD' : 'root',
+    #     'HOST' : 'localhost',
     # }   
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME' : config('DB_NAME'),
+        'USER' : config('DB_USER'),
+        'PASSWORD' : config('DB_PASSWORD'),
+        'HOST' : config('DB_HOST'),
+        'PORT' : '',
+    }   
 }
 
 PASSWORD_HASHERS = [
