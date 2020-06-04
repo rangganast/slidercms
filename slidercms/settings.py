@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,14 +21,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'tva_!lb^te36kxke^1(!!h&zdz92*6k24n2=h3qynp+wfe9wdx'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = 0
+DEBUG = True
+# DEBUG = 0
 
-# ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['banner-slider-qa.holahalo.dev', 'localhost']
+ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
@@ -80,30 +81,30 @@ WSGI_APPLICATION = 'slidercms.wsgi.application'
 # Email
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-EMAIL_HOST = 'smtp.mailtrap.io'
-EMAIL_HOST_USER = '82bc2ad88b3be2'
-EMAIL_HOST_PASSWORD = 'd73513f52d45c6'
-EMAIL_PORT = '2525'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = config('EMAIL_PORT')
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME' : 'slidercmsDB',
-    #     'USER' : 'postgres',
-    #     'PASSWORD' : 'root',
-    #     'HOST' : 'localhost',
-    # }   
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME' : 'slidercmsdbqa',
-        'USER' : 'iamsuperuser',
-        'PASSWORD' : 'amwTxd4qu6',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME' : 'slidercmsDB',
+        'USER' : 'postgres',
+        'PASSWORD' : 'root',
         'HOST' : 'localhost',
-        'PORT' : '',
     }   
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME' : config('DB_NAME'),
+    #     'USER' : config('DB_USER'),
+    #     'PASSWORD' : config('DB_PASSWORD'),
+    #     'HOST' : config('DB_HOST'),
+    #     'PORT' : '',
+    # }   
 }
 
 PASSWORD_HASHERS = [
