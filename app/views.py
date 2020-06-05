@@ -30,7 +30,7 @@ class PageView(View):
         contents = []
 
         for i in range(len(pages)):
-            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_counters' : [], 'location_ids' : [], 'location_names' : [], 'location_sizes' : [], 'location_is_active': [], 'is_active' : False})
+            contents.append({'app' : None, 'page_id' : pages[i].id, 'page_name' : pages[i].name, 'is_archived' : pages[i].is_archived, 'location_counters' : [], 'location_ids' : [], 'location_names' : [], 'location_codes' : [], 'location_sizes' : [], 'location_is_active': [], 'is_active' : False})
             for app in apps:
                 if pages[i].application_id == app.id:
                     contents[i]['app'] = app.name
@@ -40,6 +40,7 @@ class PageView(View):
                     contents[i]['location_counters'].append(j)
                     contents[i]['location_ids'].append(locations[j].id)
                     contents[i]['location_names'].append(locations[j].name)
+                    contents[i]['location_codes'].append(locations[j].loc_code)
                     contents[i]['location_sizes'].append(str(locations[j].width) + " x " + str(locations[j].height))
                     contents[i]['location_is_active'].append(locations[j].is_active)
 
@@ -102,11 +103,12 @@ class AddPageView(View):
                     for i in range(int(min_loc), int(max_loc) + 1):
                         if locform[i]:
                             name = locform[i]['name']
+                            loc_code = locform[i]['loc_code']
                             is_slider = locform[i]['is_slider']
                             width = locform[i]['width']
                             height = locform[i]['height']
 
-                            loc_instance = Location(name=name, width=width, height=height, is_slider=is_slider, page=page_instance)
+                            loc_instance = Location(name=name, loc_code=loc_code, width=width, height=height, is_slider=is_slider, page=page_instance)
                             loc_instance.save()
 
                             campaign_instance = Campaign(date_created=datetime.date.today(), priority=0, location_id=loc_instance.id)
@@ -188,6 +190,7 @@ class UpdatePageView(View):
                         loc_id = location.cleaned_data['id']
                         is_slider = location.cleaned_data['is_slider']
                         name = location.cleaned_data['name']
+                        loc_code = location.cleaned_data['loc_code']
                         width = location.cleaned_data['width']
                         height = location.cleaned_data['height']
 
@@ -195,12 +198,13 @@ class UpdatePageView(View):
                             loc_instance = loc_id
                             loc_instance.is_slider = is_slider
                             loc_instance.name = name
+                            loc_instance.loc_code = loc_code
                             loc_instance.width = width
                             loc_instance.height = height
 
                             loc_instance.save()
                         else:
-                            loc_instance = Location(is_slider=is_slider, name=name, width=width, height=height, page_id=page_instance.id)
+                            loc_instance = Location(is_slider=is_slider, name=name, loc_code=loc_code, width=width, height=height, page_id=page_instance.id)
                             loc_instance.save()
 
                             campaign_instance = Campaign(date_created=datetime.date.today(), priority=0, location_id=loc_instance.id)
@@ -1031,6 +1035,33 @@ class KeywordListPage(View):
             context['date2'] = date2
             
         return render(request, self.template_name, context)
+
+@login_required
+def check_location_code_available_add(request):
+    value = request.GET.get('value')
+    app_value = request.GET.get('app_value')
+    check = True
+
+    pages = Page.objects.filter(application_id=app_value)
+
+    if Location.objects.filter(loc_code=value, page_id__in=pages).exists():
+        check = False
+
+    return HttpResponse(check)
+
+@login_required
+def check_location_code_available_update(request):
+    value = request.GET.get('value')
+    app_value = request.GET.get('app_value')
+    loc_id = request.GET.get('loc_id')
+    check = True
+
+    pages = Page.objects.filter(application_id=app_value)
+
+    if Location.objects.filter(loc_code=value, page_id__in=pages).exclude(id=loc_id).exists():
+        check = False
+
+    return HttpResponse(check)
 
 @login_required
 def check_campaign_code_available_add(request):

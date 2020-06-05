@@ -51,7 +51,6 @@ class SetPasswordForm(SetPasswordForm):
 
         return password2
 
-
 class ApplicationForm(forms.ModelForm):
     names = forms.ModelChoiceField(queryset=Application.objects.all(), widget=forms.Select(attrs={'class' : 'form-control'}), label='Nama Aplikasi', empty_label='Pilih Aplikasi')
 
@@ -82,14 +81,16 @@ class LocationForm(forms.ModelForm):
 
     class Meta:
         model = Location
-        fields = ['is_slider', 'name', 'height', 'width']
+        fields = ['is_slider', 'loc_code', 'name', 'height', 'width']
         labels = {
             'name' : 'Nama Lokasi Pemasangan',
+            'loc_code' : 'Kode Lokasi pemasangan',
             'width' : 'Ukuran Gambar',
             'height' : 'x',
         }
         widgets = {
             'name' : forms.TextInput(attrs={'class' : 'form-control location-name-input','required': 'True', 'disabled': 'true', 'oninput' : 'checkSimilarLocation(this);'}),
+            'loc_code' : forms.TextInput(attrs={'class' : 'form-control location-code-input','required': 'True', 'disabled': 'true', 'oninput' : 'checkLocationCode(this);'}),
             'width' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'width', 'required': 'True', 'min' : '1', 'disabled': 'true'}),
             'height' : forms.NumberInput(attrs={'class' : 'form-control col-sm-3', 'placeholder' : 'height', 'required': 'True', 'min' : '1', 'disabled': 'true'}),
         }

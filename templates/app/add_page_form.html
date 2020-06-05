@@ -10,7 +10,8 @@
 
 <div class="container mb-5">
     <form id="pageForm" method="POST" data-check-similar-page-url="{% url 'app:ajax_check_similar_page_add' %}"
-        data-check-similar-location-url="{% url 'app:ajax_check_similar_location_add' %}">
+        data-check-similar-location-url="{% url 'app:ajax_check_similar_location_add' %}"
+        data-check-code-location-url="{% url 'app:ajax_check_location_code_add' %}">
         {% csrf_token %}
 
         {{ formset_page.management_form }}
@@ -76,6 +77,15 @@
                                         {% endfor %}
                                     </strong>
                                 </div>    
+                            </div>
+
+                            <div class="form-group row location-code">
+                                <label class="col-sm-3 col-form-label" for="{{ location.loc_code.id_for_label }}">{{ location.loc_code.label }}</label>
+                                <div class="col-sm-9">
+                                    {{ location.loc_code }}
+                                    <small id="id_warning-text-location-code-0" class="location-code-warning-text" style="color: red; display: none;">Kode Lokasi
+                                        telah dipakai. Silahkan masukkan kode lain.</small>
+                                </div>
                             </div>
 
                             <div class="form-group row location-name">

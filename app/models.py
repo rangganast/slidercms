@@ -52,6 +52,7 @@ class Page(models.Model):
 
 class Location(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
+    loc_code = models.CharField(max_length=30, null=True, blank=True, unique=True)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='pages')
     is_slider = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)

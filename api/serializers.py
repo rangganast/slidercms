@@ -48,7 +48,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ('id', 'name', 'application', 'application_name', 'page', 'page_name', 'is_slider', 'width', 'height', 'is_active', 'banners',)
+        fields = ('loc_code', 'name', 'application', 'application_name', 'page', 'page_name', 'is_slider', 'width', 'height', 'is_active', 'banners',)
 
     def get_application(self, obj):
         return obj.page.application.id

@@ -10,19 +10,19 @@ table = $('#pageTable').DataTable({
     ordering : [[ 0, "asc" ]],
     responsive : true,
     dom : "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
-})
+});
 
 $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/page/add_page"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Halaman</button></a></div>');
 
 $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
-})
+});
 
 $('#app_filter').change(function () {
     var appname = $('#app_filter option:selected').text().toLowerCase();
     var regex = '\\b' + appname + '\\b';
     table.column(1).search(regex, true, false).draw();
-})
+});
 
 $('#page_filter').change(function () {
     var appname = $('#app_filter option:selected').text().toLowerCase();
@@ -32,13 +32,20 @@ $('#page_filter').change(function () {
     
     table.column(1).search(app_regex, true, false).draw();
     table.column(2).search(page_regex, true, false).draw();
-})
+});
+
+// $('#active_filter').change(function () {
+//     var value = $(this).find('option:selected').val();
+//     activeFilter();
+//     table.draw();
+// });
 
 $('#resetFilter').click(function(){
     $('#myInputTextField').val('');
     $('#app_filter').val('').trigger('change');
     $('#page_filter').val('').trigger('change');
     $('#page_filter').prop('disabled', true);
+    $('#active_filter').val('').trigger('change');
 
     table.destroy()
 
@@ -187,3 +194,10 @@ function deletePage(input) {
         };
     });
 };
+
+// function activeFilter(){
+//     var value = $('#active_filter').find('option:selected').val();
+//     table.cell(0, 5).nodes().to$().find('input[type="checkbox"]').each(function (){
+//         console.log($(this).val());
+//     });
+// }

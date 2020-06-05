@@ -41,6 +41,8 @@ function clonePage(selector){
     newElement.find('#id_location-' + (totalPage - 1) + '-is_slider_1').prop('disabled', true);
     newElement.find('#id_location-' + (totalPage - 1) + '-name').val('');
     newElement.find('#id_location-' + (totalPage - 1) + '-name').prop('disabled', true);
+    newElement.find('#id_location-' + (totalPage - 1) + '-loc_code').val('');
+    newElement.find('#id_location-' + (totalPage - 1) + '-loc_code').prop('disabled', true);
     newElement.find('#id_location-' + (totalPage - 1) + '-width').val('');
     newElement.find('#id_location-' + (totalPage - 1) + '-width').prop('disabled', true);
     newElement.find('#id_location-' + (totalPage - 1) + '-height').val('');
@@ -51,7 +53,6 @@ function clonePage(selector){
     
     newElement.find('#id_page-' + (totalPage - 1) + '-min').attr('id', 'id_page-' + totalPage + '-min');
     newElement.find('#id_page-' + totalPage + '-min').attr('name', 'page-' + totalPage + '-min');
-    newElement.find('#id_page-' + totalPage + '-min').val('');
 
     newElement.find('#id_page-' + (totalPage - 1) + '-max').attr('id', 'id_page-' + totalPage + '-max');
     newElement.find('#id_page-' + totalPage + '-max').attr('name', 'page-' + totalPage + '-max');
@@ -59,8 +60,8 @@ function clonePage(selector){
     newElement.find('#id_warning-text-page-' + (totalPage - 1)).attr('id', 'id_warning-text-page-' + totalPage);
     newElement.find('#id_warning-text-page-' + totalPage).hide();
     
-    newElement.find('#id_warning-text-location-' + (totalPage - 1)).attr('id', 'id_warning-text-location-' + totalPage);
-    newElement.find('#id_warning-text-location-' + totalPage).hide();
+    newElement.find('.location-warning-text').hide();
+    newElement.find('.location-code-warning-text').hide();
     
     newElement.find('#id_location-add-' + (totalPage - 1)).attr('id', 'id_location-add-' + totalPage);
     newElement.find('#id_location-delete-' + (totalPage - 1)).attr('id', 'id_location-delete-' + totalPage).hide();
@@ -106,7 +107,18 @@ function clonePage(selector){
         $(this).attr("id", "id_warning-text-location-" + index);
     });
 
+    $('.location-code input').each(function (index) {
+        $(this).attr("id", "id_location-" + index + "-loc_code");
+        $(this).attr("name", "location-" + index + "-loc_code");
+    });
 
+    $('.location-code').find('label').each(function (index) {
+        $(this).attr("for", "id_location-" + index + "-loc_code");
+    });
+
+    $('.location-code').find('small').each(function (index) {
+        $(this).attr("id", "id_warning-text-location-code-" + index);
+    });
     
     $('.location-size').find('input:first').each(function (index) {
         $(this).attr("id", "id_location-" + index + "-width");
@@ -206,6 +218,19 @@ function removePage(selector) {
     $('.location-name').find('small').each(function (index) {
         $(this).attr("id", "id_warning-text-location-" + index);
     });
+
+    $('.location-code input').each(function (index) {
+        $(this).attr("id", "id_location-" + index + "-loc_code");
+        $(this).attr("name", "location-" + index + "-loc_code");
+    });
+
+    $('.location-code').find('label').each(function (index) {
+        $(this).attr("for", "id_location-" + index + "-loc_code");
+    });
+
+    $('.location-code').find('small').each(function (index) {
+        $(this).attr("id", "id_warning-text-location-code-" + index);
+    });
     
     
     $('.location-size').find('input:first').each(function (index) {
@@ -263,7 +288,8 @@ function cloneLocation(input) {
 
     newElement.find('input:checked').prop('checked', false);
     newElement.find('input:not(:radio)').val('');
-    newElement.find('.location-name small').hide();
+    newElement.find('.location-warning-text').hide();
+    newElement.find('.location-code-warning-text').hide();
 
     $(selector).after(newElement);
 
@@ -302,6 +328,19 @@ function cloneLocation(input) {
 
     $('.location-name').find('small').each(function (index) {
         $(this).attr("id", "id_warning-text-location-" + index);
+    });
+
+    $('.location-code input').each(function (index) {
+        $(this).attr("id", "id_location-" + index + "-loc_code");
+        $(this).attr("name", "location-" + index + "-loc_code");
+    });
+
+    $('.location-code').find('label').each(function (index) {
+        $(this).attr("for", "id_location-" + index + "-loc_code");
+    });
+
+    $('.location-code').find('small').each(function (index) {
+        $(this).attr("id", "id_warning-text-location-code-" + index);
     });
 
 
@@ -404,6 +443,18 @@ function removeLocation(input) {
         $(this).attr("id", "id_warning-text-location-" + index);
     });
 
+    $('.location-code input').each(function (index) {
+        $(this).attr("id", "id_location-" + index + "-loc_code");
+        $(this).attr("name", "location-" + index + "-loc_code");
+    });
+
+    $('.location-code').find('label').each(function (index) {
+        $(this).attr("for", "id_location-" + index + "-loc_code");
+    });
+
+    $('.location-code').find('small').each(function (index) {
+        $(this).attr("id", "id_warning-text-location-code-" + index);
+    });
 
     $('.location-size').find('input:first').each(function (index) {
         $(this).attr("id", "id_location-" + index + "-width");
@@ -452,17 +503,63 @@ function removeLocation(input) {
 
 }
 
+function checkLocationCode(input) {
+    var url = $('#pageForm').attr("data-check-code-location-url");
+    var value = $(input).val();
+    var fieldset = $(input).parent().parent().parent().parent().parent();
+    var app_value = $('#id_names').val();
+
+    var inputId = $(input).attr('id');
+    var id = inputId.slice(12, 14);
+
+    if (id.includes('-')) {
+        var id = inputId.slice(12, 13);
+    }
+
+    $.ajax({
+        url: url,
+        data: {
+            'value': value,
+            'app_value': app_value,
+        },
+        success: function (data) {
+            if (data == 'True') {
+                if ($('.location-code-input:not(#' + inputId + ')').length > 0) {
+                    $('.location-code-input:not(#' + inputId + ')').each(function () {
+                        if ($(this).val() == value) {
+                            $('#id_warning-text-location-code-' + id).show();
+                            $('#submitAddPage').prop('disabled', true);
+                            return false;
+                        } else {
+                            $('#id_warning-text-location-code-' + id).hide();
+                            if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
+                                $('#submitAddPage').prop('disabled', false);
+                            } else {
+                                $('#submitAddPage').prop('disabled', true);
+                            }
+                        }
+                    });
+                } else {
+                    $('#id_warning-text-location-code-' + id).hide();
+                    if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
+                        $('#submitAddPage').prop('disabled', false);
+                    } else {
+                        $('#submitAddPage').prop('disabled', true);
+                    }
+                }
+            } else {
+                $('#id_warning-text-location-code-' + id).show();
+                $('#submitAddPage').prop('disabled', true);
+            }
+        }
+    });
+}
+
 function checkSimilarLocation(input) {
     var url = $('#pageForm').attr("data-check-similar-location-url");
     var value = $(input).val();
     var fieldset = $(input).parent().parent().parent().parent().parent();
     var app_value = $('#id_names').val();
-
-    var fieldId = fieldset.attr('id').slice(8, 10)
-
-    if(fieldId.includes('-')) {
-       var fieldId = fieldset.attr('id').slice(8, 9);
-    }
 
     var inputId = $(input).attr('id');
     var id = inputId.slice(12, 14);
@@ -487,7 +584,7 @@ function checkSimilarLocation(input) {
                             return false;
                         } else {
                             $('#id_warning-text-location-' + id).hide();
-                            if($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0){
+                            if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
                                 $('#submitAddPage').prop('disabled', false);
                             }else{
                                 $('#submitAddPage').prop('disabled', true);
@@ -496,7 +593,7 @@ function checkSimilarLocation(input) {
                     });
                 } else {
                     $('#id_warning-text-location-' + id).hide();
-                    if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                    if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
                         $('#submitAddPage').prop('disabled', false);
                     } else {
                         $('#submitAddPage').prop('disabled', true);
@@ -545,7 +642,7 @@ function checkSimilarPage(input) {
                             return false;
                         } else {
                             $('#id_warning-text-page-' + id).hide();
-                            if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                            if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
                                 $('#submitAddPage').prop('disabled', false);
                             }else{
                                 $('#submitAddPage').prop('disabled', true);
@@ -554,7 +651,7 @@ function checkSimilarPage(input) {
                     });
                 } else {
                     $('#id_warning-text-page-' + id).hide();
-                    if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                    if ($('.page-warning-text:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
                         $('#submitAddPage').prop('disabled', false);
                     } else {
                         $('#submitAddPage').prop('disabled', true);

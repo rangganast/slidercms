@@ -255,7 +255,7 @@ function validDateRangeFilter() {
                 var max = new Date(max[2] + '-' + max[1] + '-' + max[0]);
 
                 if (data[9]) {
-                    var validDate = data[9].split(' s/d ');
+                    var validDate = data[8].split(' s/d ');
                     var startDate = validDate[0].split('/');
                     var startDate = new Date(startDate[2] + '-' + startDate[1] + '-' + startDate[0]);
                     var endDate = validDate[1].split('/');

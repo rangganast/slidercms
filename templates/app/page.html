@@ -41,6 +41,16 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-sm-3 no-padding">
+                    <label for="page_filter"><small>Cari Aktif/Non-Aktif</small></label>
+                    <div class="input-group">
+                        <select id="active_filter" class="form-control">
+                            <option value="">Cari Aktif/Non-Aktif</option>
+                            <option value="checked">Aktif</option>
+                            <option value="unchecked">Non-Aktif</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="col-sm-2 no-padding">
                     <label style="color: white;"><small>Reset Filter</small></label>
                     <div class="input-group">
@@ -90,9 +100,9 @@
 
                     {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
                     {% with idSlice=""|add:start|add:":"|add:end %}
-                    {% with loc_id=content.location_ids|slice:idSlice %}
+                    {% with loc_code=content.location_codes|slice:idSlice %}
                     
-                    <li class="table_li">{{name}} ({{loc_id.0}})</li>
+                    <li class="table_li">{{name}} ({{loc_code.0}})</li>
                     
                     {% endwith %}
                     {% endwith %}
@@ -307,6 +317,11 @@
         $('#page_filter').select2({
             theme: 'bootstrap4',
             placeholder: 'Cari Halaman',
+        });
+        
+        $('#active_filter').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Cari Aktif/Non-Aktif',
         });
     });
     

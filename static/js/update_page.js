@@ -87,12 +87,22 @@ function cloneLocation() {
     newElement.find('#id_location-' + (totalLocation - 1) + '-name').val('');
     newElement.find('#id_location-' + (totalLocation - 1) + '-name').prop('readonly', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-name').attr('id', 'id_location-' + totalLocation + '-name');
+    
+    newElement.find('#id_location-' + (totalLocation - 1) + '-loc_code').attr('name', 'location-' + totalLocation + '-loc_code');
+    newElement.find('#id_location-' + (totalLocation - 1) + '-loc_code').val('');
+    newElement.find('#id_location-' + (totalLocation - 1) + '-loc_code').prop('readonly', false);
+    newElement.find('#id_location-' + (totalLocation - 1) + '-loc_code').attr('id', 'id_location-' + totalLocation + '-loc_code');
 
     newElement.find('#id_warning-text-location-' + (totalLocation - 1)).hide();
     newElement.find('#id_warning-text-location-' + (totalLocation - 1)).prop('disabled', false);
     newElement.find('#id_warning-text-location-' + (totalLocation - 1)).attr('id', 'id_warning-text-location-' + totalLocation);
+
+    newElement.find('#id_warning-text-location-code-' + (totalLocation - 1)).hide();
+    newElement.find('#id_warning-text-location-code-' + (totalLocation - 1)).prop('disabled', false);
+    newElement.find('#id_warning-text-location-code-' + (totalLocation - 1)).attr('id', 'id_warning-text-location-code-' + totalLocation);
     
     newElement.find('.location-name label').attr('for', 'id_location-' + totalLocation + '-name');
+    newElement.find('.location-code label').attr('for', 'id_location-' + totalLocation + '-loc_code');
 
     newElement.find('#id_location-' + (totalLocation - 1) + '-width').attr('name', 'location-' + totalLocation + '-width');
     newElement.find('#id_location-' + (totalLocation - 1) + '-width').val('');
@@ -102,6 +112,7 @@ function cloneLocation() {
     newElement.find('.location-size label:first').attr('for', 'id_location-' + totalLocation + '-width');
 
     newElement.find('#id_location-' + (totalLocation - 1) + '-height').attr('name', 'location-' + totalLocation + '-height');
+    newElement.find('#id_location-' + (totalLocation - 1) + '-height').val('');
     newElement.find('#id_location-' + (totalLocation - 1) + '-height').prop('readonly', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-height').attr('id', 'id_location-' + totalLocation + '-height');
 
@@ -144,6 +155,80 @@ function removeLocation(input) {
         }
     } else {
         $(selector).remove();
+
+        $('.location-slider').find('input:first').each(function (index) {
+            $(this).attr("id", "id_location-" + index + "-is_slider_0");
+            $(this).attr("name", "location-" + index + "-is_slider");
+        });
+
+        $('.location-slider').find('label:first').each(function (index) {
+            $(this).attr("for", "id_location-" + index + "-is_slider_0");
+        });
+
+        $('.location-slider').find('label:nth-child(2)').each(function (index) {
+            $(this).find('label').attr("for", "id_location-" + index + "-is_slider_0");
+        });
+
+        $('.location-slider').find('input:last').each(function (index) {
+            $(this).attr("id", "id_location-" + index + "-is_slider_1");
+            $(this).attr("name", "location-" + index + "-is_slider");
+        });
+
+        $('.location-slider').find('label:last').each(function (index) {
+            $(this).attr("for", "id_location-" + index + "-is_slider_1");
+        });
+
+
+
+        $('.location-name input').each(function (index) {
+            $(this).attr("id", "id_location-" + index + "-name");
+            $(this).attr("name", "location-" + index + "-name");
+        });
+
+        $('.location-name').find('label').each(function (index) {
+            $(this).attr("for", "id_location-" + index + "-name");
+        });
+
+        $('.location-name').find('small').each(function (index) {
+            $(this).attr("id", "id_warning-text-location-" + index);
+        });
+
+        $('.location-code input').each(function (index) {
+            $(this).attr("id", "id_location-" + index + "-loc_code");
+            $(this).attr("name", "location-" + index + "-loc_code");
+        });
+
+        $('.location-code').find('label').each(function (index) {
+            $(this).attr("for", "id_location-" + index + "-loc_code");
+        });
+
+        $('.location-code').find('small').each(function (index) {
+            $(this).attr("id", "id_warning-text-location-code-" + index);
+        });
+
+        $('.location-size').find('input:first').each(function (index) {
+            $(this).attr("id", "id_location-" + index + "-width");
+            $(this).attr("name", "location-" + index + "-width");
+        });
+
+        $('.location-size').find('label:first').each(function (index) {
+            $(this).attr("for", "id_location-" + index + "-width");
+        });
+
+        $('.location-size').find('input:last').each(function (index) {
+            $(this).attr("id", "id_location-" + index + "-height");
+            $(this).attr("name", "location-" + index + "-height");
+        });
+
+        $('.location-size').find('label:last').each(function (index) {
+            $(this).attr("for", "id_location-" + index + "-height");
+        });
+
+        $('.delete-btn').each(function (index) {
+            $(this).attr("id", "id_location-delete-" + index);
+        });
+
+
         var total_forms = $('fieldset:visible').length;
 
         if (total_forms == 1) {
@@ -224,7 +309,7 @@ function checkSimilarLocation(input) {
                             return false;
                         } else {
                             $('#id_warning-text-location-' + id).hide();
-                            if ($('#id_warning-text-page:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                            if ($('#id_warning-text-page:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
                                 $('#submitUpdatePage').prop('disabled', false);
                             } else {
                                 $('#submitUpdatePage').prop('disabled', true);
@@ -233,7 +318,7 @@ function checkSimilarLocation(input) {
                     });
                 } else {
                     $('#id_warning-text-location-' + id).hide();
-                    if ($('#id_warning-text-page:visible').length == 0 && $('.location-warning-text:visible').length == 0) {
+                    if ($('#id_warning-text-page:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
                         $('#submitUpdatePage').prop('disabled', false);
                     } else {
                         $('#submitUpdatePage').prop('disabled', true);
@@ -241,6 +326,59 @@ function checkSimilarLocation(input) {
                 }
             } else {
                 $('#id_warning-text-location-' + id).show();
+                $('#submitUpdatePage').prop('disabled', true);
+            }
+        }
+    });
+}
+
+function checkLocationCode(input) {
+    var url = $('#pageForm').attr("data-check-location-code-url");
+    var inputId = $(input).attr('id');
+    var id = inputId.slice(12, 14);
+    
+    if (id.includes('-')) {
+        var id = inputId.slice(12, 13);
+    }
+    
+    var value = $(input).val();
+    var app_id = $('#id_names').val();
+    var loc_id = $('#id_location-' + id + '-id').val();
+
+    $.ajax({
+        url: url,
+        data: {
+            'value': value,
+            'app_id': app_id,
+            'loc_id': loc_id,
+        },
+        success: function (data) {
+            if (data == 'True') {
+                if ($('.location-code-input:not(#' + inputId + ')').length > 0) {
+                    $('.location-code-input:not(#' + inputId + ')').each(function () {
+                        if ($(this).val() == value) {
+                            $('#id_warning-text-location-code-' + id).show();
+                            $('#submitUpdatePage').prop('disabled', true);
+                            return false;
+                        } else {
+                            $('#id_warning-text-location-code-' + id).hide();
+                            if ($('#id_warning-text-page:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
+                                $('#submitUpdatePage').prop('disabled', false);
+                            } else {
+                                $('#submitUpdatePage').prop('disabled', true);
+                            }
+                        }
+                    });
+                } else {
+                    $('#id_warning-text-location-code-' + id).hide();
+                    if ($('#id_warning-text-page:visible').length == 0 && $('.location-warning-text:visible').length == 0 && $('.location-code-warning-text:visible').length == 0) {
+                        $('#submitUpdatePage').prop('disabled', false);
+                    } else {
+                        $('#submitUpdatePage').prop('disabled', true);
+                    }
+                }
+            } else {
+                $('#id_warning-text-location-code-' + id).show();
                 $('#submitUpdatePage').prop('disabled', true);
             }
         }
