@@ -1,0 +1,188 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block title %}Manajemen Halaman{% endblock title %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% endblock style %}
+
+{% block contentheader %}Manajemen Halaman{% endblock contentheader %}
+
+{% block content %}
+
+<fieldset class="app-border">
+
+    <legend class="app-border">Filter</legend>
+    
+    <div id="filterDiv" class="control-group mb-3">
+        <div class="col input-wrapper">
+            <div class="row">
+                <div class="col-sm-3 no-padding">
+                    <label for="app_filter"><small>Cari Nama Aplikasi</small></label>
+                    <div class="input-group">
+                        <select id="status_filter" class="form-control">
+                            <option value="">Cari Status</option>
+                            <option value="archived">Archived</option>
+                            <option value="unarchived">Unarchived</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-2 no-padding">
+                    <label style="color: white;"><small>Reset Filter</small></label>
+                    <div class="input-group">
+                        <button id="resetFilter" name="reset" type="button" class="btn btn-secondary ml-2">Reset Filter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="control-group mb-3">
+        <div class="row">
+            <div class="col input-wrapper">
+                <input id="myInputTextField" type="text" class="form-control form-control-borderless searchinput" placeholder="Cari...">
+                <span class="fas fa-search searchspan"></span>
+            </div>
+        </div>
+    </div>
+
+</fieldset>
+
+<table id="appTable" class="table table-striped table-bordered mt-3">
+    <thead>
+        <tr>
+            <th scope="col">No</th>
+            <th scope="col">Kode Aplikasi</th>
+            <th scope="col">Nama Aplikasi</th>
+            <th scope="col">Aksi</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        
+        {% for app in apps %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{app.app_code}}</td>
+                <td>{{app.name}}</td>
+                <td>
+                    <span class="spanFormat">
+                        <form action="{% url 'app:update_app' pk=app.id %}" method="GET">
+                            <button type="submit" class="btn btn-sm btn-warning">Update</button>
+                        </form>
+                    </span>
+
+                    {% if app.is_archived == False %}
+
+                    <span class="spanFormat">
+                        <form id="form_app_archive_{{ app.id }}"
+                            action="{% url 'app:archive_app' pk=app.id %}" method="POST">
+                            {% csrf_token %}
+                            <button id="{{ app.id }}-archive" type="button" onclick="archive(this);" class="btn btn-sm btn-success btn-archive"
+                                {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
+                        </form>
+                    </span>
+
+                    {% else %}
+
+                    <span class="spanFormat">
+                        <form id="form_app_archive_{{ app.id }}"
+                            action="{% url 'app:archive_app' pk=app.id %}" method="POST">
+                            {% csrf_token %}
+                            <button id="{{ app.id }}-unarchive" type="button" onclick="unarchive(this);" class="btn btn-sm btn-success btn-archive"
+                                {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
+                        </form>
+                    </span>
+
+                    {% endif %}
+
+                    {% if request.user.is_superuser == True %}
+
+                    <span class="spanFormat">
+                        <form id="form_app_delete_{{ app.id }}" action="{% url 'app:delete_app' pk=app.id %}" method="POST">
+                            {% csrf_token %}
+                            <button id="{{ app.id }}-delete" type="button"
+                                onclick="deleteApp(this);" class="btn btn-sm btn-danger"
+                                {% if content.is_active %}disabled{% else %}{% endif %}>Hapus</button>
+                        </form>
+                    </span>
+
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+            
+    </tbody>     
+</table>
+
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'js/app.js' %}"></script>
+    
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#sliderManagement').addClass('menu-open');
+        $('a#appManagement').addClass('active');
+
+        $('#status_filter').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Cari Status',
+        });
+    });
+
+    {% if messages %}
+    {% for message in messages %}
+    
+    {% if 'app_added' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+
+    {% if 'app_updated' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'app_archived' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'app_unarchived' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'app_deleted' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+           
+    {% endfor %}
+    {% endif %}
+        
+</script>
+{% endblock script %}

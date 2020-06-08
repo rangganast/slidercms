@@ -40,20 +40,20 @@ class InstallationSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.banner.image.url)
 
 class LocationSerializer(serializers.ModelSerializer):
-    application = serializers.SerializerMethodField('get_application')
-    application_name = serializers.SerializerMethodField('get_application_name')
+    app_code = serializers.SerializerMethodField('get_app_code')
+    app_name = serializers.SerializerMethodField('get_app_name')
     page = serializers.SerializerMethodField('get_page')
     page_name = serializers.SerializerMethodField('get_page_name')
     banners = serializers.SerializerMethodField('get_installation')
 
     class Meta:
         model = Location
-        fields = ('loc_code', 'name', 'application', 'application_name', 'page', 'page_name', 'is_slider', 'width', 'height', 'is_active', 'banners',)
+        fields = ('loc_code', 'name', 'app_code', 'app_name', 'page', 'page_name', 'is_slider', 'width', 'height', 'is_active', 'banners',)
 
-    def get_application(self, obj):
-        return obj.page.application.id
+    def get_app_code(self, obj):
+        return obj.page.application.app_code
 
-    def get_application_name(self, obj):
+    def get_app_name(self, obj):
         return obj.page.application.name
 
     def get_page(self, obj):

@@ -45,6 +45,12 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a id="appManagement" href="{% url 'app:app' %}" class="nav-link">
+                                <i class="fas fa-archive nav-icon"></i>
+                                <p>Manajemen Aplikasi</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a id="pageManagement" href="{% url 'app:page' %}" class="nav-link">
                                 <i class="fas fa-file-alt nav-icon"></i>
                                 <p>Manajemen Halaman</p>
@@ -117,7 +123,7 @@
                     <a id="sliderManagement" href="#" class="nav-link">
                         <i class="nav-icon fas fa-calendar-alt"></i>
                         <p>
-                            Manajemen Slider
+                            Manajemen Campaign
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -176,8 +182,14 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="false">
                 <li class="nav-item">
+                    <a id="appManagement" href="{% url 'app:app' %}" class="nav-link">
+                        <i class="fas fa-archive nav-icon"></i>
+                        <p>Manajemen Aplikasi</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a id="pageManagement" href="{% url 'app:page' %}" class="nav-link">
-                        <i class="nav-icon fas fa-user"></i>
+                        <i class="fas fa-file-alt nav-icon"></i>
                         <p>
                             Manajemen Halaman
                         </p>

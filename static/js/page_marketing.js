@@ -32,12 +32,19 @@ $('#page_filter').change(function () {
     table.column(2).search(page_regex, true, false).draw();
 })
 
+$('#active_filter').change(function () {
+    activeFilter();
+    table.draw();
+});
+
 $('#resetFilter').click(function(){
     $('#myInputTextField').val('');
     $('#app_filter').val('').trigger('change');
     $('#page_filter').val('').trigger('change');
     $('#page_filter').prop('disabled', true);
+    $('#active_filter').val('').trigger('change');
 
+    $.fn.dataTable.ext.search = [];
     table.destroy()
 
     table = $('#pageTable').DataTable({
@@ -52,6 +59,30 @@ $('#resetFilter').click(function(){
     table.draw();
 })
 
+
+function activeFilter() {
+    var value = $('#active_filter').find('option:selected').val();
+    $.fn.dataTable.ext.search = [];
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            if (value == 'checked') {
+                if (table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').val() == 'True') {
+                    return true;
+                }else{
+                    return false;
+                }
+            } else {
+                if (table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').val() == 'False') {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    )
+
+}
+
 function active(input) {
     var inputId = $(input).attr('id');
     var pk = inputId.slice(-1);
@@ -59,8 +90,6 @@ function active(input) {
     if(pk.includes('-')) {
         var pk = inputId.slice(-2);
     }
-
-    console.log(pk);
 
     var value = $(input).attr('value');
 

@@ -12,7 +12,9 @@ class User(AbstractUser):
 
 class Application(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
+    app_code = models.CharField(max_length=30)
     name = models.CharField(max_length=100)
+    is_archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

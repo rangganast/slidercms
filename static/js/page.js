@@ -34,11 +34,10 @@ $('#page_filter').change(function () {
     table.column(2).search(page_regex, true, false).draw();
 });
 
-// $('#active_filter').change(function () {
-//     var value = $(this).find('option:selected').val();
-//     activeFilter();
-//     table.draw();
-// });
+$('#active_filter').change(function () {
+    activeFilter();
+    table.draw();
+});
 
 $('#resetFilter').click(function(){
     $('#myInputTextField').val('');
@@ -47,6 +46,7 @@ $('#resetFilter').click(function(){
     $('#page_filter').prop('disabled', true);
     $('#active_filter').val('').trigger('change');
 
+    $.fn.dataTable.ext.search = [];
     table.destroy()
 
     table = $('#pageTable').DataTable({
@@ -195,9 +195,31 @@ function deletePage(input) {
     });
 };
 
-// function activeFilter(){
-//     var value = $('#active_filter').find('option:selected').val();
-//     table.cell(0, 5).nodes().to$().find('input[type="checkbox"]').each(function (){
-//         console.log($(this).val());
-//     });
-// }
+function activeFilter(){
+    var value = $('#active_filter').find('option:selected').val();
+    $.fn.dataTable.ext.search = [];
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            if(value == 'checked'){
+                var status = false;
+                var maxSwitch = table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').length;
+                for (var j = 0; j < maxSwitch; j++) {
+                    if (table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').eq(j).val() == 'True') {
+                        var status = true;
+                    }
+                }
+                return status;
+            }else{
+                var status = false;
+                var maxSwitch = table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').length;
+                for (var j = 0; j < maxSwitch; j++) {
+                    if (table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').eq(j).val() == 'False') {
+                        var status = true;
+                    }
+                }
+                return status;
+            }
+        }
+    )
+
+}

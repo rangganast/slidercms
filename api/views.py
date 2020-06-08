@@ -18,8 +18,9 @@ class LocationViewSet(viewsets.ModelViewSet):
         return context
 
     def get_queryset(self):
-        app_id = self.kwargs['app_id']
-        pages = Page.objects.filter(application_id=app_id)
+        app_code = self.kwargs['app_code']
+        app = Application.objects.get(app_code=app_code)
+        pages = Page.objects.filter(application_id=app.id)
 
         try:
             loc = Location.objects.get(loc_code=self.kwargs['loc_code'])

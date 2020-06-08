@@ -14,10 +14,149 @@ from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 from . import services
 from .decorators import developer_required, marketing_required, superuser_required
-from .forms import ApplicationForm, PageFormSet, LocationFormSet, BannerForm, CampaignFormSet ,InstallationFormSet, UserForm, KeywordDateRangeForm
+from .forms import AppForm, ApplicationForm, PageFormSet, LocationFormSet, BannerForm, CampaignFormSet ,InstallationFormSet, UserForm, KeywordDateRangeForm
 from .models import Application, Page, Location, Banner, Campaign, Installation, User
 
 # Create your views here.
+@method_decorator([login_required, developer_required], name='dispatch')
+class AppView(View):
+    template_name = 'app/app.html'
+
+    def get(self, request):
+       apps = Application.objects.all().order_by('pk')
+
+       context = {
+           'apps' : apps,
+       }
+
+       return render(request, self.template_name, context)
+
+@method_decorator([login_required, developer_required], name='dispatch')
+class AddAppView(View):
+    form_class = {
+        'form_app' : AppForm,
+    }
+
+    inital = {'key' : 'value'}
+    template_name = 'app/add_app_form.html'
+
+    def get(self, request):
+        form_app = self.form_class['form_app']()
+
+        context = {
+            'form_app' : form_app,
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        form_app = self.form_class['form_app'](request.POST or None)
+
+        if form_app.is_valid():
+            app_code = form_app.cleaned_data['app_code']
+            name = form_app.cleaned_data['name']
+
+            app_instance = Application(app_code=app_code, name=name)
+            app_instance.save()
+
+            messages.add_message(request, messages.INFO, "Aplikasi berhasil ditambahkan!", extra_tags="app_added")
+
+            return redirect(reverse('app:app'))
+        else:
+            context = {
+                'form_app' : form_app,
+            }
+            return render(request, self.template_name, context)
+
+@method_decorator([login_required, developer_required], name='dispatch')
+class UpdateAppView(View):
+    form_class = {
+        'form_app' : AppForm,
+    }
+
+    inital = {'key' : 'value'}
+    template_name = 'app/update_app_form.html'
+
+    def get(self, request, pk):
+        app_instance = Application.objects.get(pk=pk)
+
+        form_app = self.form_class['form_app'](initial={'id' : app_instance.id, 'app_code' : app_instance.app_code, 'name' : app_instance.name})
+
+        context = {
+            'app' : app_instance,
+            'form_app' : form_app,
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        app_instance = Application.objects.get(pk=pk)
+        form_app = self.form_class['form_app'](request.POST or None)
+
+        if form_app.is_valid():
+            app_code = form_app.cleaned_data['app_code']
+            name = form_app.cleaned_data['name']
+
+            if not (app_code == app_instance.app_code and name == app_instance.name):
+                app_instance.app_code = app_code
+                app_instance.name = name
+                
+                app_instance.save()
+
+                messages.add_message(request, messages.INFO, "Aplikasi berhasil diupdate!", extra_tags="app_updated")
+
+                return redirect(reverse('app:app'))
+            
+            else:
+                messages.add_message(request, messages.INFO, "Aplikasi berhasil diupdate!", extra_tags="app_updated")
+
+                return redirect(reverse('app:app'))
+
+        else:
+            app_instance = Application.objects.get(pk=pk)
+            context = {
+                'app' : app_instance,
+                'form_app' : form_app,
+            }
+            return render(request, self.template_name, context)
+
+@method_decorator([login_required, superuser_required], name='dispatch')
+class ArchiveAppView(View):
+    def post(self, request, pk):
+        app_instance = Application.objects.get(pk=pk)
+
+        if app_instance.is_archived == True:
+            app_instance.is_archived = False
+            app_instance.save()
+            messages.add_message(request, messages.INFO, "Aplikasi berhasil di-unarchive!", extra_tags="app_unarchived")
+
+            return redirect(reverse('app:app'))
+        else:
+            app_instance.is_archived = True
+            app_instance.save()
+            messages.add_message(request, messages.INFO, "Aplikasi berhasil di-archive!", extra_tags="app_archived")
+
+            return redirect(reverse('app:app'))
+
+@method_decorator([login_required, superuser_required], name='dispatch')
+class DeleteAppView(View):
+    def post(self, request, pk):
+        app_instance = Application.objects.get(pk=pk)
+        app_instance.delete()
+        
+        page_instances = Page.objects.filter(application_id=app_instance.id)
+        location_instances = Location.objects.filter(page_id__in=page_instances)
+
+        for page in page_instances:
+            page.delete()
+
+        for location in location_instances:
+            location.delete()
+
+        messages.add_message(request, messages.INFO, "Aplikasi berhasil dihapus!", extra_tags="app_deleted")
+
+        return redirect(reverse('app:page'))
+
 @method_decorator(login_required, name='dispatch')
 class PageView(View):
     template_name = 'app/page.html'
@@ -1197,6 +1336,48 @@ def check_similar_location_update(request):
     pages = Page.objects.filter(application_id=app_id)
 
     if Location.objects.filter(name=value, page_id__in=pages).exclude(id=loc_id).exists():
+        check = False
+
+    return HttpResponse(check)
+
+@login_required
+def check_similar_app_name_add(request):
+    value = request.GET.get('value')
+    check = True
+
+    if Application.objects.filter(name=value).exists():
+        check = False
+
+    return HttpResponse(check)
+
+@login_required
+def check_similar_app_name_update(request):
+    value = request.GET.get('value')
+    app_id = request.GET.get('app_id')
+    check = True
+
+    if Application.objects.filter(name=value).exclude(id=app_id).exists():
+        check = False
+
+    return HttpResponse(check)
+
+@login_required
+def check_similar_app_code_add(request):
+    value = request.GET.get('value')
+    check = True
+
+    if Application.objects.filter(app_code=value).exists():
+        check = False
+
+    return HttpResponse(check)
+
+@login_required
+def check_similar_app_code_update(request):
+    value = request.GET.get('value')
+    app_id = request.GET.get('app_id')
+    check = True
+
+    if Application.objects.filter(app_code=value).exclude(id=app_id).exists():
         check = False
 
     return HttpResponse(check)

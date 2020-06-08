@@ -1,0 +1,128 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block title %}Tambah Aplikasi{% endblock title %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'css/add_app.css' %}">{% endblock style %}
+
+{% block content %}
+<div class="container mb-5">
+    <form id="appForm" method="POST" data-check-app-name-url="{% url 'app:ajax_check_app_name_add' %}"
+        data-check-app-code-url="{% url 'app:ajax_check_app_code_add' %}">
+        {% csrf_token %}
+        
+        <div id="card-field" class="container-fluid mt-3">
+
+            <h3 class="text-center mb-2">Form Tambah Aplikasi
+                <span class="btn-group float-right">
+                    <a href="{% url 'app:add_app' %}">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </a>
+                </span>
+                <span class="btn-group float-right">
+                    <a href="{% url 'app:app' %}" style="color: white; text-decoration: none;">
+                        <button type="button" class="btn btn-secondary mr-2">
+                            Batal
+                        </button>
+                    </a>
+                </span>
+            </h3>
+
+            <hr>
+
+            <div class="container-fluid mt-5 mb-5">
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="{{ form_app.name.id_for_label }}">{{ form_app.name.label }}</label>
+                    <div class="col-sm-10 input-group">
+                        {{ form_app.name }}
+                    </div>
+                    <label class="col-sm-2 col-form-label" for=""></label>
+                    <div class="col-sm-10 input-group">  
+                        <small id="app_name_unique" style="display: none; color: red;">Nama Aplikasi ini telah digunakan. Silahkan coba kode lain</small>                     
+                        {% if form_app.errors %}
+                        {% for error in form_app.name.errors %}
+                        <small style="color: red;">{{error}}</small>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="{{ form_app.app_code.id_for_label }}">{{ form_app.app_code.label }}</label>
+                    <div class="col-sm-10 input-group">
+                        {{ form_app.app_code }}
+                    </div>
+                    <label class="col-sm-2 col-form-label" for=""></label>
+                    <div class="col-sm-10 input-group">
+                        <small id="app_code_unique" style="display: none; color: red;">Kode Aplikasi ini telah
+                            digunakan. Silahkan coba kode lain</small>
+                        {% if form_app.errors %}
+                        {% for error in form_app.app_code.errors %}
+                        <small style="color: red;">{{error}}</small>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+    $('#sliderManagement').removeClass('menu-open');
+    $('a#userManagement').addClass('active');
+    
+    function checkAppName(input) {
+        var url = $('#appForm').attr("data-check-app-name-url");
+        var value = $(input).val();
+
+        $.ajax({
+            url: url,
+            data: {
+                'value': value,
+            },
+            success: function (data) {
+                if (data == 'True') {
+                    $('#app_name_unique').hide();
+                    $('button[type="submit"]').prop('disabled', false);
+                }else{                    
+                    $('#app_name_unique').show();
+                    $('button[type="submit"]').prop('disabled', true);
+                }
+            }
+        });
+    }
+    
+    function checkAppCode(input) {
+        var url = $('#appForm').attr("data-check-app-code-url");
+        console.log(url);
+        var value = $(input).val();
+
+        $.ajax({
+            url: url,
+            data: {
+                'value': value,
+            },
+            success: function (data) {
+                if (data == 'True') {
+                    $('#app_code_unique').hide();
+                    $('button[type="submit"]').prop('disabled', false);
+                }else{                    
+                    $('#app_code_unique').show();
+                    $('button[type="submit"]').prop('disabled', true);
+                }
+            }
+        });
+    }
+
+
+</script>
+{% endblock script %}
+    

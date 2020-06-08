@@ -12,6 +12,13 @@ urlpatterns = [
     path('', login_required(RedirectView.as_view(url='page/', permanent=False)), name='home'),
 
     path('keywords/', views.KeywordListPage.as_view(), name='keywords'),
+
+    path('app/', views.AppView.as_view(), name='app'),
+    path('app/add_app/', views.AddAppView.as_view(), name='add_app'),
+    path('app/update_app/<str:pk>/', views.UpdateAppView.as_view(), name='update_app'),
+    path('app/archive_app/<str:pk>/', views.ArchiveAppView.as_view(), name='archive_app'),
+    path('app/delete_app/<str:pk>/', views.DeleteAppView.as_view(), name='delete_app'),
+
     path('page/', views.PageView.as_view(), name='page'),
     path('page/add_page/', views.AddPageView.as_view(), name='add_page'),
     path('page/update_page/<str:pk>/', views.UpdatePageView.as_view(), name='update_page'),
@@ -53,6 +60,10 @@ urlpatterns = [
     path('ajax/check-similar-location-update/', views.check_similar_location_update, name='ajax_check_similar_location_update'),
     path('ajax/check-location-code-add/', views.check_location_code_available_add, name='ajax_check_location_code_add'),
     path('ajax/check-location-code-update/', views.check_location_code_available_update, name='ajax_check_location_code_update'),
+    path('ajax/check-app-name-add/', views.check_similar_app_name_add, name='ajax_check_app_name_add'),
+    path('ajax/check-app-name-update/', views.check_similar_app_name_update, name='ajax_check_app_name_update'),
+    path('ajax/check-app-code-add/', views.check_similar_app_code_add, name='ajax_check_app_code_add'),
+    path('ajax/check-app-code-update/', views.check_similar_app_code_update, name='ajax_check_app_code_update'),
 
     path('login/', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('password_reset/', auth_views.PasswordResetView.as_view(form_class=PasswordResetForm, success_url=reverse_lazy('app:password_reset_done'), html_email_template_name='registration/password_reset_email.html', from_email='noreply@banner-slider-qa.holahalo.dev'), name='password_reset'),

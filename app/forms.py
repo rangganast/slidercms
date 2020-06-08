@@ -51,8 +51,22 @@ class SetPasswordForm(SetPasswordForm):
 
         return password2
 
+class AppForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ['app_code', 'name']
+
+        labels = {
+            'app_code' : 'Kode Aplikasi',
+            'name' : 'Nama Aplikasi',
+        }
+        widgets = {
+            'app_code' : forms.TextInput(attrs={'class' : 'form-control', 'required': 'True', 'oninput' : 'checkAppCode(this);'}),
+            'name' : forms.TextInput(attrs={'class' : 'form-control', 'required': 'True', 'oninput' : 'checkAppName(this);'})
+        }
+
 class ApplicationForm(forms.ModelForm):
-    names = forms.ModelChoiceField(queryset=Application.objects.all(), widget=forms.Select(attrs={'class' : 'form-control'}), label='Nama Aplikasi', empty_label='Pilih Aplikasi')
+    names = forms.ModelChoiceField(queryset=Application.objects.filter(is_archived=False), widget=forms.Select(attrs={'class' : 'form-control'}), label='Nama Aplikasi', empty_label='Pilih Aplikasi')
 
     class Meta:
         model = Application
