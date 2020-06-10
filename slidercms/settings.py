@@ -29,7 +29,6 @@ DEBUG = 0
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
-# ALLOWED_HOSTS = ['banner-slider-qa.holahalo.dev', 'localhost']
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
@@ -148,7 +147,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

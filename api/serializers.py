@@ -68,10 +68,10 @@ class LocationSerializer(serializers.ModelSerializer):
         
         if not campaigns:
             campaign_obj = Campaign.objects.get(location_id=obj.id, priority=0)
-            inst_obj = Installation.objects.filter(campaign_id=campaign_obj).order_by('id')
+            inst_obj = Installation.objects.filter(campaign_id=campaign_obj).order_by('pk')
 
         else:
-            inst_obj = Installation.objects.filter(campaign_id=campaigns.order_by('-priority')[0].id).order_by('id')
+            inst_obj = Installation.objects.filter(campaign_id=campaigns.order_by('-priority')[0].id).order_by('pk')
 
         if inst_obj[0].banner:
             serializer = InstallationSerializer(inst_obj, many=True, context=self.context)

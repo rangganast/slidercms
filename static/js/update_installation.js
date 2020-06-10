@@ -40,11 +40,11 @@ $(document).ready(function () {
     $('#id_campaign-0-daterangepicker').prop('disabled', false);
     $('.banner-select').prop('disabled', false);
 
-    if($('.banner-div').length > 1){
+    if ($('.banner-div').length > 1){
         if($('#location-is_slider').val() == 'True') {
             $('.delete-btn').hide();
         }
-    }else{
+    } else {
         $('.delete-btn').hide();
     }
 
@@ -52,12 +52,37 @@ $(document).ready(function () {
         if($('#location-is_slider').val() == 'True') {
             if ($('img:visible').length == 0) {
                 $('#id_banner-add-0').click();
+                $('.delete-btn').hide();
+            } else if ($('img:visible').length <= 2) {
+                $('.delete-btn').hide();
+            } else {
+                $('.delete-btn').show();
             }
-            $('.delete-btn').hide();
+        }else{
+            if ($('img:visible').length <= 1) {
+                $('.delete-btn').hide();
+            } else {
+                $('.delete-btn').show();
+            }
         }
 
-        $('#id_campaign-0-priority').prop('disabled', true)
-        $('#id_campaign-0-daterangepicker').prop('disabled', true)
+        $('#id_campaign-0-priority').prop('disabled', true);
+        $('#id_campaign-0-daterangepicker').prop('disabled', true);
+
+    }else{
+        if ($('#location-is_slider').val() == 'True') {
+            if ($('img:visible').length <= 2) {
+                $('.delete-btn').hide();
+            } else {
+                $('.delete-btn').show();
+            }
+        }else{
+            if ($('img:visible').length <= 1) {
+                $('.delete-btn').hide();
+            } else {
+                $('.delete-btn').show();
+            }
+        }
     }
 
     if ($('img:visible').length == 0) {

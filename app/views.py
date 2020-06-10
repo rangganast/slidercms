@@ -23,13 +23,17 @@ class AppView(View):
     template_name = 'app/app.html'
 
     def get(self, request):
-       apps = Application.objects.all().order_by('pk')
+        contents = []
 
-       context = {
-           'apps' : apps,
-       }
+        apps = Application.objects.all().order_by('pk')
+        pages = Page.objects.filter(application_id__in=apps)
+        locations = Location.objects.filter(page_id__in=pages)
 
-       return render(request, self.template_name, context)
+        context = {
+            'apps' : apps,
+        }
+
+        return render(request, self.template_name, context)
 
 @method_decorator([login_required, developer_required], name='dispatch')
 class AddAppView(View):
@@ -590,7 +594,6 @@ class InstallationView(View):
         campaigns_0 = Campaign.objects.filter(priority=0).order_by('pk')
         campaigns = Campaign.objects.all().exclude(priority=0).order_by('pk')
         banners = Banner.objects.all().order_by('pk')
-        installations = Installation.objects.all().order_by('pk')
 
         contents_0 = []
 
@@ -599,14 +602,14 @@ class InstallationView(View):
 
                 contents_0.append({'loc_id' : None, 'page_id' : None, 'app' : None, 'app_id' : None, 'page' : None, 'location' : None, 'banners' : [], 'campaign_id' : campaigns_0[i].id, 'campaign_code' : campaigns_0[i].campaign_code, 'priority' : campaigns_0[i].priority, 'valid_date' : None, 'status' : 'Active'})
 
-                installs = Installation.objects.filter(campaign_id=contents_0[-1]['campaign_id'])
+                installs = Installation.objects.filter(campaign_id=contents_0[-1]['campaign_id']).order_by('pk')
                 for install in installs:
                     if install.banner_id != None:
                         contents_0[-1]['banners'].append(Banner.objects.get(pk=install.banner_id))
 
                 for location in locations:
                     if campaigns_0[i].location_id == location.id:
-                        contents_0[i]['loc_id'] = location.id
+                        contents_0[i]['loc_id'] = location.loc_code
                         contents_0[i]['location'] = location.name
                         contents_0[i]['page_id'] = location.page_id
 
@@ -653,14 +656,14 @@ class InstallationView(View):
 
                 contents.append({'loc_id' : None, 'page_id' : None, 'app' : None, 'app_id' : None, 'page' : None, 'location' : None, 'banners' : [], 'campaign_id' : campaigns[i].id, 'campaign_code' : campaigns[i].campaign_code, 'priority' : campaigns[i].priority, 'valid_date' : valid_date, 'status' : status})
 
-                installs = Installation.objects.filter(campaign_id=contents[-1]['campaign_id'])
+                installs = Installation.objects.filter(campaign_id=contents[-1]['campaign_id']).order_by('pk')
                 for install in installs:
                     if install.banner_id != None:
                         contents[-1]['banners'].append(Banner.objects.get(pk=install.banner_id))
 
                 for location in locations:
                     if campaigns[i].location_id == location.id:
-                        contents[i]['loc_id'] = location.id
+                        contents[i]['loc_id'] = location.loc_code
                         contents[i]['location'] = location.name
                         contents[i]['page_id'] = location.page_id
 
@@ -767,7 +770,7 @@ class UpdateInstallationView(View):
         location_instance = Location.objects.get(pk=campaign_instance.location_id)
         page_instance = Page.objects.get(pk=location_instance.page_id)
         app_instance = Application.objects.get(pk=page_instance.application_id)
-        installation_instance = Installation.objects.filter(campaign_id=campaign_instance.pk)
+        installation_instance = Installation.objects.filter(campaign_id=campaign_instance.pk).order_by('pk')
 
         valid_date = None
         if campaign_instance.valid_date_start != None:
@@ -883,7 +886,7 @@ class DetailInstallationView(View):
     template_name = 'app/detail_installation.html'
 
     def get(self, request, pk):
-        installation_instance = Installation.objects.filter(campaign_id=pk)
+        installation_instance = Installation.objects.filter(campaign_id=pk).order_by('pk')
         campaign_instance = Campaign.objects.get(pk=pk)
         location_instance = Location.objects.get(pk=campaign_instance.location_id)
         page_instance = Page.objects.get(pk=location_instance.page_id)
@@ -1108,11 +1111,10 @@ class UpdateEmailView(View):
 @method_decorator([login_required], name='dispatch')
 class UpdatePasswordView(View):
     def post(self, request, pk):
-        user = User.objects.get(id=pk)
+        user = User.objects.get(pk=pk)
 
         new_password = request.POST.get('newPasswordConfirm')
         confirm_password = request.POST.get('oldPasswordInput')
-
 
         if user.check_password('{}'.format(confirm_password)):
             if not new_password.isascii():

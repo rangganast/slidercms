@@ -37,7 +37,7 @@ $(document).ready(function () {
 
     $('#status_filter').select2({
         theme: 'bootstrap4',
-        placeholder: 'Cari Aplikasi',
+        placeholder: 'Cari Status',
     });
 
     $('#app_filter').select2({
