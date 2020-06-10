@@ -54,3 +54,14 @@ legend.scheduler-border {
     padding: 0 10px;
     border-bottom: none;
 }
+
+.btn-danger,
+.btn-danger:hover,
+.btn-danger:active,
+.btn-danger:visited,
+.btn-danger:focus,
+.btn-danger:disabled {
+    background-color: #dc3545 !important;
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}

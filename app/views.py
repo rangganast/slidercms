@@ -1133,7 +1133,7 @@ class UpdatePasswordView(View):
                 messages.add_message(request, messages.INFO, "Password tidak valid", extra_tags="password_error")
                 return redirect(reverse('app:update_user'))
 
-            elif len(new_password) <= 8:
+            elif len(new_password) < 8:
                 messages.add_message(request, messages.INFO, "Password kurang dari 8 karakter", extra_tags="password_less")
                 return redirect(reverse('app:update_user'))
 

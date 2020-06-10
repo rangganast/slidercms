@@ -45,6 +45,7 @@ legend.location-border {
 .btn-danger:focus,
 .btn-danger:disabled,
 .btn-danger:read-only {
+    background-color: #dc3545 !important;
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }
