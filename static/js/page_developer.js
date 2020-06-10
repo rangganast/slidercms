@@ -201,22 +201,17 @@ function activeFilter(){
     $.fn.dataTable.ext.search.push(
         function (settings, data, dataIndex) {
             if(value == 'checked'){
-                var status = false;
-                var maxSwitch = table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').length;
-                for (var j = 0; j < maxSwitch; j++) {
-                    if (table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').eq(j).val() == 'True') {
-                        var status = true;
-                    }
+                if (table.cell(dataIndex, 5).nodes().to$().find('button.btn-archive').is(':disabled') == true) {
+                    return true;
+                } else {
+                    return false;
                 }
             }else{
-                var status = false;
-                var maxSwitch = table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').length;
-                for (var j = 0; j < maxSwitch; j++) {
-                    if (table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').eq(j).val() == 'False') {
-                        var status = true;
-                    }
+                if (table.cell(dataIndex, 5).nodes().to$().find('button.btn-archive').is(':disabled') == false) {
+                    return true;
+                } else {
+                    return false;
                 }
-                return status;
             }
         }
     )

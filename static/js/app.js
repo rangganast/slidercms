@@ -105,14 +105,14 @@ function statusFilter(){
     $.fn.dataTable.ext.search = [];
     $.fn.dataTable.ext.search.push(
         function (settings, data, dataIndex) {
-            if (value == 'archived') {
-                if (table.cell(dataIndex, 3).nodes().to$().find('button.btn-archive').text() == 'Archive') {
+            if (value == 'active') {
+                if (table.cell(dataIndex, 3).nodes().to$().find('button.btn-archive').is(':disabled') == true) {
                     return true;
                 } else {
                     return false;
                 }
             } else {
-                if (table.cell(dataIndex, 3).nodes().to$().find('button.btn-archive').text() == 'Unarchive') {
+                if (table.cell(dataIndex, 3).nodes().to$().find('button.btn-archive').is(':disabled') == false) {
                     return true;
                 } else {
                     return false;

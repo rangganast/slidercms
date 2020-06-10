@@ -168,7 +168,7 @@
                     <form id="form_page_archive_{{content.page_id}}" action="{% url 'app:archive_page' pk=content.page_id %}"
                         method="POST">
                         {% csrf_token %}
-                        <button id="{{ content.page_id }}-archive" type="button" onclick="archive(this);" class="btn btn-sm btn-success"
+                        <button id="{{ content.page_id }}-archive" type="button" onclick="archive(this);" class="btn btn-sm btn-success btn-archive"
                             {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
                     </form>
                 </span>
@@ -179,7 +179,7 @@
                     <form id="form_page_archive_{{content.page_id}}" action="{% url 'app:archive_page' pk=content.page_id %}"
                         method="POST">
                         {% csrf_token %}
-                        <button id="{{ content.page_id }}-unarchive" type="button" onclick="unarchive(this);" class="btn btn-sm btn-success"
+                        <button id="{{ content.page_id }}-unarchive" type="button" onclick="unarchive(this);" class="btn btn-sm btn-success btn-archive"
                             {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
                     </form>
                 </span>
@@ -300,6 +300,8 @@
 
 {% if request.user.is_marketing == True %}
 <script src="{% static 'js/page_marketing.js' %}"></script>
+{% elif request.user.is_developer == True %}
+<script src="{% static 'js/page_developer.js' %}"></script>
 {% else %}
 <script src="{% static 'js/page.js' %}"></script>
 {% endif %}
