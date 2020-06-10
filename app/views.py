@@ -26,11 +26,21 @@ class AppView(View):
         contents = []
 
         apps = Application.objects.all().order_by('pk')
-        pages = Page.objects.filter(application_id__in=apps)
-        locations = Location.objects.filter(page_id__in=pages)
+        pages = Page.objects.filter(application_id__in=apps).order_by('pk')
+        locations = Location.objects.filter(page_id__in=pages).order_by('pk')
+
+        for app in apps:
+            contents.append({'app_id' : app.pk, 'app_code' : app.app_code, 'app_name' : app.name, 'is_archived' : app.is_archived, 'is_active' : False})
+
+            for page in pages:
+                if page.application_id == app.id:
+                    for location in locations:
+                        if location.page_id == page.id:
+                            if location.is_active == True:
+                                contents[-1]['is_active'] = True
 
         context = {
-            'apps' : apps,
+            'contents' : contents,
         }
 
         return render(request, self.template_name, context)
@@ -1116,8 +1126,10 @@ class UpdatePasswordView(View):
         new_password = request.POST.get('newPasswordConfirm')
         confirm_password = request.POST.get('oldPasswordInput')
 
+        isascii = lambda s: len(s) == len(s.encode())
+
         if user.check_password('{}'.format(confirm_password)):
-            if not new_password.isascii():
+            if not isascii(new_password):
                 messages.add_message(request, messages.INFO, "Password tidak valid", extra_tags="password_error")
                 return redirect(reverse('app:update_user'))
 

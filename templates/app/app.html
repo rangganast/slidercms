@@ -62,25 +62,26 @@
 
     <tbody>
         
-        {% for app in apps %}
+        {% for content in contents %}
             <tr>
                 <td>{{forloop.counter}}</td>
-                <td>{{app.app_code}}</td>
-                <td>{{app.name}}</td>
+                <td>{{content.app_code}}</td>
+                <td>{{content.app_name}}</td>
                 <td>
                     <span class="spanFormat">
-                        <form action="{% url 'app:update_app' pk=app.id %}" method="GET">
-                            <button type="submit" class="btn btn-sm btn-warning">Update</button>
+                        <form action="{% url 'app:update_app' pk=content.app_id %}" method="GET">
+                            <button type="submit" class="btn btn-sm btn-warning" {% if content.is_active %}disabled{% else %}{% endif %}>Update</button>
                         </form>
                     </span>
 
-                    {% if app.is_archived == False %}
+                    {% if content.is_archived == False %}
 
                     <span class="spanFormat">
-                        <form id="form_app_archive_{{ app.id }}"
-                            action="{% url 'app:archive_app' pk=app.id %}" method="POST">
+                        <form id="form_app_archive_{{ content.app_id }}"
+                            action="{% url 'app:archive_app' pk=content.app_id %}" method="POST">
                             {% csrf_token %}
-                            <button id="{{ app.id }}-archive" type="button" onclick="archive(this);" class="btn btn-sm btn-success btn-archive"
+                            <button id="{{ content.app_id }}-archive" type="button" onclick="archive(this);"
+                                class="btn btn-sm btn-success btn-archive"
                                 {% if content.is_active %}disabled{% else %}{% endif %}>Archive</button>
                         </form>
                     </span>
@@ -88,10 +89,11 @@
                     {% else %}
 
                     <span class="spanFormat">
-                        <form id="form_app_archive_{{ app.id }}"
-                            action="{% url 'app:archive_app' pk=app.id %}" method="POST">
+                        <form id="form_app_archive_{{ content.app_id }}"
+                            action="{% url 'app:archive_app' pk=content.app_id %}" method="POST">
                             {% csrf_token %}
-                            <button id="{{ app.id }}-unarchive" type="button" onclick="unarchive(this);" class="btn btn-sm btn-success btn-archive"
+                            <button id="{{ content.app_id }}-unarchive" type="button" onclick="unarchive(this);"
+                                class="btn btn-sm btn-success btn-archive"
                                 {% if content.is_active %}disabled{% else %}{% endif %}>Unarchive</button>
                         </form>
                     </span>
@@ -101,9 +103,10 @@
                     {% if request.user.is_superuser == True %}
 
                     <span class="spanFormat">
-                        <form id="form_app_delete_{{ app.id }}" action="{% url 'app:delete_app' pk=app.id %}" method="POST">
+                        <form id="form_app_delete_{{ app.app_id }}" action="{% url 'app:delete_app' pk=content.app_id %}"
+                            method="POST">
                             {% csrf_token %}
-                            <button id="{{ app.id }}-delete" type="button"
+                            <button id="{{ content.app_id }}-delete" type="button"
                                 onclick="deleteApp(this);" class="btn btn-sm btn-danger"
                                 {% if content.is_active %}disabled{% else %}{% endif %}>Hapus</button>
                         </form>

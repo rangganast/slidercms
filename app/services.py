@@ -2,10 +2,10 @@ import requests
 import json
 from datetime import datetime
 
-token = '94efa1fdcbef94fbdaeb39f0cff9c246d9154fb1'
+token = 'f5cc920a4a4103f8e625d2aa66bfb030e8e2ee87'
 
 def get_list():
-    url = 'https://keywords-log-qa.holahalo.dev/api/v1/keyword/list'
+    url = 'https://keywords-serach-api.holahalo.com/api/v1/keyword/list'
 
     r = requests.get(url, headers={'Content-Type': 'application/json',
                                     'Authorization': 'Token {}'.format(token)})
@@ -13,7 +13,7 @@ def get_list():
     return keywords_list
 
 def get_keywords():
-    url = 'https://keywords-log-qa.holahalo.dev/api/v1/keyword/search'
+    url = 'https://keywords-serach-api.holahalo.com/api/v1/keyword/search'
 
     r = requests.get(url, headers={'Content-Type': 'application/json',
                                    'Authorization': 'Token {}'.format(token)})
@@ -21,7 +21,7 @@ def get_keywords():
     return keywords_list
 
 def get_count_keywords():
-    url = 'https://keywords-log-qa.holahalo.dev/api/v1/keyword/count'
+    url = 'https://keywords-serach-api.holahalo.com/api/v1/keyword/count'
 
     r = requests.get(url, headers={'Content-Type': 'application/json',
                                    'Authorization': 'Token {}'.format(token)})
@@ -30,7 +30,7 @@ def get_count_keywords():
     return count_list
 
 def get_count_keywords_with_params(date1=None, date2=None):
-    url = 'https://keywords-log-qa.holahalo.dev/api/v1/keyword/count'
+    url = 'https://keywords-serach-api.holahalo.com/api/v1/keyword/count'
 
     date1_check = True
     date2_check = True
