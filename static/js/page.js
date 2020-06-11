@@ -208,6 +208,7 @@ function activeFilter(){
                         var status = true;
                     }
                 }
+                return status;
             }else{
                 var status = false;
                 var maxSwitch = table.cell(dataIndex, 5).nodes().to$().find('input[type="checkbox"]').length;

@@ -240,8 +240,8 @@
             {% with nameSlice=""|add:start|add:":"|add:end  %}
             
             {% for name in content.location_names|slice:nameSlice %}
-            {% with loc_id=content.location_ids|slice:nameSlice %}
-                {{name}} ({{loc_id.0}})
+            {% with loc_code=content.location_codes|slice:nameSlice %}
+                {{name}} ({{loc_code.0}})
             {% endwith %}
             {% endfor %}
             

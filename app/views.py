@@ -1,5 +1,6 @@
 import re
 import datetime
+from django.db.models import Q
 from django.views import View
 from django.urls import reverse
 from django.shortcuts import render
@@ -134,7 +135,7 @@ class UpdateAppView(View):
             }
             return render(request, self.template_name, context)
 
-@method_decorator([login_required, superuser_required], name='dispatch')
+@method_decorator([login_required, developer_required], name='dispatch')
 class ArchiveAppView(View):
     def post(self, request, pk):
         app_instance = Application.objects.get(pk=pk)
@@ -169,7 +170,7 @@ class DeleteAppView(View):
 
         messages.add_message(request, messages.INFO, "Aplikasi berhasil dihapus!", extra_tags="app_deleted")
 
-        return redirect(reverse('app:page'))
+        return redirect(reverse('app:app'))
 
 @method_decorator(login_required, name='dispatch')
 class PageView(View):
@@ -450,10 +451,7 @@ class BannerView(View):
             contents.append({'id': banners[i].id, 'name': banners[i].name, 'description': banners[i].description, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].image, 'is_archived': banners[i].is_archived, 'is_active': False})
             for installation in installations:
                 if installation['banner_id'] == banners[i].id:
-                    campaign = Campaign.objects.get(pk=installation['campaign_id'])
-                    campaigns = Campaign.objects.filter(location_id=campaign.location_id).order_by('-priority')
-
-                    if campaign.priority == campaigns[0].priority:
+                    if Campaign.objects.filter(Q(pk=installation['campaign_id'], valid_date_start__gte=datetime.date.today()) | Q(pk=installation['campaign_id'], valid_date_start__isnull=True)).exists():
                         contents[i]['is_active'] = True
 
 
@@ -494,7 +492,7 @@ class AddBannerView(View):
             banner_instance = Banner(name=name, description=description, image=image, width=width, height=height)
             banner_instance.save()
 
-            messages.add_message(request, messages.INFO, "Data berhasil ditambahkan!", extra_tags="banner_added")
+            messages.add_message(request, messages.INFO, "Gambar berhasil ditambahkan!", extra_tags="banner_added")
 
             return redirect(reverse('app:banner'))
 
@@ -553,7 +551,7 @@ class UpdateBannerView(View):
 
             banner_instance.save()
         
-            messages.add_message(request, messages.INFO, "Data berhasil di-update!", extra_tags="banner_updated")
+            messages.add_message(request, messages.INFO, "Gambar berhasil di-update!", extra_tags="banner_updated")
 
             return redirect(reverse('app:banner'))
 
@@ -573,13 +571,13 @@ class ArchiveBannerView(View):
         if banner_instance.is_archived == True:
             banner_instance.is_archived = False
             banner_instance.save()
-            messages.add_message(request, messages.INFO, "Data berhasil di-unarchive!", extra_tags="banner_unarchived")
+            messages.add_message(request, messages.INFO, "Gambar berhasil di-unarchive!", extra_tags="banner_unarchived")
 
             return redirect(reverse('app:banner'))
         else:
             banner_instance.is_archived = True
             banner_instance.save()
-            messages.add_message(request, messages.INFO, "Data berhasil di-archive!", extra_tags="banner_archived")
+            messages.add_message(request, messages.INFO, "Gambar berhasil di-archive!", extra_tags="banner_archived")
 
             return redirect(reverse('app:banner'))
 
@@ -589,7 +587,7 @@ class DeleteBannerView(View):
         banner_instance = Banner.objects.get(pk=pk)
         banner_instance.delete()
 
-        messages.add_message(request, messages.INFO, "Data berhasil dihapus!", extra_tags="banner_deleted")
+        messages.add_message(request, messages.INFO, "Gambar berhasil dihapus!", extra_tags="banner_deleted")
 
         return redirect(reverse('app:banner'))
 

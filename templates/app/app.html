@@ -103,8 +103,7 @@
                     {% if request.user.is_superuser == True %}
 
                     <span class="spanFormat">
-                        <form id="form_app_delete_{{ app.app_id }}" action="{% url 'app:delete_app' pk=content.app_id %}"
-                            method="POST">
+                        <form id="form_app_delete_{{ content.app_id }}" action="{% url 'app:delete_app' pk=content.app_id %}" method="POST">
                             {% csrf_token %}
                             <button id="{{ content.app_id }}-delete" type="button"
                                 onclick="deleteApp(this);" class="btn btn-sm btn-danger"
