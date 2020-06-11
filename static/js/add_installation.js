@@ -233,6 +233,7 @@ function load_size(input) {
         $('#id_install-' + id + '-fieldset').find('.redirect-yes').prop('disabled', false);
         $('#id_install-' + id + '-fieldset').find('.redirect-no').prop('disabled', false);
         $('#id_install-' + id + '-fieldset').find('#id_banner-add-' + id).prop('disabled', false);
+        $('#id_install-' + id + '-fieldset').find('.daterangepickerinput').css("background-color", "white");
     }
 
     $.ajax({
@@ -303,6 +304,7 @@ function cloneInstall(selector) {
     newElement.find('#id_campaign-' + (totalInstall - 1) + '-daterangepicker').val('');
     newElement.find('#id_campaign-' + (totalInstall - 1) + '-daterangepicker').attr('id', 'id_campaign-' + totalInstall + '-daterangepicker');
     newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').attr('name', 'campaign-' + totalInstall + '-daterangepicker');
+    newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').css('background-color', '');
     newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').prop('disabled', true);
 
     newElement.find('#id_campaign-' + totalInstall + '-daterangepicker').daterangepicker({

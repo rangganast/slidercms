@@ -70,6 +70,7 @@ $(document).ready(function () {
         $('#id_campaign-0-daterangepicker').prop('disabled', true);
 
     }else{
+        $('.daterangepickerinput').css('background-color', 'white');
         if ($('#location-is_slider').val() == 'True') {
             if ($('img:visible').length <= 2) {
                 $('.delete-btn').hide();
