@@ -192,6 +192,31 @@ function load_banner(input) {
     }
 }
 
+function check_date() {
+    var url = $('#installationForm').attr("data-check-similar-date-url");
+    var value = $('#id_campaign-0-daterangepicker').val()
+    var loc_id = $('#id_location-select-0').find('option:selected').val();
+
+    $.ajax({
+        url: url,
+        data: {
+            'value': value,
+            'loc_id': loc_id,
+        },
+        success: function (data) {
+            if (data.split(',')[0] == 'True') {
+                $('#date-check-similar-true-0').text('Terdapat ' + data.split(',')[1] + ' campaign pada tanggal yang sama');
+                $('#date-check-similar-true-0').attr('href', '/installation/?validDate=' + value);
+                $('#date-check-similar-true-0').show();
+                $('#date-check-similar-false-0').hide();
+            } else {
+                $('#date-check-similar-false-0').show();
+                $('#date-check-similar-true-0').hide();
+            }
+        }
+    });
+}
+
 function cloneBanner() {
     var total = $('#id_installation-TOTAL_FORMS').val();
     var total = Number(total);

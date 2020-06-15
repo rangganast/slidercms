@@ -64,6 +64,8 @@ urlpatterns = [
     path('ajax/check-app-name-update/', views.check_similar_app_name_update, name='ajax_check_app_name_update'),
     path('ajax/check-app-code-add/', views.check_similar_app_code_add, name='ajax_check_app_code_add'),
     path('ajax/check-app-code-update/', views.check_similar_app_code_update, name='ajax_check_app_code_update'),
+    path('ajax/check-similar-date-add/', views.check_similar_date_add, name='ajax_check_similar_date_add'),
+    path('ajax/check-similar-date-update/', views.check_similar_date_update, name='ajax_check_similar_date_update'),
 
     path('login/', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('password_reset/', auth_views.PasswordResetView.as_view(form_class=PasswordResetForm, success_url=reverse_lazy('app:password_reset_done'), html_email_template_name='registration/password_reset_email.html', from_email='noreply@banner-slider-qa.holahalo.dev'), name='password_reset'),

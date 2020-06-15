@@ -234,6 +234,7 @@ function load_size(input) {
         $('#id_install-' + id + '-fieldset').find('.redirect-no').prop('disabled', false);
         $('#id_install-' + id + '-fieldset').find('#id_banner-add-' + id).prop('disabled', false);
         $('#id_install-' + id + '-fieldset').find('.daterangepickerinput').css("background-color", "white");
+        $('#id_install-' + id + '-fieldset').find('#btn-date-check-' + id).prop('disabled', false);
     }
 
     $.ajax({
@@ -264,6 +265,37 @@ function load_size(input) {
             }
         }
 
+    });
+}
+
+function check_date(input) {
+    var url = $('#installationForm').attr("data-check-similar-date-url");
+    var id = $(input).attr('id').slice(-2);
+
+    if (id.includes('-')) {
+        var id = $(input).attr('id').slice(-1);
+    }
+
+    var value = $('#id_campaign-' + id + '-daterangepicker').val()
+    var loc_id = $('#id_location-select-' + id).find('option:selected').val();
+
+    $.ajax({
+        url: url,
+        data: {
+            'value': value,
+            'loc_id': loc_id,
+        },
+        success: function (data) {
+            if(data.split(',')[0] == 'True'){
+                $('#date-check-similar-true-' + id).text('Terdapat ' + data.split(',')[1] + ' campaign pada tanggal yang sama');
+                $('#date-check-similar-true-' + id).attr('href', '/installation/?validDate=' + value);
+                $('#date-check-similar-true-' + id).show();
+                $('#date-check-similar-false-' + id).hide();
+            }else{
+                $('#date-check-similar-false-' + id).show();
+                $('#date-check-similar-true-' + id).hide();
+            }
+        }
     });
 }
 
@@ -319,7 +351,13 @@ function cloneInstall(selector) {
             format: 'DD/MM/YYYY',
         }
     });
-
+    
+    newElement.find('#form-date-check-' + (totalInstall - 1)).attr('id', 'form-date-check-' + totalInstall);
+    newElement.find('#btn-date-check-' + (totalInstall - 1)).prop('disabled', true);
+    newElement.find('#btn-date-check-' + (totalInstall - 1)).attr('id', 'btn-date-check-' + totalInstall);
+    newElement.find('#date-check-similar-true-' + (totalInstall - 1)).attr('id', 'date-check-similar-true-' + totalInstall);
+    newElement.find('#date-check-similar-false-' + (totalInstall - 1)).attr('id', 'date-check-similar-false-' + totalInstall);
+    
     newElement.find('#id_location-is_slider-status-' + (totalInstall - 1)).attr('id', 'id_location-is_slider-status-' + totalInstall);
     newElement.find('#id_location-is_slider-status-' + totalInstall).attr('name', 'location-is_slider-status-' + totalInstall);
     newElement.find('#id_location-is_slider-status-' + totalInstall).val('');

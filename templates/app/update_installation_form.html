@@ -10,7 +10,8 @@
 <form id="installationForm" action="{% url 'app:update_install' pk=campaign.pk %}" method="POST"
     data-banner-url="{% url 'app:ajax_load_banner' %}"
     data-check-priority-url="{% url 'app:ajax_check_priority_available_update' %}"
-    data-check-campaign_code-url="{% url 'app:ajax_check_campaign_code_available_update' %}">
+    data-check-campaign_code-url="{% url 'app:ajax_check_campaign_code_available_update' %}"
+    data-check-similar-date-url="{% url 'app:ajax_check_similar_date_update' %}"">
     {% csrf_token %}
 
     {{ formset_installation.management_form }}
@@ -114,6 +115,19 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-group row mb-4">
+                        <label class="col-sm-2 col-form-label" for="">Cek Tanggal</label>
+                        <div class="input-group col-sm-10">
+                            <button type="button" id="btn-date-check-0" class="btn btn-primary btn-sm"
+                                onclick="check_date(this);">Cek Tanggal</button>
+                            <a id="date-check-similar-true-0" style="display: none; text-decoration: underline;"
+                                class="my-auto ml-4" href="">Terdapat 0 campaign di tanggal yang sama</a>
+                            <a id="date-check-similar-false-0" style="display: none;" class="my-auto ml-4"
+                                href="#">Terdapat 0 campaign di tanggal yang sama</a>
+                        </div>
+                    </div>
+
                     {% endfor %}
                     
                     <hr>
