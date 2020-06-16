@@ -16,26 +16,39 @@
     
     <legend class="scheduler-border">Filter</legend>
     
-    <form method="GET">
-        <div class="container">
-            <div class="control-group">
-                <div class="row">
-                    <div class="form-group form-inline">
-                        <label for="datepicker1">Tanggal :</label>
-                        <input name="date1"class="form-control ml-3" id="datepicker1" placeholder="DD-MM-YY"
-                            autocomplete="off" required {% if date1 %}value="{{date1}}"{% else %}value=""{% endif %} />
+    <div class="control-group mb-3 ml-2">
+        <form method="GET">
+            <div class="row">
+                <div class="form-inline">
+                    <label for="datepicker1">Tanggal :</label>
+                    <input name="date1"class="form-control ml-3" id="datepicker1" placeholder="DD-MM-YY"
+                        autocomplete="off" required {% if date1 %}value="{{date1}}"{% else %}value=""{% endif %} />
 
-                        <label class="ml-3" for="datepicker2"> s/d </label>
-                        <input name="date2"class="form-control ml-3" id="datepicker2"
-                            placeholder="DD-MM-YY" autocomplete="off" required {% if date1 %}value="{{date1}}"{% else %}value=""{% endif %} />
+                    <label class="ml-3" for="datepicker2"> s/d </label>
+                    <input name="date2"class="form-control ml-3" id="datepicker2"
+                        placeholder="DD-MM-YY" autocomplete="off" required {% if date1 %}value="{{date1}}"{% else %}value=""{% endif %} />
 
-                        <button name="filter" type="submit" class="btn btn-sm btn-primary ml-3">Terapkan</button>
-                        <button id="resetFilter" name="reset" type="button" class="btn btn-sm btn-secondary ml-2">Reset Filter</button>
-                    </div>
+                    <button name="filter" type="submit" class="btn btn-sm btn-primary ml-3">Terapkan</button>
+                    <button id="resetFilter" name="reset" type="button" class="btn btn-sm btn-secondary ml-2">Reset Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+        
+    <div class="control-group mb-3">
+        <div class="row">
+            <div class="col-sm-3 no-padding">
+                <div class="input-group">
+                    <select id="app_filter" class="form-control">
+                        <option value="">Cari Aplikasi</option>
+                        {% for app in apps %}
+                        <option value="{{app.id}}">{{app.name}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
         </div>
-    </form>
+    </div>
         
     <div class="control-group">
         <div class="row">
@@ -53,14 +66,37 @@
     <thead>
         <tr>                    
             <th>Keyword</th>
+            <th>Sumber</th>
+            <th>IP Lokasi</th>
             <th>Jumlah Pencarian</th>
+            <th></th>
+            <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
         {% for item in counts %}
         <tr>
             <td>{{item.keyword}}</td>
+            <td></td>
+            <td></td>
             <td>{{item.keyword_count}}</td>
+            <td></td>
+            <td>
+                <span class="spanFormat">
+                    <a href="https://www.holahalo.com/search?q={{item.keyword}}&category_id_navbar%5B%5D=" target="_blank">
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </a>
+                </span>
+                <span class="spanFormat">
+                    <form action="">
+                        <button type="button" class="btn btn-sm btn-warning">
+                            <i class="far fa-chart-bar"></i>
+                        </button>
+                    </form>
+                </span>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

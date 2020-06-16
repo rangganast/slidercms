@@ -2,6 +2,11 @@ $(document).ready(function () {
     $('#sliderManagement').removeClass('menu-open');
     $('a#keywordCounter').addClass('active');
 
+    $('#app_filter').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Cari Aplikasi',
+    });
+
     $('#datepicker1').datepicker({
         uiLibrary: 'bootstrap4',
         format: 'dd-mm-yyyy',
@@ -52,13 +57,18 @@ $(document).ready(function () {
     $('#datepicker1').val(monthago_day + "-" + monthago_month + "-" + monthago_year)
 })
 
-oTable = $('#keywordTable').DataTable({
+table = $('#keywordTable').DataTable({
     bInfo: false,
     aaSorting: [],
+    dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
 });
+
+$("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href=""><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
+
 $('#myInputTextField').keyup(function () {
-    oTable.search($(this).val()).draw();
-})
+    table.search($(this).val()).draw();
+});
+
 $('#resetFilter').click(function () {
     var urlParams = new URLSearchParams(window.location.search);
     var urlParam = urlParams.get('date1');
@@ -66,9 +76,9 @@ $('#resetFilter').click(function () {
     if (urlParam) {
         window.location.href = "/keywords/";
     } else {
-        oTable.search('').draw();
+        table.search('').draw();
         $('#myInputTextField').val('');
         $('#datepicker1').val('');
         $('#datepicker2').val('');
     }
-})
+});

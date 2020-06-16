@@ -1172,7 +1172,8 @@ class KeywordListPage(View):
 
         context = {
             'counts': counts,
-            'form_date': form_date
+            'form_date': form_date,
+            'apps' : Application.objects.all(),
         }
 
         if request.GET.get('filter') == '':

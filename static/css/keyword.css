@@ -65,3 +65,22 @@ legend.scheduler-border {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }
+
+.btn-warning,
+.btn-warning:hover,
+.btn-warning:active,
+.btn-warning:visited,
+.btn-warning:focus {
+    background-color: #FFFF00 !important;
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.btn-success,
+.btn-success:hover,
+.btn-success:active,
+.btn-success:visited,
+.btn-success:focus {
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
