@@ -5,6 +5,7 @@ $(document).ready(function () {
 
     if (urlParams.has('validDate')) {
         var validDate = urlParams.get('validDate');
+        var loc_name = urlParams.get('loc_name');
 
         $('#validDateFilter').daterangepicker({
             startDate: validDate.split(' - ')[0],
@@ -18,6 +19,8 @@ $(document).ready(function () {
 
         $('#validDateFilter').click()
         $('.applyBtn').click()
+
+        table.column(3).search(loc_name, true, false).draw();
 
     }else{
         $('#validDateFilter').daterangepicker({

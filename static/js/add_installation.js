@@ -278,6 +278,7 @@ function check_date(input) {
 
     var value = $('#id_campaign-' + id + '-daterangepicker').val()
     var loc_id = $('#id_location-select-' + id).find('option:selected').val();
+    var loc_name = $('#id_location-select-' + id).find('option:selected').text();
 
     $.ajax({
         url: url,
@@ -288,7 +289,8 @@ function check_date(input) {
         success: function (data) {
             if(data.split(',')[0] == 'True'){
                 $('#date-check-similar-true-' + id).text('Terdapat ' + data.split(',')[1] + ' campaign pada tanggal yang sama');
-                $('#date-check-similar-true-' + id).attr('href', '/installation/?validDate=' + value);
+                $('#date-check-similar-true-' + id).attr('href', '/installation/?validDate=' + value + '&loc_name=' + loc_name);
+                $('#date-check-similar-true-0').attr('target', '_blank');
                 $('#date-check-similar-true-' + id).show();
                 $('#date-check-similar-false-' + id).hide();
             }else{

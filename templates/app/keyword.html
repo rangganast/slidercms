@@ -23,11 +23,11 @@
                     <div class="form-group form-inline">
                         <label for="datepicker1">Tanggal :</label>
                         <input name="date1"class="form-control ml-3" id="datepicker1" placeholder="DD-MM-YY"
-                            autocomplete="off" required value="{{date1}}" />
+                            autocomplete="off" required {% if date1 %}value="{{date1}}"{% else %}value=""{% endif %} />
 
                         <label class="ml-3" for="datepicker2"> s/d </label>
                         <input name="date2"class="form-control ml-3" id="datepicker2"
-                            placeholder="DD-MM-YY" autocomplete="off" required value="{{date2}}" />
+                            placeholder="DD-MM-YY" autocomplete="off" required {% if date1 %}value="{{date1}}"{% else %}value=""{% endif %} />
 
                         <button name="filter" type="submit" class="btn btn-sm btn-primary ml-3">Terapkan</button>
                         <button id="resetFilter" name="reset" type="button" class="btn btn-sm btn-secondary ml-2">Reset Filter</button>
@@ -69,24 +69,4 @@
 
 {% block script %}
 <script src="{% static 'js/keyword.js' %}"></script>
-<script>
-    $('#sliderManagement').removeClass('menu-open');
-    $('a#keywordCounter').addClass('active');
-
-    $('#datepicker1').datepicker({
-        uiLibrary: 'bootstrap4',
-        format: 'dd-mm-yyyy',
-    });
-    $('#datepicker2').datepicker({
-        uiLibrary: 'bootstrap4',
-        format: 'dd-mm-yyyy',
-        disableDates: function (date) {
-            var date1 = $('#datepicker1').val();
-            var date1 = date1.slice(6, 10) + '-' + date1.slice(3, 5) + '-' +
-                date1.slice(0, 2)
-            const currentDate = new Date(date1).setHours(0, 0, 0, 0);
-            return date.setHours(0, 0, 0, 0) >= currentDate ? true : false;
-        }
-    });
-</script>
 {% endblock script %}
