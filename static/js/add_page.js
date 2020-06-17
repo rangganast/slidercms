@@ -67,6 +67,7 @@ function clonePage(selector){
     newElement.find('#id_location-delete-' + (totalPage - 1)).attr('id', 'id_location-delete-' + totalPage).hide();
 
     newElement.find('.location-div').not(':first').remove();
+    newElement.find('.location-page_id').attr('data-page-id', totalPage)
 
     $(selector).after(newElement);
 
@@ -93,6 +94,10 @@ function clonePage(selector){
     });
 
 
+    
+    $('.location-page_id').each(function (index) {
+        $(this).attr("id", "location-" + index + "-page_id");
+    });
     
     $('.location-name input').each(function (index) {
         $(this).attr("id", "id_location-" + index + "-name");
@@ -181,7 +186,7 @@ function removePage(selector) {
     if ($('fieldset').length == 1) {
         $('#id_page-delete-button').hide();
     }
-    
+   
     $('.location-slider').find('input:first').each(function (index) {
         $(this).attr("id", "id_location-" + index + "-is_slider_0");
         $(this).attr("name", "location-" + index + "-is_slider");
@@ -204,7 +209,10 @@ function removePage(selector) {
         $(this).attr("for", "id_location-" + index + "-is_slider_1");
     });
     
-    
+
+    $('.location-page_id').each(function (index) {
+        $(this).attr("id", "location-" + index + "-page_id");
+    });
     
     $('.location-name input').each(function (index) {
         $(this).attr("id", "id_location-" + index + "-name");
@@ -315,7 +323,11 @@ function cloneLocation(input) {
         $(this).attr("for", "id_location-" + index + "-is_slider_1");
     });
 
+    
 
+    $('.location-page_id').each(function (index) {
+        $(this).attr("id", "location-" + index + "-page_id");
+    });
 
     $('.location-name input').each(function (index) {
         $(this).attr("id", "id_location-" + index + "-name");
@@ -429,6 +441,10 @@ function removeLocation(input) {
     });
 
 
+
+    $('.location-page_id').each(function (index) {
+        $(this).attr("id", "location-" + index + "-page_id");
+    });
 
     $('.location-name input').each(function (index) {
         $(this).attr("id", "id_location-" + index + "-name");
@@ -558,21 +574,22 @@ function checkLocationCode(input) {
 function checkSimilarLocation(input) {
     var url = $('#pageForm').attr("data-check-similar-location-url");
     var value = $(input).val();
-    var fieldset = $(input).parent().parent().parent().parent().parent();
-    var app_value = $('#id_names').val();
-
+    
     var inputId = $(input).attr('id');
     var id = inputId.slice(12, 14);
-
+    
     if (id.includes('-')) {
         var id = inputId.slice(12, 13);
     }
+    
+    var page_id = $('#location-' + id + '-page_id').attr('data-page-id')
+    var page_value = $('#id_page-' + page_id + '-name').val()
 
     $.ajax({
         url: url,
         data: {
             'value': value,
-            'app_value' : app_value,
+            'page_value': page_value,
         },
         success: function (data) {
             if (data == 'True') {

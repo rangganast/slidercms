@@ -63,6 +63,8 @@
                             <input id="id_page-0-max" type="hidden" name="page-0-max" value="0">
                         </div>
 
+                        
+                        {% with pageid=forloop.counter0 %}                           
                         {% for location in formset_location %}
                         <div class="location-div ml-5">
 
@@ -79,6 +81,8 @@
                                 </div>    
                             </div>
 
+                            <input id="location-0-page_id" class="location-page_id" type="hidden" data-page-id="{{pageid}}">
+                            
                             <div class="form-group row location-code">
                                 <label class="col-sm-3 col-form-label" for="{{ location.loc_code.id_for_label }}">{{ location.loc_code.label }}</label>
                                 <div class="col-sm-9">
@@ -107,6 +111,7 @@
 
                         </div>
                         {% endfor %}
+                        {% endwith %}
 
                         <button id="id_location-add-0" type="button" class="btn btn-sm btn-primary float-right"
                             onclick="cloneLocation(this);">Tambah Lokasi</button>

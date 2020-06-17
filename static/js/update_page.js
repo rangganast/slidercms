@@ -289,14 +289,14 @@ function checkSimilarLocation(input) {
     }
     
     var value = $(input).val();
-    var app_id = $('#id_names').val();
+    var page_value = $('#id_page-0-name').val();
     var loc_id = $('#id_location-' + id + '-id').val();
 
     $.ajax({
         url: url,
         data: {
             'value': value,
-            'app_id': app_id,
+            'page_value': page_value,
             'loc_id': loc_id,
         },
         success: function (data) {
