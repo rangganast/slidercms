@@ -197,8 +197,8 @@ function check_date() {
     var value = $('#id_campaign-0-daterangepicker').val()
     var loc_id = $('#id_location-select-0').find('option:selected').val();
     var app_name = $('#app_select').find('option:selected').text();
+    var page_name = $('#page_select').find('option:selected').text();
     var loc_name = $('#id_location-select-0').find('option:selected').text();
-    var page_name = $('#page_select').find('option:selected').text()
 
     $.ajax({
         url: url,

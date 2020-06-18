@@ -271,6 +271,8 @@ function load_size(input) {
 function check_date(input) {
     var url = $('#installationForm').attr("data-check-similar-date-url");
     var id = $(input).attr('id').slice(-2);
+    var app_name = $('#app_select').find('option:selected').text();
+    var page_name = $('#page_select').find('option:selected').text();
 
     if (id.includes('-')) {
         var id = $(input).attr('id').slice(-1);
@@ -289,7 +291,7 @@ function check_date(input) {
         success: function (data) {
             if(data.split(',')[0] == 'True'){
                 $('#date-check-similar-true-' + id).text('Terdapat ' + data.split(',')[1] + ' campaign pada tanggal yang sama');
-                $('#date-check-similar-true-' + id).attr('href', '/installation/?validDate=' + value + '&loc_name=' + loc_name);
+                $('#date-check-similar-true-' + id).attr('href', '/installation/?validDate=' + value + '&app_name=' + app_name + '&page_name=' + page_name + '&loc_name=' + loc_name);
                 $('#date-check-similar-true-0').attr('target', '_blank');
                 $('#date-check-similar-true-' + id).show();
                 $('#date-check-similar-false-' + id).hide();

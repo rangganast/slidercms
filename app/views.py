@@ -1409,9 +1409,17 @@ def check_similar_date_add(request):
         valid_date_start = datetime.datetime.strptime(value.split(' - ')[0], '%d/%m/%Y').strftime('%Y-%m-%d')
         valid_date_end = datetime.datetime.strptime(value.split(' - ')[1], '%d/%m/%Y').strftime('%Y-%m-%d')
 
-        if Campaign.objects.filter(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) | Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end)).exists():
+        if Campaign.objects.filter(
+            Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end) |
+            Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) |
+            Q(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_start) | Q(location_id=loc_id, valid_date_start__lte=valid_date_end, valid_date_end__gte=valid_date_end))
+            ).exists():
             check = True
-            cmp_total = Campaign.objects.filter(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) | Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end)).count()
+            cmp_total = Campaign.objects.filter(
+            Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end) |
+            Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) |
+            Q(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_start) | Q(location_id=loc_id, valid_date_start__lte=valid_date_end, valid_date_end__gte=valid_date_end))
+            ).count()
         else:
             check = False
 
@@ -1431,9 +1439,17 @@ def check_similar_date_update(request):
         valid_date_start = datetime.datetime.strptime(value.split(' - ')[0], '%d/%m/%Y').strftime('%Y-%m-%d')
         valid_date_end = datetime.datetime.strptime(value.split(' - ')[1], '%d/%m/%Y').strftime('%Y-%m-%d')
 
-        if Campaign.objects.filter(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) | Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end)).exclude(location_id=loc_id, valid_date_start=valid_date_start, valid_date_end=valid_date_end).exists():
+        if Campaign.objects.filter(
+            Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end) |
+            Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) |
+            Q(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_start) | Q(location_id=loc_id, valid_date_start__lte=valid_date_end, valid_date_end__gte=valid_date_end))
+            ).exists():
             check = True
-            cmp_total = Campaign.objects.filter(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) | Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end)).exclude(location_id=loc_id, valid_date_start=valid_date_start, valid_date_end=valid_date_end).count()
+            cmp_total = Campaign.objects.filter(
+            Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end) |
+            Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) |
+            Q(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_start) | Q(location_id=loc_id, valid_date_start__lte=valid_date_end, valid_date_end__gte=valid_date_end))
+            ).count()
         else:
             check = False
 

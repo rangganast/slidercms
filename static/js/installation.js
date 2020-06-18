@@ -200,7 +200,11 @@ function validDateRangeFilter() {
                     var endDate = validDate[1].split('/');
                     var endDate = new Date(endDate[2] + '-' + endDate[1] + '-' + endDate[0]);
     
-                    if ((min <= startDate && max >= endDate) || (min >= startDate && max <= endDate)) {
+                    if (
+                        (min <= startDate && max >= endDate) ||
+                        (min >= startDate && max <= endDate) ||
+                        ((min >= startDate && min <= endDate) || (max >= startDate && max <= endDate))
+                        ) {
                         return true;
                     }
                     return false;
