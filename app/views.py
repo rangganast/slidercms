@@ -1329,10 +1329,12 @@ def check_similar_page_update(request):
 @login_required
 def check_similar_location_add(request):
     value = request.GET.get('value')
+    app_id = request.GET.get('app_id')
     page_value = request.GET.get('page_value')
+
     check = True
 
-    pages = Page.objects.filter(name=page_value)
+    pages = Page.objects.filter(name=page_value, application_id=app_id)
 
     if Location.objects.filter(name=value, page_id__in=pages).exists():
         check = False
@@ -1342,11 +1344,12 @@ def check_similar_location_add(request):
 @login_required
 def check_similar_location_update(request):
     value = request.GET.get('value')
+    app_id = request.GET.get('app_id')
     page_value = request.GET.get('page_value')
     loc_id = request.GET.get('loc_id')
     check = True
 
-    pages = Page.objects.filter(name=page_value)
+    pages = Page.objects.filter(name=page_value, application_id=app_id)
 
     if Location.objects.filter(name=value, page_id__in=pages).exclude(id=loc_id).exists():
         check = False

@@ -573,6 +573,7 @@ function checkLocationCode(input) {
 
 function checkSimilarLocation(input) {
     var url = $('#pageForm').attr("data-check-similar-location-url");
+    var app_id = $('#id_names').find('option:selected').val()
     var value = $(input).val();
     
     var inputId = $(input).attr('id');
@@ -589,6 +590,7 @@ function checkSimilarLocation(input) {
         url: url,
         data: {
             'value': value,
+            'app_id' : app_id,
             'page_value': page_value,
         },
         success: function (data) {

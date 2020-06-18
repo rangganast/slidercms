@@ -5,6 +5,8 @@ $(document).ready(function () {
 
     if (urlParams.has('validDate')) {
         var validDate = urlParams.get('validDate');
+        var loc_name = urlParams.get('app_name');
+        var loc_name = urlParams.get('page_name');
         var loc_name = urlParams.get('loc_name');
 
         $('#validDateFilter').daterangepicker({
@@ -20,6 +22,8 @@ $(document).ready(function () {
         $('#validDateFilter').click()
         $('.applyBtn').click()
 
+        table.column(1).search(app_name, true, false).draw();
+        table.column(2).search(page_name, true, false).draw();
         table.column(3).search(loc_name, true, false).draw();
 
     }else{
@@ -202,7 +206,7 @@ function validDateRangeFilter() {
                     return false;
 
                 }else{
-                    return true;
+                    return false;
                 }
         
             }
