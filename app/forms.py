@@ -114,17 +114,17 @@ LocationFormSet = modelformset_factory(Location, form=LocationForm, extra=1, can
 class BannerForm(forms.ModelForm):
     class Meta:
         model = Banner
-        fields = ['name', 'description', 'image', 'height', 'width']
+        fields = ['name', 'caption', 'image', 'height', 'width']
         labels = {
             'name' : _('Nama Banner'),
-            'description' : _('Deskripsi'),
+            'caption' : _('Caption'),
             'image' : _('Gambar Banner'),
             'width' : _('Ukuran'),
             'height' : _('x'),
         }
         widgets = {
             'name' : forms.TextInput(attrs={'class' : 'form-control', 'required' : 'true'}),
-            'description' : forms.Textarea({'class': 'form-control', 'required': 'True'}),
+            'caption' : forms.Textarea({'class': 'form-control', 'required': 'True'}),
             'image' : forms.FileInput(attrs={'class': 'form-control', 'onchange': 'upload_img(this);', 'required' : 'True'}),
             'height' : forms.NumberInput(attrs={'class': 'form-control col-sm-3', 'readonly' : 'true'}),
             'width' : forms.NumberInput(attrs={'class': 'form-control col-sm-3', 'readonly' : 'true'}),

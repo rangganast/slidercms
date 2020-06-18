@@ -12,8 +12,8 @@ class User(AbstractUser):
 
 class Application(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
-    app_code = models.CharField(max_length=30)
-    name = models.CharField(max_length=100)
+    app_code = models.CharField(max_length=30, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
     is_archived = models.BooleanField(default=False)
 
     def __str__(self):
@@ -80,7 +80,7 @@ class Location(models.Model):
 class Banner(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=5)
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    caption = models.TextField()
     image = models.ImageField(upload_to='images/', verbose_name='Banner', blank=True)
     height = models.IntegerField()
     width = models.IntegerField()

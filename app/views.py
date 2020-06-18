@@ -448,7 +448,7 @@ class BannerView(View):
         contents = []
 
         for i in range(len(banners)):
-            contents.append({'id': banners[i].id, 'name': banners[i].name, 'description': banners[i].description, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].image, 'is_archived': banners[i].is_archived, 'is_active': False})
+            contents.append({'id': banners[i].id, 'name': banners[i].name, 'caption': banners[i].caption, 'width': banners[i].width, 'height': banners[i].height, 'image': banners[i].image, 'is_archived': banners[i].is_archived, 'is_active': False})
             for installation in installations:
                 if installation['banner_id'] == banners[i].id:
                     if Campaign.objects.filter(Q(pk=installation['campaign_id'], valid_date_start__gte=datetime.date.today()) | Q(pk=installation['campaign_id'], valid_date_start__isnull=True)).exists():
@@ -484,12 +484,12 @@ class AddBannerView(View):
 
         if form_banner.is_valid():
             name = form_banner.cleaned_data['name']
-            description = form_banner.cleaned_data['description']
+            caption = form_banner.cleaned_data['caption']
             image = form_banner.cleaned_data['image']
             width = form_banner.cleaned_data['width']
             height = form_banner.cleaned_data['height']
 
-            banner_instance = Banner(name=name, description=description, image=image, width=width, height=height)
+            banner_instance = Banner(name=name, captoin=caption, image=image, width=width, height=height)
             banner_instance.save()
 
             messages.add_message(request, messages.INFO, "Gambar berhasil ditambahkan!", extra_tags="banner_added")
@@ -515,7 +515,7 @@ class UpdateBannerView(View):
     def get(self, request, pk):
         banner_instance = Banner.objects.get(pk=pk)
 
-        form_banner = self.form_class['form_banner'](initial={'id' : banner_instance.id, 'name' : banner_instance.name, 'description' : banner_instance.description, 'image' : banner_instance.image, 'width' : banner_instance.width, 'height' : banner_instance.height })
+        form_banner = self.form_class['form_banner'](initial={'id' : banner_instance.id, 'name' : banner_instance.name, 'caption' : banner_instance.caption, 'image' : banner_instance.image, 'width' : banner_instance.width, 'height' : banner_instance.height })
 
         context = {
             'banner' : banner_instance,
@@ -530,21 +530,21 @@ class UpdateBannerView(View):
 
         if form_banner.is_valid():
             name = form_banner.cleaned_data['name']
-            description = form_banner.cleaned_data['description']
+            caption = form_banner.cleaned_data['caption']
             image = form_banner.cleaned_data['image']
             width = form_banner.cleaned_data['width']
             height = form_banner.cleaned_data['height']
 
             if image == None:
                 banner_instance.name = name
-                banner_instance.description = description
+                banner_instance.caption = caption
                 banner_instance.width = width
                 banner_instance.height = height
             else:
                 banner_instance.image.delete()
 
                 banner_instance.name = name
-                banner_instance.description = description
+                banner_instance.caption = caption
                 banner_instance.image = image
                 banner_instance.width = width
                 banner_instance.height = height
@@ -1443,13 +1443,13 @@ def check_similar_date_update(request):
             Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end) |
             Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) |
             Q(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_start) | Q(location_id=loc_id, valid_date_start__lte=valid_date_end, valid_date_end__gte=valid_date_end))
-            ).exists():
+            ).exclude(location_id=loc_id).exists():
             check = True
             cmp_total = Campaign.objects.filter(
             Q(location_id=loc_id, valid_date_start__gte=valid_date_start, valid_date_end__lte=valid_date_end) |
             Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_end) |
             Q(Q(location_id=loc_id, valid_date_start__lte=valid_date_start, valid_date_end__gte=valid_date_start) | Q(location_id=loc_id, valid_date_start__lte=valid_date_end, valid_date_end__gte=valid_date_end))
-            ).count()
+            ).exclude(location_id=loc_id).count()
         else:
             check = False
 
