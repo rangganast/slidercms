@@ -42,7 +42,7 @@ function archive(input) {
     Swal.fire({
         title: 'Archive',
         icon: 'info',
-        html: 'Anda yakin ingin meng-archive halaman ini?',
+        html: 'Anda yakin ingin meng-archive aplikasi ini?',
         showCancelButton: true,
         showCloseButton: true,
         focusConfirm: false,
@@ -63,7 +63,7 @@ function unarchive(input) {
     Swal.fire({
         title: 'Unarchive',
         icon: 'info',
-        html: 'Anda yakin ingin meng-unarchive halaman ini?',
+        html: 'Anda yakin ingin meng-unarchive aplikasi ini?',
         showCancelButton: true,
         showCloseButton: true,
         focusConfirm: false,
@@ -84,7 +84,7 @@ function deleteApp(input) {
     Swal.fire({
         title: 'Hapus',
         icon: 'info',
-        html: 'Anda yakin ingin menghapus halaman ini?',
+        html: 'Anda yakin ingin menghapus aplikasi ini?',
         showCancelButton: true,
         showCloseButton: true,
         focusConfirm: false,

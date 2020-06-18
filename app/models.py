@@ -81,6 +81,7 @@ class Banner(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=5)
     name = models.CharField(max_length=100)
     caption = models.TextField()
+    description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='images/', verbose_name='Banner', blank=True)
     height = models.IntegerField()
     width = models.IntegerField()

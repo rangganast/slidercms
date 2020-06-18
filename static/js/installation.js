@@ -151,28 +151,35 @@ $('#location_filter').change(function () {
 });
 
 $('#resetFilter').click(function () {
-    $('#myInputTextField').val('');
-    $('#validDateFilter').val('');
-    $('#status_filter').val('').trigger('change');
-    $('#app_filter').val('').trigger('change');
-    $('#page_filter').val('').trigger('change');
-    $('#page_filter').prop('disabled', true);
-    $('#location_filter').val('').trigger('change');
-    $('#location_filter').prop('disabled', true);
-    
-    $.fn.dataTable.ext.search = [];
-    table.destroy();
-    
-    table = $('#installTable').DataTable({
-        bInfo: false,
-        aaSorting: [],
-        responsive : true,
-        dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
-    });
-    
-    $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/installation/add_installation"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Pemasangan</button></a></div>');
+    var urlParams = new URLSearchParams(window.location.search)
 
-    table.draw();
+    if (urlParams.has('validDate')) {
+        window.location.href = '/installation'
+    } else {
+        $('#myInputTextField').val('');
+        $('#validDateFilter').val('');
+        $('#status_filter').val('').trigger('change');
+        $('#app_filter').val('').trigger('change');
+        $('#page_filter').val('').trigger('change');
+        $('#page_filter').prop('disabled', true);
+        $('#location_filter').val('').trigger('change');
+        $('#location_filter').prop('disabled', true);
+        
+        $.fn.dataTable.ext.search = [];
+        table.destroy();
+        
+        table = $('#installTable').DataTable({
+            bInfo: false,
+            aaSorting: [],
+            responsive : true,
+            dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
+        });
+        
+        $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/installation/add_installation"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Pemasangan</button></a></div>');
+    
+        table.draw();
+    }
+
 });
 
 function validDateRangeFilter() {
