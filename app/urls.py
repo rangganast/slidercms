@@ -12,6 +12,7 @@ urlpatterns = [
     path('', login_required(RedirectView.as_view(url='page/', permanent=False)), name='home'),
 
     path('keywords/', views.KeywordListPage.as_view(), name='keywords'),
+    path('keywords/scrape/<int:pk>', views.KeywordScrapeView.as_view(), name='keywords_scrape'),
 
     path('app/', views.AppView.as_view(), name='app'),
     path('app/add_app/', views.AddAppView.as_view(), name='add_app'),

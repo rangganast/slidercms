@@ -1,1 +1,4 @@
 .env
+debug.log
+geckodriver.log
+ghostdriver.log

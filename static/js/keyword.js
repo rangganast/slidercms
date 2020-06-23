@@ -55,6 +55,10 @@ $(document).ready(function () {
     }
 
     $('#datepicker1').val(monthago_day + "-" + monthago_month + "-" + monthago_year)
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 })
 
 table = $('#keywordTable').DataTable({
@@ -82,3 +86,17 @@ $('#resetFilter').click(function () {
         $('#datepicker2').val('');
     }
 });
+
+// function appFilter() {
+//     $.fn.dataTable.ext.search = [];
+//     $.fn.dataTable.ext.search.push(
+//         function (settings, data, dataIndex) {
+//             var value = $('#app_filter').find('option:selected').text();
+//             if (value) {
+//                 if (data[1]) {
+//                     console.log(data[1])
+//                 }
+//             }
+//         }
+//     )
+// }

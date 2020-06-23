@@ -66,32 +66,60 @@
     <thead>
         <tr>                    
             <th>Keyword</th>
-            <th>Sumber</th>
+            <th>Sumber Keyword</th>
             <th>IP Lokasi</th>
             <th>Jumlah Pencarian</th>
-            <th></th>
+            <th>Hasil Pencarian</th>
             <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
         {% for item in counts %}
         <tr>
-            <td>{{item.keyword}}</td>
-            <td></td>
-            <td></td>
-            <td>{{item.keyword_count}}</td>
-            <td></td>
+            <td style="vertical-align:middle;">{{item.keyword}}</td>
+            <td style="vertical-align:middle;">
+                <ul>
+                    <li class="Holahalo Website">
+                        Holahalo Website: {{item.holahalo_website}}
+                    </li>
+                    <li class="Holahalo Mobile Website">
+                        Holahalo Mobile Website: {{item.holahalo_mobile_website}}
+                    </li>
+                    <li class="Holahalo Android">
+                        Holahalo Android: {{item.holahalo_android}}
+                    </li>
+                </ul>
+            </td>
+            <td style="vertical-align:middle;"></td>
+            <td align="center" style="vertical-align:middle;">{{item.keyword_count}}</td>
             <td>
+                {% if item.lastscrape_products %}
+                <ul>
+                    <li>
+                        Tanggal: {{item.lastscrape_date|default_if_none:""}}
+                    </li>
+                    <li>
+                        Jam: {{item.lastscrape_time|default_if_none:""}}
+                    </li>
+                    <li>
+                        Total Produk: {{item.lastscrape_products|default_if_none:""}}
+                    </li>
+                </ul>
+                {% endif %}
+            </td>
+            <td style="vertical-align:middle;">
                 <span class="spanFormat">
                     <a href="https://www.holahalo.com/search?q={{item.keyword}}&category_id_navbar%5B%5D=" target="_blank">
-                        <button type="submit" class="btn btn-sm btn-primary">
+                        <button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" title="Klik untuk melihat asal sumber keyword">
                             <i class="fa fa-search"></i>
                         </button>
                     </a>
                 </span>
                 <span class="spanFormat">
-                    <form action="">
-                        <button type="button" class="btn btn-sm btn-warning">
+                    <form method="POST" action="{% url 'app:keywords_scrape' pk=item.id %}">
+                        {% csrf_token %}
+                        <input name="scrapeurl" type="hidden" value="https://www.holahalo.com/search?q={{item.keyword}}&category_id_navbar%5B%5D=">
+                        <button type="submit" class="btn btn-sm btn-warning" data-toggle="tooltip" data-placement="bottom" title="Klik untuk melihat hasil pencarian terbaru">
                             <i class="far fa-chart-bar"></i>
                         </button>
                     </form>

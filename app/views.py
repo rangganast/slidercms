@@ -1,5 +1,12 @@
 import re
 import datetime
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 from django.db.models import Q
 from django.views import View
 from django.urls import reverse
@@ -1191,6 +1198,40 @@ class KeywordListPage(View):
             context['date2'] = date2
             
         return render(request, self.template_name, context)
+
+@method_decorator([login_required, superuser_required], name='dispatch')
+class KeywordScrapeView(View):
+    def post(self, request, pk):
+        url = request.POST.get('scrapeurl')
+        driver = webdriver.Chrome('D:\\Utils\\chromedriver\\chromedriver.exe')
+        driver.get(url)
+        timeout = 4
+
+        try:
+            element_present = EC.presence_of_element_located((By.CLASS_NAME, 'py-2 col-12'))
+            WebDriverWait(driver, timeout).until(element_present)
+        except TimeoutException:
+            print("Timed out waiting for page to load")
+        
+        html = driver.page_source
+        soup = BeautifulSoup(html, 'lxml')
+
+        products_num = 0
+
+        div_class = soup.findAll('div', {'class' : 'py-2 col-12'})
+        if len(div_class) > 0:
+            for div in div_class:
+                products_num = div.find('strong').text
+            
+        try: 
+            services.post_scrape(pk, int(products_num))
+
+            messages.add_message(request, messages.INFO, "Hasil Pencarian berhasil!", extra_tags="scrape_suceeded")
+            return redirect(reverse('app:keywords'))
+
+        except requests.exceptions.RequestException as e:
+            messages.add_message(request, messages.INFO, "Hasil Pencarian Gagal!", extra_tags="scrape_failed")
+            return redirect(reverse('app:keywords'))
 
 @login_required
 def check_location_code_available_add(request):
