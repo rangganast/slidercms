@@ -1,0 +1,157 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block title %}Keyword Counter{% endblock title %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/keyword.css' %}">
+{% endblock style %}
+
+{% block contentheader %}Keyword Counter{% endblock contentheader %}
+
+{% block content %}
+
+<fieldset class="scheduler-border">
+
+    <legend class="scheduler-border">Filter</legend>
+
+    <div id="filterDiv" class="control-group mb-3" data-regions-url="{% url 'app:ajax_load_regions' %}">
+        <div class="row">
+            <div class="col-sm-3 no-padding">
+                <div class="input-group">
+                    <label for="country_filter"><small>Cari Nama Negara</small></label>
+                    <div class="input-group">
+                        <select id="country_filter" class="form-control">
+                            <option value="">Cari Nama Negara</option>
+                            {% for country in countries %}
+                            <option value="{{country}}">{{country}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 no-padding">
+                <label for="region_filter"><small>Cari Nama Wilayah</small></label>
+                <div class="input-group">
+                    <select id="region_filter" class="form-control">
+                        {% include 'app/regions_dropdown_list_options.html' %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-3 no-padding">
+                <label for="city_filter"><small>Cari Nama Wilayah</small></label>
+                <div class="input-group">
+                    <select id="city_filter" class="form-control">
+                        <option value="">Cari Nama Kota</option>
+                        {% for count in counts %}
+                        <option value="{{count.keyword_ip_country}}">{{count.keyword_ip_country}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="row">
+            <div class="col input-wrapper">
+                <input id="myInputTextField" type="text" class="form-control form-control-borderless searchinput"
+                    placeholder="Cari keyword...">
+                <span class="fas fa-search searchspan"></span>
+            </div>
+        </div>
+    </div>
+
+</fieldset>
+
+<table id="ipTable" class="table table-sm table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Alamat IP</th>
+            <th>Kode Negara</th>
+            <th>Nama Negara</th>
+            <th>Nama Wilayah</th>
+            <th>Nama Kota</th>
+            <th>Jumlah Pencarian</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        {% for item in items %}
+        <tr>
+            <td style="vertical-align:middle; text-align:center;">{{forloop.counter}}</td>
+            <td>{{item.keyword_ip|default_if_none:""}}</td>
+            <td>{{item.keyword_ip_country_id|default_if_none:""}}</td>
+            <td>{{item.keyword_ip_country|default_if_none:""}}</td>
+            <td>{{item.keyword_ip_region|default_if_none:""}}</td>
+            <td>{{item.keyword_ip_city|default_if_none:""}}</td>
+            <td>{{item.count}}</td>
+        </tr>
+        {% endfor %}
+            
+    </tbody>
+</table>
+
+{% endblock content %}
+
+{% block script %}
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#sliderManagement').removeClass('menu-open');
+    $('a#keywordCounter').addClass('active');
+})
+
+$('#country_filter').select2({
+    theme: 'bootstrap4',
+    placeholder: 'Cari Nama Negara',
+});
+
+$('#region_filter').select2({
+    theme: 'bootstrap4',
+    placeholder: 'Cari Nama Wilayah',
+});
+
+$('#city_filter').select2({
+    theme: 'bootstrap4',
+    placeholder: 'Cari Nama Kota',
+});
+
+table = $('#ipTable').DataTable({
+    bInfo: false,
+    aaSorting: [],
+    dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
+});
+
+$("div.tableWidget.top").append('<div class="col-sm-12 col-md-6 my-auto"><h5 class="float-right"><strong>Keyword: {{items.0.keyword}}</strong></h5></div>');
+
+$('#myInputTextField').keyup(function () {
+    table.search($(this).val()).draw();
+});
+
+$('#country_filter').change(function () {
+    var url = $('#filterDiv').attr("data-regions-url");
+    var value = $(this).find('option:selected').val();
+    var id = window.location.href
+
+    if (value) {
+        $.ajax({
+            url: url,
+            data: {
+                'value': value,
+                'id' : id
+            },
+            success: function (data) {
+                console.log(data)
+                $("#region_filter").html(data);
+                //$("#page_filter").prop('disabled', false);
+            }
+        });
+    }
+
+    table.column(3).search(value.toLowerCase(), true, false).draw();
+});
+
+</script>
+{% endblock script %}

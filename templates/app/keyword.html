@@ -65,9 +65,10 @@
 <table id="keywordTable" class="table table-sm table-striped table-bordered">
     <thead>
         <tr>                    
+            <th>No</th>
             <th>Keyword</th>
             <th>Sumber Keyword</th>
-            <th>IP Lokasi</th>
+            <th>IP Pencarian</th>
             <th>Jumlah Pencarian</th>
             <th>Hasil Pencarian</th>
             <th>Aksi</th>
@@ -76,6 +77,7 @@
     <tbody>
         {% for item in counts %}
         <tr>
+            <td style="vertical-align:middle; text-align:center;">{{forloop.counter}}</td>
             <td style="vertical-align:middle;">{{item.keyword}}</td>
             <td style="vertical-align:middle;">
                 <ul>
@@ -90,10 +92,14 @@
                     </li>
                 </ul>
             </td>
-            <td style="vertical-align:middle;"></td>
-            <td align="center" style="vertical-align:middle;">{{item.keyword_count}}</td>
+            <td style="vertical-align:middle; text-align:center;">
+                <a href="{% url 'app:keyword_ip_detail' pk=item.id %}">
+                    {{item.keyword_ip}}
+                </a>
+            </td>
+            <td style="vertical-align:middle; text-align:center;">{{item.keyword_count}}</td>
             <td>
-                {% if item.lastscrape_products %}
+                {% if item.lastscrape_time %}
                 <ul>
                     <li>
                         Tanggal: {{item.lastscrape_date|default_if_none:""}}

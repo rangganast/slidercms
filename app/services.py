@@ -2,9 +2,10 @@ import requests
 import json
 import datetime
 import time
+from decouple import config
 
-token = 'c35a93bc889a4f137a25b5f2d6bec5769d61899f'
-domain = 'http://127.0.0.1:8000'
+token = config('TOKEN')
+domain = config('DOMAIN')
 
 def get_list():
     url = domain + '/api/v1/keyword/list'
@@ -21,6 +22,26 @@ def get_keywords():
                                    'Authorization': 'Token {}'.format(token)})
     keywords_list = r.json()
     return keywords_list
+
+def get_keyword_ips(id):
+    url =  domain + '/api/v1/keyword/ip/' + str(id)
+
+    r = requests.get(url, headers={'Content-Type': 'application/json',
+                                   'Authorization': 'Token {}'.format(token)})
+    ip_list = r.json()
+    return ip_list
+
+def get_regions(id, country):
+    url =  domain + '/api/v1/keyword/ajax/load-regions'
+
+    params = {"keyword_id" : id, "country": country}
+
+    r = requests.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
+
+    regions = r.json()
+    regions = str(list(set([item['keyword_ip_region'] for item in regions])))
+
+    return regions
 
 def get_count_keywords():
     url =  domain + '/api/v1/keyword/count'

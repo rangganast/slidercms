@@ -1,6 +1,7 @@
 import re
 import datetime
 import requests
+from decouple import config
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -1199,13 +1200,35 @@ class KeywordListPage(View):
             
         return render(request, self.template_name, context)
 
+@method_decorator([login_required, marketing_required], name='dispatch')
+class KeywordIpDetailPage(View):
+    template_name = 'app/keyword_ip_detail.html'
+
+    def get(self, request, pk):
+        items = services.get_keyword_ips(pk)
+        countries = list(set([item['keyword_ip_country'] for item in items]))
+
+        context = {
+            'items': items,
+            'countries': countries,
+        }
+            
+        return render(request, self.template_name, context)
+
 @method_decorator([login_required, superuser_required], name='dispatch')
 class KeywordScrapeView(View):
     def post(self, request, pk):
         url = request.POST.get('scrapeurl')
-        driver = webdriver.Chrome('D:\\Utils\\chromedriver\\chromedriver.exe')
+        chromeOptions = webdriver.ChromeOptions()
+        chromeOptions.add_argument("--remote-debugging-port=9222")
+        chromeOptions.add_argument("--disable-extensions")
+        chromeOptions.add_argument("--headless")
+        chromeOptions.add_argument("--disable-gpu")
+        chromeOptions.add_argument("--no-sandbox")
+        
+        driver = webdriver.Chrome(config('DRIVER_PATH'))
         driver.get(url)
-        timeout = 4
+        timeout = 1
 
         try:
             element_present = EC.presence_of_element_located((By.CLASS_NAME, 'py-2 col-12'))
@@ -1222,6 +1245,8 @@ class KeywordScrapeView(View):
         if len(div_class) > 0:
             for div in div_class:
                 products_num = div.find('strong').text
+
+        driver.quit()
             
         try: 
             services.post_scrape(pk, int(products_num))
@@ -1350,6 +1375,16 @@ def load_banner(request):
     banner_size = str(banner.width) + " x " + str(banner.height)
     return HttpResponse(banner_size + ',' + banner.image.url)
 
+@login_required
+def load_regions(request):
+    value = request.GET.get('value')
+    id = request.GET.get('id')
+    id = id.split('/')[-1]
+
+    regions = services.get_regions(id, value)
+
+    return HttpResponse(regions)
+    
 @login_required
 def check_similar_page_add(request):
     value = request.GET.get('value')
