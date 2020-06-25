@@ -23,39 +23,6 @@ $(document).ready(function () {
         }
     });
 
-    var now_date = new Date();
-
-    var now_day = now_date.getDate();
-    var now_month = now_date.getMonth() + 1;
-    var now_year = now_date.getFullYear();
-
-    if (now_day.toString().length == 1) {
-        var now_day = '0' + now_day.toString()
-    }
-
-    if (now_month.toString().length == 1) {
-        var now_month = '0' + now_month.toString()
-    }
-
-    $('#datepicker2').val(now_day + "-" + now_month + "-" + now_year)
-
-    var monthago_date = new Date();
-    monthago_date.setDate(monthago_date.getDate() - 30);
-
-    var monthago_day = monthago_date.getDate();
-    var monthago_month = monthago_date.getMonth() + 1;
-    var monthago_year = monthago_date.getFullYear();
-
-    if (monthago_day.toString().length == 1) {
-        var monthago_day = '0' + monthago_day.toString()
-    }
-
-    if (monthago_month.toString().length == 1) {
-        var monthago_month = '0' + monthago_month.toString()
-    }
-
-    $('#datepicker1').val(monthago_day + "-" + monthago_month + "-" + monthago_year)
-
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
@@ -78,7 +45,7 @@ $('#resetFilter').click(function () {
     var urlParam = urlParams.get('date1');
 
     if (urlParam) {
-        window.location.href = "/keywords/";
+        window.location.href = "/keywords";
     } else {
         table.search('').draw();
         $('#myInputTextField').val('');

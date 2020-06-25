@@ -1183,6 +1183,8 @@ class KeywordListPage(View):
         counts = services.get_count_keywords()
 
         context = {
+            'date1' : (datetime.date.today() - datetime.timedelta(days=30)).strftime('%d-%m-%Y'),
+            'date2' : datetime.date.today().strftime('%d-%m-%Y'),
             'counts': counts,
             'form_date': form_date,
             'apps' : Application.objects.all(),
