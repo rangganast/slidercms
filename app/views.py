@@ -1216,40 +1216,40 @@ class KeywordIpDetailPage(View):
         return render(request, self.template_name, context)
 
 @method_decorator([login_required, superuser_required], name='dispatch')
-class KeywordScrapeView(View):
-    def post(self, request, pk):
-        url = request.POST.get('scrapeurl')
-        chromeOptions = webdriver.ChromeOptions()
-        chromeOptions.add_argument("--remote-debugging-port=9222")
-        chromeOptions.add_argument("--disable-extensions")
-        chromeOptions.add_argument("--headless")
-        chromeOptions.add_argument("--disable-gpu")
-        chromeOptions.add_argument("--no-sandbox")
+class KeywordProductsTotalView(View):
+    def post(self, request, pk, keyword):
+        # url = request.POST.get('scrapeurl')
+        # chromeOptions = webdriver.ChromeOptions()
+        # chromeOptions.add_argument("--remote-debugging-port=9222")
+        # chromeOptions.add_argument("--disable-extensions")
+        # chromeOptions.add_argument("--headless")
+        # chromeOptions.add_argument("--disable-gpu")
+        # chromeOptions.add_argument("--no-sandbox")
         
-        driver = webdriver.Chrome(config('DRIVER_PATH'), chrome_options=chromeOptions)
-        driver.get(url)
-        timeout = 1
+        # driver = webdriver.Chrome(config('DRIVER_PATH'), chrome_options=chromeOptions)
+        # driver.get(url)
+        # timeout = 1
 
-        try:
-            element_present = EC.presence_of_element_located((By.CLASS_NAME, 'py-2 col-12'))
-            WebDriverWait(driver, timeout).until(element_present)
-        except TimeoutException:
-            print("Timed out waiting for page to load")
+        # try:
+        #     element_present = EC.presence_of_element_located((By.CLASS_NAME, 'py-2 col-12'))
+        #     WebDriverWait(driver, timeout).until(element_present)
+        # except TimeoutException:
+        #     print("Timed out waiting for page to load")
         
-        html = driver.page_source
-        soup = BeautifulSoup(html, 'lxml')
+        # html = driver.page_source
+        # soup = BeautifulSoup(html, 'lxml')
 
-        products_num = 0
+        # products_num = 0
 
-        div_class = soup.findAll('div', {'class' : 'py-2 col-12'})
-        if len(div_class) > 0:
-            for div in div_class:
-                products_num = div.find('strong').text
+        # div_class = soup.findAll('div', {'class' : 'py-2 col-12'})
+        # if len(div_class) > 0:
+        #     for div in div_class:
+        #         products_num = div.find('strong').text
 
-        driver.quit()
+        # driver.quit()
             
         try: 
-            services.post_scrape(pk, int(products_num))
+            services.post_products_total(pk, keyword)
 
             messages.add_message(request, messages.INFO, "Hasil Pencarian berhasil!", extra_tags="scrape_suceeded")
             return redirect(reverse('app:keywords'))

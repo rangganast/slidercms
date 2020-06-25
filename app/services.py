@@ -91,8 +91,14 @@ def get_count_keywords_with_params(date1=None, date2=None):
     else:
         return None
 
-def post_scrape(id, products_num):
+def post_products_total(id, keyword):
     url =  domain + '/api/v1/keyword/scrape'
+    products_total_url = 'https://qaweb.holahalo.dev/api/v1/public/search-product?q=' + keyword
+    r = requests.get(products_total_url, headers={'Content-Type': 'application/json'}, params={'q' : keyword})
+
+    data = r.json()
+
+    products_num = len(data['data'])
 
     if id and products_num:
         data = {
