@@ -1216,9 +1216,9 @@ class KeywordIpDetailPage(View):
         return render(request, self.template_name, context)
 
 @method_decorator([login_required, superuser_required], name='dispatch')
-class KeywordProductsTotalView(View):
-    def post(self, request, pk, keyword):
-        # url = request.POST.get('scrapeurl')
+class KeywordScrapeView(View):
+    def post(self, request, pk):
+        keyword = request.POST.get('keyword')
         # chromeOptions = webdriver.ChromeOptions()
         # chromeOptions.add_argument("--remote-debugging-port=9222")
         # chromeOptions.add_argument("--disable-extensions")

@@ -96,11 +96,14 @@ def post_products_total(id, keyword):
     products_total_url = 'https://qaweb.holahalo.dev/api/v1/public/search-product?q=' + keyword
     r = requests.get(products_total_url, headers={'Content-Type': 'application/json'}, params={'q' : keyword})
 
-    data = r.json()
+    products_data = r.json()
 
-    products_num = len(data['data'])
+    products_num = 0
 
-    if id and products_num:
+    if(products_data):
+        products_num = len(products_data['data'])
+
+    if id:
         data = {
             "id" : id,
             "lastscrape_date" : datetime.date.today().strftime('%Y-%m-%d'),

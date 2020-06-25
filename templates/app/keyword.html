@@ -122,9 +122,9 @@
                     </a>
                 </span>
                 <span class="spanFormat">
-                    <form method="POST" action="{% url 'app:keywords_scrape' pk=item.id keyword=item.keyword %}">
+                    <form method="POST" action="{% url 'app:keywords_scrape' pk=item.id %}">
                         {% csrf_token %}
-                        <input name="scrapeurl" type="hidden" value="https://www.holahalo.com/search?q={{item.keyword}}&category_id_navbar%5B%5D=">
+                        <input name="keyword" type="hidden" value="{{item.keyword}}">
                         <button type="submit" class="btn btn-sm btn-warning" data-toggle="tooltip" data-placement="bottom" title="Klik untuk melihat hasil pencarian terbaru">
                             <i class="far fa-chart-bar"></i>
                         </button>
