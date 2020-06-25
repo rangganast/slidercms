@@ -39,9 +39,21 @@ def get_regions(id, country):
     r = requests.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
 
     regions = r.json()
-    regions = str(list(set([item['keyword_ip_region'] for item in regions])))
+    regions = list(set([item['keyword_ip_region'] + '/' for item in regions]))
 
     return regions
+
+def get_cities(id, country, region):
+    url =  domain + '/api/v1/keyword/ajax/load-cities'
+
+    params = {"keyword_id": id, "country": country, "region": region}
+
+    r = requests.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
+
+    cities = r.json()
+    cities = list(set([item['keyword_ip_city'] + '/' for item in cities]))
+
+    return cities
 
 def get_count_keywords():
     url =  domain + '/api/v1/keyword/count'

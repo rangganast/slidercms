@@ -1226,7 +1226,7 @@ class KeywordScrapeView(View):
         chromeOptions.add_argument("--disable-gpu")
         chromeOptions.add_argument("--no-sandbox")
         
-        driver = webdriver.Chrome(config('DRIVER_PATH'))
+        driver = webdriver.Chrome(config('DRIVER_PATH'), chrome_options=chromeOptions)
         driver.get(url)
         timeout = 1
 
@@ -1377,13 +1377,24 @@ def load_banner(request):
 
 @login_required
 def load_regions(request):
-    value = request.GET.get('value')
     id = request.GET.get('id')
     id = id.split('/')[-1]
+    value = request.GET.get('value')
 
     regions = services.get_regions(id, value)
 
     return HttpResponse(regions)
+
+@login_required
+def load_cities(request):
+    id = request.GET.get('id')
+    id = id.split('/')[-1]
+    country = request.GET.get('country')
+    value = request.GET.get('value')
+
+    cities = services.get_cities(id, country, value)
+
+    return HttpResponse(cities)
     
 @login_required
 def check_similar_page_add(request):

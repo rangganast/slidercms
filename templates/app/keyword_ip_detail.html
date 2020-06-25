@@ -8,6 +8,12 @@
 <link rel="stylesheet" href="{% static 'css/keyword.css' %}">
 {% endblock style %}
 
+{% block buttonheader %}
+<a href="{% url 'app:keywords' %}">
+    <button class="btn btn-secondary float-right my-auto">Kembali</button>
+</a>
+{% endblock buttonheader %}
+
 {% block contentheader %}Keyword Counter{% endblock contentheader %}
 
 {% block content %}
@@ -16,7 +22,8 @@
 
     <legend class="scheduler-border">Filter</legend>
 
-    <div id="filterDiv" class="control-group mb-3" data-regions-url="{% url 'app:ajax_load_regions' %}">
+    <div id="filterDiv" class="control-group mb-3" data-regions-url="{% url 'app:ajax_load_regions' %}"
+        data-cities-url="{% url 'app:ajax_load_cities' %}">
         <div class="row">
             <div class="col-sm-3 no-padding">
                 <div class="input-group">
@@ -35,12 +42,11 @@
                 <label for="region_filter"><small>Cari Nama Wilayah</small></label>
                 <div class="input-group">
                     <select id="region_filter" class="form-control">
-                        {% include 'app/regions_dropdown_list_options.html' %}
                     </select>
                 </div>
             </div>
             <div class="col-sm-3 no-padding">
-                <label for="city_filter"><small>Cari Nama Wilayah</small></label>
+                <label for="city_filter"><small>Cari Nama Kota</small></label>
                 <div class="input-group">
                     <select id="city_filter" class="form-control">
                         <option value="">Cari Nama Kota</option>
@@ -48,6 +54,13 @@
                         <option value="{{count.keyword_ip_country}}">{{count.keyword_ip_country}}</option>
                         {% endfor %}
                     </select>
+                </div>
+            </div>
+            <div class="col-sm-2 no-padding">
+                <label style="color: white;"><small>Reset Filter</small></label>
+                <div class="input-group">
+                    <button id="resetFilter" name="reset" type="button" class="btn btn-secondary ml-2">Reset
+                        Filter</button>
                 </div>
             </div>
         </div>
@@ -143,14 +156,88 @@ $('#country_filter').change(function () {
                 'id' : id
             },
             success: function (data) {
-                console.log(data)
-                $("#region_filter").html(data);
-                //$("#page_filter").prop('disabled', false);
+                data = data.split('/')
+                data.pop()
+                $("#region_filter").html('')
+                $("#region_filter").append('<option value="">Cari Nama Wilayah</option>')
+                for(let i = 0; i < data.length; i++){
+                    $("#region_filter").append('<option value="' + data[i] + '">' + data[i] + '</option>')
+                }
             }
         });
     }
 
-    table.column(3).search(value.toLowerCase(), true, false).draw();
+    value_regex = '\\b' + value.toLowerCase() + '\\b'
+
+    table.column(3).search(value_regex, true, false).draw();
+});
+
+$('#region_filter').change(function () {
+    var url = $('#filterDiv').attr("data-cities-url");
+    var country = $('#country_filter').find('option:selected').val();
+    var value = $(this).find('option:selected').val();
+    var id = window.location.href
+
+    if (value) {
+        $.ajax({
+            url: url,
+            data: {
+                'country': country,
+                'value': value,
+                'id' : id
+            },
+            success: function (data) {
+                data = data.split('/')
+                data.pop()
+                $("#city_filter").html('')
+                $("#city_filter").append('<option value="">Cari Nama Kota</option>')
+                for(let i = 0; i < data.length; i++){
+                    $("#city_filter").append('<option value="' + data[i] + '">' + data[i] + '</option>')
+                }
+            }
+        });
+    }
+
+    country_regex = '\\b' + country.toLowerCase() + '\\b'
+    value_regex = '\\b' + value.toLowerCase() + '\\b'
+
+    table.column(3).search(country_regex, true, false).draw();
+    table.column(4).search(value_regex, true, false).draw();
+});
+
+$('#city_filter').change(function () {
+    var country = $('#country_filter').find('option:selected').val();
+    var region = $('#region_filter').find('option:selected').val();
+    var value = $(this).find('option:selected').val();
+
+    country_regex = '\\b' + country.toLowerCase() + '\\b'
+    region_regex = '\\b' + region.toLowerCase() + '\\b'
+    value_regex = '\\b' + value.toLowerCase() + '\\b'
+
+    table.column(3).search(country_regex, true, false).draw();
+    table.column(4).search(region_regex, true, false).draw();
+    table.column(5).search(value_regex, true, false).draw();
+});
+
+$('#resetFilter').click(function () {
+    $('#myInputTextField').val('');
+    $('#country_filter').val('').trigger('change');
+    $('#region_filter').val('').trigger('change');
+    $('#city_filter').val('').trigger('change');
+    
+    $.fn.dataTable.ext.search = [];
+    table.destroy();
+    
+    table = $('#ipTable').DataTable({
+        bInfo: false,
+        aaSorting: [],
+        dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
+    });
+
+    $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6 my-auto"><h5 class="float-right"><strong>Keyword: {{items.0.keyword}}</strong></h5></div>');
+
+    table.draw();
+
 });
 
 </script>

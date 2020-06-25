@@ -57,6 +57,7 @@ urlpatterns = [
     path('ajax/load-banner', views.load_banner, name='ajax_load_banner'),
     path('ajax/load-location-size', views.load_location_size, name='ajax_load_location_size'),
     path('ajax/load-regions', views.load_regions, name='ajax_load_regions'),
+    path('ajax/load-cities', views.load_cities, name='ajax_load_cities'),
     path('ajax/check-similar-page-add', views.check_similar_page_add, name='ajax_check_similar_page_add'),
     path('ajax/check-similar-page-update', views.check_similar_page_update, name='ajax_check_similar_page_update'),
     path('ajax/check-similar-location-add', views.check_similar_location_add, name='ajax_check_similar_location_add'),
