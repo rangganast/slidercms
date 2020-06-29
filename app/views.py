@@ -1182,12 +1182,25 @@ class KeywordListPage(View):
 
         counts = services.get_count_keywords()
 
+        keys = list(counts[0].keys())
+        keys.remove('keyword')
+        keys.remove('id')
+        keys.remove('lastscrape_date')
+        keys.remove('lastscrape_time')
+        keys.remove('lastscrape_products')
+        keys.remove('keyword_count')
+        keys.remove('keyword_ip')
+
+        apps = [app.replace('_', ' ').title() for app in keys]
+
+        apps = dict(zip(keys, apps))
+
         context = {
             'date1' : (datetime.date.today() - datetime.timedelta(days=30)).strftime('%d-%m-%Y'),
             'date2' : datetime.date.today().strftime('%d-%m-%Y'),
             'counts': counts,
             'form_date': form_date,
-            'apps' : Application.objects.all(),
+            'apps' : apps,
         }
 
         if request.GET.get('filter') == '':

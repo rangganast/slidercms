@@ -4,7 +4,7 @@ $(document).ready(function () {
 
     $('#app_filter').select2({
         theme: 'bootstrap4',
-        placeholder: 'Cari Aplikasi',
+        placeholder: 'Semua Aplikasi',
     });
 
     $('#datepicker1').datepicker({
@@ -40,6 +40,16 @@ $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
 });
 
+$('#app_filter').change(function () {
+    li_class = $(this).find('option:selected').val()
+
+    if (li_class) {
+        $('#keywordTable li.' + li_class).show();
+        $('#keywordTable li:not(.' + li_class + ')').hide();
+    }
+
+})
+
 $('#resetFilter').click(function () {
     var urlParams = new URLSearchParams(window.location.search);
     var urlParam = urlParams.get('date1');
@@ -47,9 +57,21 @@ $('#resetFilter').click(function () {
     if (urlParam) {
         window.location.href = "/keywords";
     } else {
-        table.search('').draw();
         $('#myInputTextField').val('');
         $('#datepicker1').val('');
         $('#datepicker2').val('');
+        $('#app_filter').val('').trigger('change');
+        $('li').show();
+
+        $.fn.dataTable.ext.search = [];
+        table.destroy();
+
+        table = $('#keywordTable').DataTable({
+            bInfo: false,
+            aaSorting: [],
+            dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
+        });
+    
+        $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href=""><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
     }
 });
