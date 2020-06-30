@@ -34,7 +34,7 @@ table = $('#keywordTable').DataTable({
     dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
 });
 
-$("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href=""><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
+$("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/keywords/export"><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
 
 $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
@@ -72,6 +72,6 @@ $('#resetFilter').click(function () {
             dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
         });
     
-        $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href=""><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
+        $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/keywords/export"><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
     }
 });

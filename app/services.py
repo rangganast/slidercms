@@ -3,6 +3,7 @@ import json
 import datetime
 import time
 from decouple import config
+from io import BytesIO
 
 token = config('TOKEN')
 domain = config('DOMAIN')
@@ -39,7 +40,7 @@ def get_regions(id, country):
     r = requests.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
 
     regions = r.json()
-    regions = list(set([item['keyword_ip_region'] + '/' for item in regions]))
+    regions = list(set([item['keyword_ip_region'] + '/' for item in regions if item['keyword_ip_region'] is not None]))
 
     return regions
 
@@ -51,7 +52,7 @@ def get_cities(id, country, region):
     r = requests.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
 
     cities = r.json()
-    cities = list(set([item['keyword_ip_city'] + '/' for item in cities]))
+    cities = list(set([item['keyword_ip_city'] + '/' for item in cities if item['keyword_ip_city'] is not None]))
 
     return cities
 
@@ -112,3 +113,11 @@ def post_products_total(id, keyword):
         }
 
         return requests.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)})
+
+def export_excel():
+    url =  domain + '/api/v1/keyword/export'
+
+    r = requests.get(url, stream=True, headers={'Content-Type': 'application/vnd.ms-excel',
+                                   'Authorization': 'Token {}'.format(token)})
+
+    return r.content

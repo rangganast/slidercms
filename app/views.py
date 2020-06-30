@@ -1,13 +1,10 @@
 import re
 import datetime
 import requests
+import urllib
+from wsgiref.util import FileWrapper
+import os
 from decouple import config
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from django.db.models import Q
 from django.views import View
 from django.urls import reverse
@@ -16,7 +13,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.utils.html import strip_tags
@@ -1221,7 +1218,7 @@ class KeywordIpDetailPage(View):
 
     def get(self, request, pk):
         items = services.get_keyword_ips(pk)
-        countries = list(set([item['keyword_ip_country'] for item in items]))
+        countries = list(set([item['keyword_ip_country'] for item in items if item['keyword_ip_country'] is not None]))
 
         context = {
             'items': items,
@@ -1563,3 +1560,14 @@ def check_similar_date_update(request):
 
     else:
         return HttpResponse(str(check) + ',' + str(cmp_total))
+
+@login_required
+def export_excel(request):
+    value = services.export_excel()
+    with open('keywords.xlsx', 'wb') as f:
+        f.write(value)
+
+    wrapper = FileWrapper(open('keywords.xlsx', 'rb'))
+    response = HttpResponse(wrapper, content_type='application/force-download')
+    response['Content-Disposition'] = 'inline; filename=' + os.path.basename('keywords.xlsx')
+    return response
