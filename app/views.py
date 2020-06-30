@@ -1563,7 +1563,13 @@ def check_similar_date_update(request):
 
 @login_required
 def export_excel(request):
-    value = services.export_excel()
+    date1 = request.GET.get('date1')
+    date2 = request.GET.get('date2')
+
+    date1 = datetime.datetime.strptime(date1, '%d-%m-%Y').strftime('%Y-%m-%d')
+    date2 = datetime.datetime.strptime(date2, '%d-%m-%Y').strftime('%Y-%m-%d')
+    
+    value = services.export_excel(date1, date2)
     with open('keywords.xlsx', 'wb') as f:
         f.write(value)
 

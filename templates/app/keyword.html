@@ -174,7 +174,7 @@ table = $('#keywordTable').DataTable({
     dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
 });
 
-$("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/keyword/export?date1={{date1}}&date2={{date2}}"><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
+$("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/keywords/export?date1={{date1}}&date2={{date2}}"><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
 
 $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();

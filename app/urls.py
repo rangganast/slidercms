@@ -14,7 +14,7 @@ urlpatterns = [
     path('keywords', views.KeywordListPage.as_view(), name='keywords'),
     path('keywords/ip/<int:pk>', views.KeywordIpDetailPage.as_view(), name='keyword_ip_detail'),
     path('keywords/scrape/<int:pk>', views.KeywordScrapeView.as_view(), name='keywords_scrape'),
-    path('keywords/export', views.export_excel, name='keywords_export'),
+    re_path(r'keywords/export$', views.export_excel, name='keywords_export'),
 
     path('app', views.AppView.as_view(), name='app'),
     path('app/add_app', views.AddAppView.as_view(), name='add_app'),
@@ -72,10 +72,9 @@ urlpatterns = [
     path('ajax/check-similar-date-add', views.check_similar_date_add, name='ajax_check_similar_date_add'),
     path('ajax/check-similar-date-update', views.check_similar_date_update, name='ajax_check_similar_date_update'),
 
-    path('login', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
+    re_path(r'login$', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('password_reset', auth_views.PasswordResetView.as_view(form_class=PasswordResetForm, success_url=reverse_lazy('app:password_reset_done'), html_email_template_name='registration/password_reset_email.html', from_email='noreply@banner-slider-qa.holahalo.dev'), name='password_reset'),
     path('password_reset_done', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    re_path(r'password_reset_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})', auth_views.PasswordResetConfirmView.as_view(form_class=SetPasswordForm, success_url='/login/?resetPassword=yes'), name='password_reset_confirm'),
-
+    re_path(r'password_reset_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})', auth_views.PasswordResetConfirmView.as_view(form_class=SetPasswordForm, success_url='/login?resetPassword=yes'), name='password_reset_confirm'),
     path('logout', auth_views.LogoutView.as_view(), name='logout'),
 ]
