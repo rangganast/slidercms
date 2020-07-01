@@ -24,11 +24,16 @@ def get_keywords():
     keywords_list = r.json()
     return keywords_list
 
-def get_keyword_ips(id):
+def get_keyword_ips(id, date1, date2):
     url =  domain + '/api/v1/keyword/ip/' + str(id)
 
+    date1 = datetime.datetime.strptime(date1, '%d-%m-%Y').strftime('%Y-%m-%d')
+    date2 = datetime.datetime.strptime(date2, '%d-%m-%Y').strftime('%Y-%m-%d')
+
+    params = {"date1" : date1, "date2": date2}
+
     r = requests.get(url, headers={'Content-Type': 'application/json',
-                                   'Authorization': 'Token {}'.format(token)})
+                                   'Authorization': 'Token {}'.format(token)}, params=params)
     ip_list = r.json()
     return ip_list
 

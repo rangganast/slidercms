@@ -1015,7 +1015,7 @@ class AddUserView(View):
 
             if role == '1':
                 user_instance = User(email=email, username=username, is_superuser=True)
-                subject_role = 'Superuser'
+                subject_role = 'Super Admin'
             if role == '2':
                 user_instance = User(email=email, username=username, is_developer=True)
                 subject_role = 'Developer'
@@ -1026,7 +1026,7 @@ class AddUserView(View):
             user_instance.set_password(password)
             user_instance.save()
 
-            html_content = render_to_string('app/mail_template.html', {'username' : username, 'email' : email, 'password' : password, 'role' : subject_role})
+            html_content = render_to_string('app/mail_template.html', {'username' : username, 'email' : email, 'password' : password, 'role' : subject_role, 'protocol' : request.scheme, 'domain' : request.get_host})
 
             send_mail(
                 subject='Super Admin telah menambahkan anda sebagai ' + subject_role,
@@ -1216,13 +1216,17 @@ class KeywordListPage(View):
 class KeywordIpDetailPage(View):
     template_name = 'app/keyword_ip_detail.html'
 
-    def get(self, request, pk):
-        items = services.get_keyword_ips(pk)
+    def get(self, request, pk, count):
+        date1 = request.GET.get('date1')
+        date2 = request.GET.get('date2')
+
+        items = services.get_keyword_ips(pk, date1, date2)
         countries = list(set([item['keyword_ip_country'] for item in items if item['keyword_ip_country'] is not None]))
 
         context = {
             'items': items,
             'countries': countries,
+            'count' : count,
         }
             
         return render(request, self.template_name, context)
@@ -1231,34 +1235,6 @@ class KeywordIpDetailPage(View):
 class KeywordScrapeView(View):
     def post(self, request, pk):
         keyword = request.POST.get('keyword')
-        # chromeOptions = webdriver.ChromeOptions()
-        # chromeOptions.add_argument("--remote-debugging-port=9222")
-        # chromeOptions.add_argument("--disable-extensions")
-        # chromeOptions.add_argument("--headless")
-        # chromeOptions.add_argument("--disable-gpu")
-        # chromeOptions.add_argument("--no-sandbox")
-        
-        # driver = webdriver.Chrome(config('DRIVER_PATH'), chrome_options=chromeOptions)
-        # driver.get(url)
-        # timeout = 1
-
-        # try:
-        #     element_present = EC.presence_of_element_located((By.CLASS_NAME, 'py-2 col-12'))
-        #     WebDriverWait(driver, timeout).until(element_present)
-        # except TimeoutException:
-        #     print("Timed out waiting for page to load")
-        
-        # html = driver.page_source
-        # soup = BeautifulSoup(html, 'lxml')
-
-        # products_num = 0
-
-        # div_class = soup.findAll('div', {'class' : 'py-2 col-12'})
-        # if len(div_class) > 0:
-        #     for div in div_class:
-        #         products_num = div.find('strong').text
-
-        # driver.quit()
             
         try: 
             services.post_products_total(pk, keyword)

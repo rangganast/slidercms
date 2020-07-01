@@ -151,8 +151,7 @@
                                 {% with bannerSlice=""|add:start|add:":"|add:end  %}
                                 
                                 {% for banner in banners|slice:bannerSlice %}
-                                <!-- <img id="img-{{ start }}" src="http://127.0.0.1:8000/media/{{ banner.image }}" width="400"> -->
-                                <img id="img-{{ start }}" src="https://banner-slider-qa.holahalo.dev/media/{{ banner.image }}" width="400">
+                                <img id="img-{{ start }}" src="{{request.scheme}}://{{request.META.HTTP_HOST}}/media/{{ banner.image }}" width="400">
                                 {% endfor %}
                                 {% endwith %}
                                 <img style="display: none;" id="img-{{ start }}" src="" width="400">

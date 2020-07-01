@@ -63,129 +63,124 @@
         <fieldset id="id_install-0-fieldset" class="page-border fieldset">
             
             <legend class="page-border">Detail Lokasi Pemasangan</legend>
-            
-            <div class="container">
                 
-                <div class="form-group row mt-2">
-                    <label class="col-sm-2 col-form-label" for="">
-                        <strong>Nama Lokasi Pemasangan </strong>
-                    </label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        <input type="text" class="form-control no-border" value="{{location.name}}" disabled>
-                    </div>
+            <div class="form-group row mt-2">
+                <label class="col-sm-2 col-form-label" for="">
+                    <strong>Nama Lokasi Pemasangan </strong>
+                </label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    <input type="text" class="form-control no-border" value="{{location.name}}" disabled>
                 </div>
-                
-                <div class="form-group row mt-2">
-                    <label class="col-sm-2 col-form-label" for="">
-                        <strong>Kode Campaign</strong>
-                    </label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        <input type="text" class="form-control no-border" value="{{campaign.campaign_code}}" disabled>
-                    </div>
-                </div>
-                
-                <div class="form-group row mt-2">
-                    <label class="col-sm-2 col-form-label" for="">
-                        <strong>Prioritas Banner</strong>
-                    </label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        <input type="text" class="form-control no-border" value="{{campaign.priority}}" disabled>
-                    </div>
-                </div>
-                
-                <div class="form-group row mt-2">
-                    <label class="col-sm-2 col-form-label" for="">
-                        <strong>Tanggal Dibuat</strong>
-                    </label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        <input type="text" class="form-control no-border" value="{{campaign.date_created|date:'d/m/Y'}}" disabled>
-                    </div>
-                </div>
-                
-                <div class="form-group row mt-2">
-                    <label class="col-sm-2 col-form-label" for="">
-                        <strong>Tanggal Diupdate</strong>
-                    </label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        <input type="text" class="form-control no-border" value="{{campaign.date_updated|date:'d/m/Y'}}" disabled>
-                    </div>
-                </div>
-                
-                <div class="form-group row mt-2">
-                    <label class="col-sm-2 col-form-label" for="">
-                        <strong>Tanggal Berlaku</strong>
-                    </label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        <input type="text" class="form-control no-border" value="{{campaign.valid_date_start|date:'d/m/Y'}} - {{campaign.valid_date_end|date:'d/m/Y'}}" disabled>
-                    </div>
-                </div>
-                
-                <div class="form-group row mt-2">
-                    <label class="col-sm-2 col-form-label" for="">
-                        <strong>Status Pemasangan</strong>
-                    </label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        <input type="text" class="form-control no-border" value="{{status}}" disabled>
-                    </div>
-                </div>
-
-                <hr>
-                
-                {% for installation in installations %}
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label" for="">
-                        <h5><strong>Detail Banner</strong></h5>
-                    </label>
-                </div>
-
-                {% for banner in banners %}
-                {% if banner.id == installation.banner_id %}
-
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label" for="">Nama Banner</label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        <input type="text" class="form-control no-border" value="{{banner.name}}" disabled>
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Gambar Banner</label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        <!-- <img src="http://127.0.0.1:8000/media/{{banner.image}}" alt="" width="400"> -->
-                        <img src="https://banner-slider-qa.holahalo.dev/media/{{banner.image}}" alt="" width="400">
-                    </div>
-                </div>
-                
-                {% endif %}
-                {% endfor %}
-                
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label" for="">
-                        <strong>Link Tujuan Banner</strong>
-                    </label>
-                    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
-                    <div class="col-sm-9 no-padding">
-                        {% if installation.redirect == None %}
-                        <input type="text" class="form-control no-border" value="" disabled>
-                        {% else %}
-                        <input type="text" class="form-control no-border" value="{{installation.redirect}}" disabled>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <hr>
-                {% endfor %}
-                
             </div>
+            
+            <div class="form-group row mt-2">
+                <label class="col-sm-2 col-form-label" for="">
+                    <strong>Kode Campaign</strong>
+                </label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    <input type="text" class="form-control no-border" value="{{campaign.campaign_code}}" disabled>
+                </div>
+            </div>
+            
+            <div class="form-group row mt-2">
+                <label class="col-sm-2 col-form-label" for="">
+                    <strong>Prioritas Banner</strong>
+                </label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    <input type="text" class="form-control no-border" value="{{campaign.priority}}" disabled>
+                </div>
+            </div>
+            
+            <div class="form-group row mt-2">
+                <label class="col-sm-2 col-form-label" for="">
+                    <strong>Tanggal Dibuat</strong>
+                </label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    <input type="text" class="form-control no-border" value="{{campaign.date_created|date:'d/m/Y'}}" disabled>
+                </div>
+            </div>
+            
+            <div class="form-group row mt-2">
+                <label class="col-sm-2 col-form-label" for="">
+                    <strong>Tanggal Diupdate</strong>
+                </label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    <input type="text" class="form-control no-border" value="{{campaign.date_updated|date:'d/m/Y'}}" disabled>
+                </div>
+            </div>
+            
+            <div class="form-group row mt-2">
+                <label class="col-sm-2 col-form-label" for="">
+                    <strong>Tanggal Berlaku</strong>
+                </label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    <input type="text" class="form-control no-border" value="{{campaign.valid_date_start|date:'d/m/Y'}} - {{campaign.valid_date_end|date:'d/m/Y'}}" disabled>
+                </div>
+            </div>
+            
+            <div class="form-group row mt-2">
+                <label class="col-sm-2 col-form-label" for="">
+                    <strong>Status Pemasangan</strong>
+                </label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    <input type="text" class="form-control no-border" value="{{status}}" disabled>
+                </div>
+            </div>
+
+            <hr>
+            
+            {% for installation in installations %}
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="">
+                    <h5><strong>Detail Banner</strong></h5>
+                </label>
+            </div>
+
+            {% for banner in banners %}
+            {% if banner.id == installation.banner_id %}
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="">Nama Banner</label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    <input type="text" class="form-control no-border" value="{{banner.name}}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Gambar Banner</label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    <img src="{{request.scheme}}://{{request.META.HTTP_HOST}}/media/{{banner.image}}" alt="" width="400">
+                </div>
+            </div>
+            
+            {% endif %}
+            {% endfor %}
+            
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="">
+                    <strong>Link Tujuan Banner</strong>
+                </label>
+                <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+                <div class="col-sm-9 no-padding">
+                    {% if installation.redirect == None %}
+                    <input type="text" class="form-control no-border" value="" disabled>
+                    {% else %}
+                    <input type="text" class="form-control no-border" value="{{installation.redirect}}" disabled>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <hr>
+            {% endfor %}
             
         </fieldset>
 

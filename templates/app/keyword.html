@@ -21,11 +21,11 @@
             <div class="row">
                 <div class="form-inline">
                     <label for="datepicker1">Tanggal :</label>
-                    <input name="date1"class="form-control ml-3" id="datepicker1" placeholder="DD-MM-YY"
+                    <input name="date1" class="form-control ml-3" id="datepicker1" placeholder="DD-MM-YY"
                         autocomplete="off" required {% if date1 %}value="{{date1}}"{% else %}value=""{% endif %} />
 
                     <label class="ml-3" for="datepicker2"> s/d </label>
-                    <input name="date2"class="form-control ml-3" id="datepicker2"
+                    <input name="date2" class="form-control ml-3" id="datepicker2"
                         placeholder="DD-MM-YY" autocomplete="off" required {% if date2 %}value="{{date2}}"{% else %}value=""{% endif %} />
 
                     <button name="filter" type="submit" class="btn btn-sm btn-primary ml-3">Terapkan</button>
@@ -35,10 +35,10 @@
         </form>
     </div>
         
-    <div class="control-group mb-3">
+    <div class="control-group mb-3 ml-2">
         <div class="row">
             <div class="form-inline">
-                <label class="mr-4" for="app_filter">Sumber :</label>
+                <label class="mr-3" for="app_filter">Sumber :</label>
                 <select id="app_filter" class="form-control">
                     <option value="">Semua Aplikasi</option>
                     {% for key, app in apps.items %}
@@ -61,7 +61,7 @@
 
 </fieldset>
 
-<table id="keywordTable" class="table table-sm table-striped table-bordered">
+<table id="keywordTable" class="table table-sm table-striped table-bordered nowrap">
     <thead>
         <tr>                    
             <th>No</th>
@@ -92,13 +92,12 @@
                 </ul>
             </td>
             <td style="vertical-align:middle; text-align:center;">
-                <a href="{% url 'app:keyword_ip_detail' pk=item.id %}">
+                <a href="{% url 'app:keyword_ip_detail' pk=item.id count=item.keyword_count %}?date1={{date1}}&date2={{date2}}">
                     {{item.keyword_ip|default_if_none:""}}
                 </a>
             </td>
             <td style="vertical-align:middle; text-align:center;">{{item.keyword_count}}</td>
             <td>
-                {% if item.lastscrape_time %}
                 <ul>
                     <li>
                         Tanggal: {{item.lastscrape_date|default_if_none:""}}
@@ -110,7 +109,6 @@
                         Total Produk: {{item.lastscrape_products|default_if_none:""}}
                     </li>
                 </ul>
-                {% endif %}
             </td>
             <td style="vertical-align:middle;">
                 <span class="spanFormat">

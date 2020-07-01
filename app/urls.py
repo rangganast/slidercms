@@ -12,7 +12,7 @@ urlpatterns = [
     path('', login_required(RedirectView.as_view(url='page', permanent=False)), name='home'),
 
     path('keywords', views.KeywordListPage.as_view(), name='keywords'),
-    path('keywords/ip/<int:pk>', views.KeywordIpDetailPage.as_view(), name='keyword_ip_detail'),
+    path('keywords/ip/<int:pk>/<int:count>', views.KeywordIpDetailPage.as_view(), name='keyword_ip_detail'),
     path('keywords/scrape/<int:pk>', views.KeywordScrapeView.as_view(), name='keywords_scrape'),
     re_path(r'keywords/export$', views.export_excel, name='keywords_export'),
 

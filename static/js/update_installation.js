@@ -172,9 +172,9 @@ function load_banner(input) {
         },
         success: function (data) {
             var arr = data.split(',')
-            // var imageUrl = 'http://127.0.0.1:8000' + arr[1];
-            var imageUrl = 'https://banner-slider-qa.holahalo.dev' + arr[1];
-            $('#img-' + id).attr('src', imageUrl);
+            var url = window.location.origin;
+            var result = url + arr[1];
+            $('#img-' + id).attr('src', result);
             $('#id_banner-size-' + id).html('*Ukuran gambar ini adalah ' + arr[0]);
         }
     });
