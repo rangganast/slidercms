@@ -9,7 +9,7 @@
 {% endblock style %}
 
 {% block buttonheader %}
-<a href="{% url 'app:keywords' %}">
+<a id="backAnchor" href="">
     <button class="btn btn-secondary float-right my-auto">Kembali</button>
 </a>
 {% endblock buttonheader %}
@@ -114,6 +114,7 @@
 $(document).ready(function () {
     $('#sliderManagement').removeClass('menu-open');
     $('a#keywordCounter').addClass('active');
+    $('#backAnchor').attr("href", document.referrer);
 })
 
 $('#country_filter').select2({

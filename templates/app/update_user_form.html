@@ -13,7 +13,7 @@
 
     <h3 class="text-center mb-2">Ubah Profile
         <span class="btn-group float-right">
-            <a href="javascript:history.back()" style="color: white; text-decoration: none;">
+            <a id="backAnchor" href="" style="color: white; text-decoration: none;">
                 <button type="button" class="btn btn-secondary mr-2">
                     Batal
                 </button>
@@ -224,6 +224,8 @@
                 $(this).submit();
             }
         });
+
+        $('#backAnchor').attr("href", document.referrer);
     })
 
     {% if messages %}
