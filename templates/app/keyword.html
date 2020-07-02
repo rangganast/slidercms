@@ -40,7 +40,7 @@
             <div class="form-inline">
                 <label class="mr-3" for="app_filter">Sumber :</label>
                 <select id="app_filter" class="form-control">
-                    <option value="">Semua Aplikasi</option>
+                    <option value="all_apps">Semua Aplikasi</option>
                     {% for key, app in apps.items %}
                     <option value="{{key}}">{{app}}</option>
                     {% endfor %}
@@ -99,13 +99,13 @@
             <td style="vertical-align:middle; text-align:center;">{{item.keyword_count}}</td>
             <td>
                 <ul>
-                    <li>
+                    <li class="scraperesult">
                         Tanggal: {{item.lastscrape_date|default_if_none:""}}
                     </li>
-                    <li>
+                    <li class="scraperesult">
                         Jam: {{item.lastscrape_time|default_if_none:""}}
                     </li>
-                    <li>
+                    <li class="scraperesult">
                         Total Produk: {{item.lastscrape_products|default_if_none:""}}
                     </li>
                 </ul>
@@ -172,7 +172,7 @@ table = $('#keywordTable').DataTable({
     dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
 });
 
-$("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/keywords/export?date1={{date1}}&date2={{date2}}"><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
+$("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a id="exportExcel" href="/keywords/export?date1={{date1}}&date2={{date2}}&app=all_apps"><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
 
 $('#myInputTextField').keyup(function () {
     table.search($(this).val()).draw();
@@ -182,10 +182,21 @@ $('#app_filter').change(function () {
     li_class = $(this).find('option:selected').val()
 
     if (li_class) {
-        $('#keywordTable li.' + li_class).show();
-        $('#keywordTable li:not(.' + li_class + ')').hide();
-    }
+        if (li_class === 'all_apps') {
+            $('#keywordTable li').show();
 
+            var app = $('#exportExcel').attr("href").split('=').slice(-1).pop();
+            var url = $('#exportExcel').attr("href").replace(app, li_class);
+            $('#exportExcel').attr('href', url);
+        }else {
+            $('#keywordTable li.' + li_class).show();
+            $('#keywordTable li:not(.' + li_class + ', .scraperesult)').hide();
+
+            var app = $('#exportExcel').attr("href").split('=').slice(-1).pop();
+            var url = $('#exportExcel').attr("href").replace(app, li_class);
+            $('#exportExcel').attr('href', url);
+        }
+    }
 })
 
 $('#resetFilter').click(function () {
@@ -196,9 +207,9 @@ $('#resetFilter').click(function () {
         window.location.href = "/keywords";
     } else {
         $('#myInputTextField').val('');
-        $('#datepicker1').val('');
-        $('#datepicker2').val('');
-        $('#app_filter').val('').trigger('change');
+        $('#datepicker1').val('{{date1}}');
+        $('#datepicker2').val('{{date2}}');
+        $('#app_filter').val('all_apps').trigger('change');
         $('li').show();
 
         $.fn.dataTable.ext.search = [];
@@ -210,7 +221,9 @@ $('#resetFilter').click(function () {
             dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
         });
     
-        $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/keywords/export"><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
+        $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a id="exportExcel" href="/keywords/export?date1={{date1}}&date2={{date2}}&app=all_apps"><button class="btn btn-success float-right"><i class="fas fa-file-excel mr-2"></i>Export Excel</button></a></div>');
+
+        table.draw();
     }
 });
 

@@ -119,10 +119,10 @@ def post_products_total(id, keyword):
 
         return requests.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)})
 
-def export_excel(date1, date2):
+def export_excel(date1, date2, app):
     url =  domain + '/api/v1/keyword/export'
 
-    params = {"date1" : date1, "date2": date2}
+    params = {"date1" : date1, "date2": date2, "app": app}
 
     r = requests.get(url, stream=True, headers={'Content-Type': 'application/vnd.ms-excel',
                                    'Authorization': 'Token {}'.format(token)}, params=params)

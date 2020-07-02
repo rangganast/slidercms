@@ -41,18 +41,14 @@
             <div class="col-sm-3 no-padding">
                 <label for="region_filter"><small>Cari Nama Wilayah</small></label>
                 <div class="input-group">
-                    <select id="region_filter" class="form-control">
+                    <select id="region_filter" class="form-control" disabled>
                     </select>
                 </div>
             </div>
             <div class="col-sm-3 no-padding">
                 <label for="city_filter"><small>Cari Nama Kota</small></label>
                 <div class="input-group">
-                    <select id="city_filter" class="form-control">
-                        <option value="">Cari Nama Kota</option>
-                        {% for count in counts %}
-                        <option value="{{count.keyword_ip_country}}">{{count.keyword_ip_country}}</option>
-                        {% endfor %}
+                    <select id="city_filter" class="form-control" disabled>
                     </select>
                 </div>
             </div>
@@ -168,7 +164,9 @@ $('#country_filter').change(function () {
         });
     }
 
-    value_regex = '\\b' + value.toLowerCase() + '\\b'
+    value_regex = '\\b' + value + '\\b';
+
+    $('#region_filter').attr('disabled', false);
 
     table.column(3).search(value_regex, true, false).draw();
 });
@@ -199,8 +197,10 @@ $('#region_filter').change(function () {
         });
     }
 
-    country_regex = '\\b' + country.toLowerCase() + '\\b'
-    value_regex = '\\b' + value.toLowerCase() + '\\b'
+    country_regex = '\\b' + country + '\\b'
+    value_regex = '\\b' + value + '\\b'
+
+    $('#city_filter').attr('disabled', false);
 
     table.column(3).search(country_regex, true, false).draw();
     table.column(4).search(value_regex, true, false).draw();
@@ -211,9 +211,9 @@ $('#city_filter').change(function () {
     var region = $('#region_filter').find('option:selected').val();
     var value = $(this).find('option:selected').val();
 
-    country_regex = '\\b' + country.toLowerCase() + '\\b'
-    region_regex = '\\b' + region.toLowerCase() + '\\b'
-    value_regex = '\\b' + value.toLowerCase() + '\\b'
+    country_regex = '\\b' + country + '\\b'
+    region_regex = '\\b' + region + '\\b'
+    value_regex = '\\b' + value + '\\b'
 
     table.column(3).search(country_regex, true, false).draw();
     table.column(4).search(region_regex, true, false).draw();
@@ -224,7 +224,9 @@ $('#resetFilter').click(function () {
     $('#myInputTextField').val('');
     $('#country_filter').val('').trigger('change');
     $('#region_filter').val('').trigger('change');
+    $('#region_filter').attr('disabled', true);
     $('#city_filter').val('').trigger('change');
+    $('#city_filter').attr('disabled', true);
     
     $.fn.dataTable.ext.search = [];
     table.destroy();
@@ -235,10 +237,9 @@ $('#resetFilter').click(function () {
         dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
     });
 
-    $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6 my-auto"><h5 class="float-right"><strong>Keyword: {{items.0.keyword}}</strong></h5></div>');
+    $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6 my-auto"><h5 class="float-right"><strong>Keyword: {{items.0.keyword}}<br>Jumlah Pencarian: {{count}}</strong></h5></div>');
 
     table.draw();
-
 });
 
 </script>

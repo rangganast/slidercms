@@ -1365,8 +1365,7 @@ def load_banner(request):
 
 @login_required
 def load_regions(request):
-    id = request.GET.get('id')
-    id = id.split('/')[-1]
+    id = request.GET.get('id').split('/')[-2]
     value = request.GET.get('value')
 
     regions = services.get_regions(id, value)
@@ -1375,8 +1374,7 @@ def load_regions(request):
 
 @login_required
 def load_cities(request):
-    id = request.GET.get('id')
-    id = id.split('/')[-1]
+    id = request.GET.get('id').split('/')[-2]
     country = request.GET.get('country')
     value = request.GET.get('value')
 
@@ -1541,11 +1539,12 @@ def check_similar_date_update(request):
 def export_excel(request):
     date1 = request.GET.get('date1')
     date2 = request.GET.get('date2')
+    app = request.GET.get('app')
 
     date1 = datetime.datetime.strptime(date1, '%d-%m-%Y').strftime('%Y-%m-%d')
     date2 = datetime.datetime.strptime(date2, '%d-%m-%Y').strftime('%Y-%m-%d')
     
-    value = services.export_excel(date1, date2)
+    value = services.export_excel(date1, date2, app)
     with open('keywords.xlsx', 'wb') as f:
         f.write(value)
 
