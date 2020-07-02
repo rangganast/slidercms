@@ -106,9 +106,13 @@ $('#app_filter').change(function () {
         });
     }
 
-    var appname = $(this).find('option:selected').text().toLowerCase();
+    var appname = $(this).find('option:selected').text();
     var regex = '\\b' + appname + '\\b';
+
+    table.columns().search("");
     table.column(1).search(regex, true, false).draw();
+
+    $('#location_filter').attr('disabled', true);
 });
 
 $('#page_filter').change(function () {
@@ -133,6 +137,7 @@ $('#page_filter').change(function () {
     var app_regex = '\\b' + appname + '\\b';
     var page_regex = '\\b' + pagename + '\\b';
 
+    table.columns().search("");
     table.column(1).search(app_regex, true, false).draw();
     table.column(2).search(page_regex, true, false).draw();
 });
@@ -145,6 +150,7 @@ $('#location_filter').change(function () {
     var page_regex = '\\b' + pagename + '\\b';
     var location_regex = '\\b' + locationname + '\\b';
 
+    table.columns().search("");
     table.column(1).search(app_regex, true, false).draw();
     table.column(2).search(page_regex, true, false).draw();
     table.column(3).search(location_regex, true, false).draw();

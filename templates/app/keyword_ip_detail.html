@@ -137,6 +137,7 @@ table = $('#ipTable').DataTable({
 $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6 my-auto"><h5 class="float-right"><strong>Keyword: {{items.0.keyword}}<br>Jumlah Pencarian: {{count}}</strong></h5></div>');
 
 $('#myInputTextField').keyup(function () {
+    $.fn.dataTable.ext.search = [];
     table.search($(this).val()).draw();
 });
 
@@ -167,8 +168,11 @@ $('#country_filter').change(function () {
     value_regex = '\\b' + value + '\\b';
 
     $('#region_filter').attr('disabled', false);
-
+    
+    table.columns().search("");
     table.column(3).search(value_regex, true, false).draw();
+
+    $('#city_filter').attr('disabled', true)
 });
 
 $('#region_filter').change(function () {
@@ -202,6 +206,7 @@ $('#region_filter').change(function () {
 
     $('#city_filter').attr('disabled', false);
 
+    table.columns().search("");
     table.column(3).search(country_regex, true, false).draw();
     table.column(4).search(value_regex, true, false).draw();
 });
@@ -215,6 +220,7 @@ $('#city_filter').change(function () {
     region_regex = '\\b' + region + '\\b'
     value_regex = '\\b' + value + '\\b'
 
+    table.columns().search("");
     table.column(3).search(country_regex, true, false).draw();
     table.column(4).search(region_regex, true, false).draw();
     table.column(5).search(value_regex, true, false).draw();
