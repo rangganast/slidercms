@@ -20,7 +20,7 @@ from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 from . import services
 from .decorators import developer_required, marketing_required, superuser_required
-from .forms import AppForm, ApplicationForm, PageFormSet, LocationFormSet, BannerForm, CampaignFormSet ,InstallationFormSet, UserForm, KeywordDateRangeForm
+from .forms import AppForm, ApplicationForm, PageFormSet, LocationFormSet, BannerForm, CampaignFormSet, InstallationFormSet, UserForm, KeywordDateRangeForm, ContactForm, ContactSourceForm, GenerateRandomNumberFormSet, UploadCSVForm
 from .models import Application, Page, Location, Banner, Campaign, Installation, User
 
 # Create your views here.
@@ -1245,6 +1245,33 @@ class KeywordScrapeView(View):
         except requests.exceptions.RequestException as e:
             messages.add_message(request, messages.INFO, "Hasil Pencarian Gagal!", extra_tags="scrape_failed")
             return redirect(reverse('app:keywords'))
+
+@method_decorator([marketing_required], name='dispatch')
+class AddContactView(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/add_contact_form.html'
+
+    def get(self, request, *args, **kwargs):
+        form_contact = self.form_class['form_contact']()
+        form_contactsource = self.form_class['form_contactsource']()
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber']()
+        form_uploadcsv = self.form_class['form_uploadcsv']()
+
+        context = {
+            'formset_generaterandomnumber' : formset_generaterandomnumber,
+            'form_contact' : form_contact,
+            'form_contactsource' : form_contactsource,
+            'form_uploadcsv' : form_uploadcsv,
+        }
+
+        return render(request, self.template_name, context)
 
 @login_required
 def check_location_code_available_add(request):

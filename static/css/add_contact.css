@@ -1,14 +1,14 @@
-input[type=checkbox] {
-    display: none;
-}
-
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-fieldset.location-border {
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+fieldset.numbergenerate-border {
     border: 1px groove #ddd !important;
     padding: 0 1.4em 1.4em 1.4em !important;
     margin: 0 0 1.5em 0 !important;
@@ -16,20 +16,12 @@ fieldset.location-border {
     box-shadow: 0px 0px 0px 0px #000;
 }
 
-legend.location-border {
-    font-size: 1.2em !important;
-    font-weight: bold !important;
-    text-align: left !important;
-    width: auto;
-    padding: 0 10px;
-    border-bottom: none;
-}
-
 .btn-secondary,
 .btn-secondary:hover,
 .btn-secondary:active,
 .btn-secondary:visited,
-.btn-secondary:focus {
+.btn-secondary:focus,
+.btn-secondary:disabled {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }
@@ -49,9 +41,28 @@ legend.location-border {
 .btn-danger:active,
 .btn-danger:visited,
 .btn-danger:focus,
-.btn-danger:disabled,
-.btn-danger:read-only {
+.btn-danger:disabled {
     background-color: #dc3545 !important;
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.btn-success,
+.btn-success:hover,
+.btn-success:active,
+.btn-success:visited,
+.btn-success:focus,
+.btn-success:disabled {
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.btn-warning,
+.btn-warning:hover,
+.btn-warning:active,
+.btn-warning:visited,
+.btn-warning:focus,
+.btn-warning:disabled {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }

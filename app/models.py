@@ -146,3 +146,48 @@ class Installation(models.Model):
                 max = 1
             self.id = "INS" + "{0:03d}".format(max)
         super().save(*kwargs)
+
+choices = (
+    ('random', 'Generate nomor secara acak'),
+    ('csv', 'Upload file .csv'),
+)
+
+class ContactSource(models.Model):
+    id = models.CharField(primary_key=True, editable=False, max_length=9)
+    source = models.CharField(max_length=30, choices=choices)
+
+    def __str__(self):
+        return self.source
+
+    def save(self, **kwargs):
+        if not self.id:
+            max = ContactSource.objects.aggregate(id_max=Max('id'))['id_max']
+            if max is not None:
+                max = max[-3:]
+                max = int(max)
+                max += 1
+            else:
+                max = 1
+            self.id = "CONSRC" + "{0:03d}".format(max)
+        super().save(*kwargs)
+
+class Contact(models.Model):
+    id = models.CharField(primary_key=True, editable=False, max_length=6)
+    source = models.ForeignKey(ContactSource, on_delete=models.CASCADE, related_name='contactsources')
+    name = models.CharField(max_length=100)
+    numbers = models.FileField(upload_to='csv/')
+
+    def __str__(self):
+        return self.name
+
+    def save(self, **kwargs):
+        if not self.id:
+            max = Contact.objects.aggregate(id_max=Max('id'))['id_max']
+            if max is not None:
+                max = max[-3:]
+                max = int(max)
+                max += 1
+            else:
+                max = 1
+            self.id = "CON" + "{0:03d}".format(max)
+        super().save(*kwargs)

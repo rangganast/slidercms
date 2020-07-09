@@ -70,12 +70,14 @@ function cloneLocation() {
     newElement.find('#id_location-' + (totalLocation - 1) + '-id').attr('id', 'id_location-' + totalLocation + '-id');
 
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').attr('name', 'location-' + totalLocation + '-is_slider');
-    newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').prop('checked', false);
+    newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').removeAttr('checked');
+    newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').removeAttr('readonly');
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').prop('disabled', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_0').attr('id', 'id_location-' + totalLocation + '-is_slider_0');
 
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').attr('name', 'location-' + totalLocation + '-is_slider');
-    newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').prop('checked', false);
+    newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').removeAttr('checked');
+    newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').removeAttr('readonly');
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').prop('disabled', false);
     newElement.find('#id_location-' + (totalLocation - 1) + '-is_slider_1').attr('id', 'id_location-' + totalLocation + '-is_slider_1');
 

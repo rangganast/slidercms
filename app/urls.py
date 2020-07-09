@@ -16,6 +16,8 @@ urlpatterns = [
     path('keywords/scrape/<int:pk>', views.KeywordScrapeView.as_view(), name='keywords_scrape'),
     re_path(r'keywords/export$', views.export_excel, name='keywords_export'),
 
+    path('smsblast/add_contact', views.AddContactView.as_view(), name='smsblast_add_contact'),
+
     path('app', views.AppView.as_view(), name='app'),
     path('app/add_app', views.AddAppView.as_view(), name='add_app'),
     path('app/update_app/<str:pk>', views.UpdateAppView.as_view(), name='update_app'),

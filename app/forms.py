@@ -1,7 +1,8 @@
 from django import forms
 from PIL import Image
-from .models import Application, Page, Location, Banner, Installation, Campaign, User
-from django.forms import modelformset_factory
+from .models import Application, Page, Location, Banner, Installation, Campaign, User, Contact, ContactSource
+from .models import choices
+from django.forms import modelformset_factory, formset_factory
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
@@ -254,3 +255,35 @@ class KeywordDateRangeForm(forms.Form):
         attrs={'id': 'datepicker1', 'name': 'date1', 'class': 'form-control ml-3', 'placeholder': 'DD/MM/YY', 'autocomplete': 'off', 'required': 'True'}))
     date2 = forms.DateField(label='s/d', widget=forms.DateInput(
         attrs={'id': 'datepicker2', 'name':'date2', 'class': 'form-control ml-3', 'placeholder': 'DD/MM/YY', 'autocomplete': 'off', 'required': 'True'}))
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ['name']
+        labels = {
+            'name' : 'Nama Kontak'
+        }
+        widgets = {
+            'name' : forms.TextInput(attrs={'class' : 'form-control', 'required' : True}),
+        }
+
+class ContactSourceForm(forms.ModelForm):
+    class Meta:
+        model = ContactSource
+        fields = ['source']
+        labels = {
+            'source' : 'Sumber Kontak'
+        }
+        widgets = {
+            'source' : forms.Select(attrs={'class' : 'form-control', 'required' : True}, choices=choices),
+        }
+
+class GenerateRandomNumberForm(forms.Form):
+    first_code = forms.IntegerField(label='Kode Awal', widget=forms.NumberInput({'class' : 'form-control', 'autocomplete' : 'off', 'min' : '4', 'max' : '4'}))
+    digits = forms.IntegerField(label='Jumlah Digit Nomor ***', widget=forms.NumberInput({'class' : 'form-control', 'autocomplete' : 'off', 'min' : '2', 'max' : '2'}))
+    generate_number = forms.IntegerField(label='Jumlah nomor yang akan digenerate', widget=forms.NumberInput({'class' : 'form-control', 'autocomplete' : 'off'}))
+
+GenerateRandomNumberFormSet = formset_factory(form=GenerateRandomNumberForm, extra=1, can_delete=True)
+
+class UploadCSVForm(forms.Form):
+    upload_csv = forms.FileField(label='Pilih File Nomor', widget=forms.ClearableFileInput({'class' : 'form-control', 'accept' : '.csv'}))
