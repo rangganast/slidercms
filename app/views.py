@@ -17,6 +17,7 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
@@ -1344,11 +1345,20 @@ class GenerateCSVContactView(View):
         form_contact = self.form_class['form_contact']()
         form_contactsource = self.form_class['form_contactsource']()
         formset_generaterandomnumber = self.form_class['formset_generaterandomnumber']()
-        form_uploadcsv = self.form_class['form_uploadcsv'](request.POST or None, request.FILES or None)
+        form_uploadcsv = self.form_class['form_uploadcsv'](data=request.POST, files=request.FILES)
 
         if form_uploadcsv.is_valid():
-            csv_file = form_uploadcsv['upload_csv']
-            # contacts = []
+            csv_file = request.FILES['upload_csv']
+            print(csv_file)
+            contacts = []
+
+            with open(csv_file, 'r') as f:
+                reader = csv.reader(f)
+
+                for row in reader:
+                    contacts.append(row[1])
+
+            print(contacts)
 
             # if os.path.isfile('pickles/contacts_csv_temp.p'):
             #     os.remove('pickles/contacts_csv_temp.p')
@@ -1356,6 +1366,8 @@ class GenerateCSVContactView(View):
             # with open('pickles/contacts_csv_temp.p', 'wb') as f:
             #     pickle.dump(contacts, f)
             #     f.close()
+        else:
+            print(form_uploadcsv.errors)
 
         context = {
             'formset_generaterandomnumber' : formset_generaterandomnumber,

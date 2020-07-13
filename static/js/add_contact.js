@@ -30,7 +30,7 @@ $('#randomNumberForm').submit(function (e) {
 
 $('#id_upload_csv').change(function () {
     $.post('/smsblast/generate_csv', $('#csvForm').serialize(), function (e) {});
-});
+})
 
 function addContact(input) {
     var id = Number($(input).attr('id').split('-')[1]);

@@ -118,7 +118,7 @@
     </fieldset>
 </form>
 
-<form id="csvForm" method="POST">
+<form id="csvForm" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <fieldset style="display: none;" id="csv-generate" class="numbergenerate-border">
         <div class="control-group mb-3 mt-3">
