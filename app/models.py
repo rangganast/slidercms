@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Max
+from django.core.validators import RegexValidator
 
 class User(AbstractUser):
     is_developer = models.BooleanField('developer status', default=False)
@@ -171,10 +172,16 @@ class ContactSource(models.Model):
             self.id = "CONSRC" + "{0:03d}".format(max)
         super().save(*kwargs)
 
+class GenerateContact(models.Model):
+    id = models.CharField(primary_key=True, editable=False, max_length=9)
+    first_code = models.CharField(max_length=4, validators=[RegexValidator(r'^\d{0,10}$')])
+    digits = models.CharField(max_length=8, validators=[RegexValidator(r'^\d{0,10}$')])
+    generate_numbers = models.PositiveIntegerField()
+
 class Contact(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
     source = models.ForeignKey(ContactSource, on_delete=models.CASCADE, related_name='contactsources')
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     numbers = models.FileField(upload_to='csv/')
 
     def __str__(self):

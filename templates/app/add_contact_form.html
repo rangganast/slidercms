@@ -52,96 +52,117 @@
             <label class="col-sm-2 col-form-label">Generate Nomor Tujuan</label>
         </div>
 
-        <fieldset style="display: none;" id="random-generate" class="numbergenerate-border">
-            <form method="POST">
-                <div class="control-group mb-3 mt-3">
-                    <div class="col input-wrapper">
-                        <div id="generate-0-div" class="row">
+    </div>
+</form>
 
-                            {% for form_generate in formset_generaterandomnumber %}
-                            <div class="col-sm-2 no-padding">
-                                <label for="">{{form_generate.first_code.label}}</label>
-                                <div class="input-group">
-                                    {{form_generate.first_code}}
-                                </div>
-                            </div>
-                            <div class="col-sm-3 no-padding">
-                                <label for="">{{form_generate.digits.label}}</label>
-                                <div class="input-group">
-                                    {{form_generate.digits}}
-                                </div>
-                            </div>
-                            <div class="col-sm-3 no-padding">
-                                <label for="">{{form_generate.generate_number.label}}</label>
-                                <div class="input-group">
-                                    {{form_generate.generate_number}}
-                                </div>
-                            </div>
-                            <div id="contactBtnDiv" class="col-sm-2">
-                                <label style="color: white;">tambah&hapus</label>
-                                <div class="input-group">
-                                    <button id="deleteContactBtn" type="button" class="btn btn-danger">Hapus</button>
-                                    <button id="addContactBtn" type="button" class="btn btn-primary ml-2">Tambah</button>
-                                </div>
-                            </div>
-                            {% endfor %}
-    
+<form id="randomNumberForm" method="POST">
+    {% csrf_token %}
+    {{ formset_generaterandomnumber.management_form }}
+    <fieldset style="display: none;" id="random-generate" class="numbergenerate-border">
+        <div class="control-group mb-3 mt-3">
+            <div class="col input-wrapper">
+                <div id="generate-0-div" class="row generate-div" class="row">
+                    {% for form_generate in formset_generaterandomnumber %}
+                    <div class="col-sm-2 no-padding">
+                        <label for="">{{form_generate.first_code.label}}</label>
+                        <div class="input-group">
+                            {{form_generate.first_code}}
                         </div>
-    
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <label style="color: white;"></label>
-                                <div class="input-group">
-                                    <button type="submit" class="btn btn-success">Generate</button>
-                                    <button type="button" class="btn btn-warning ml-2">Lihat Nomor</button>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="col-sm-3 no-padding">
+                        <label for="">{{form_generate.digits.label}}</label>
+                        <div class="input-group">
+                            {{form_generate.digits}}
+                        </div>
+                    </div>
+                    <div class="col-sm-3 no-padding">
+                        <label for="">{{form_generate.generate_numbers.label}}</label>
+                        <div class="input-group">
+                            {{form_generate.generate_numbers}}
+                        </div>
+                    </div>
+                    <div id="contactBtnDiv" class="col-sm-2">
+                        <label style="color: white;">tambah&hapus</label>
+                        <div class="input-group">
+                            <button id="add-0-contact" type="button" class="btn btn-primary addContactBtn"
+                                onclick="addContact(this);">Tambah</button>
+                            <button style="display: none;" id="delete-0-contact" type="button" class="btn btn-danger deleteContactBtn ml-2"
+                                onclick="deleteContact(this);">Hapus</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label style="color: white;"></label>
+                        <div class="input-group">
+                            <button id="generateNumber" type="submit" class="btn btn-success">Generate</button>
+                        <a id="tempRandomContacts" href="{% url 'app:temp_random_contacts' %}">
+                            <button id="viewNumbers" type="button" class="btn btn-warning ml-2">Lihat
+                                Nomor</button>
+                        </a>
+
+                        <div id="randomNumberSpinner" style="display: none;" class="spinner-border ml-3 mt-1" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+
                         </div>
                     </div>
                 </div>
-            </form>
 
-        </fieldset>
 
-        <fieldset style="display: none;" id="csv-generate" class="numbergenerate-border">
-            <form method="POST" enctype="multipart/form-data">
-                <div class="control-group mb-3 mt-3">
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="{{form_uploadcsv.upload_csv.id_for_label}}">{{form_uploadcsv.upload_csv.label}}</label>
-                        <div class="col-sm-10">
-                            {{form_uploadcsv.upload_csv}}
-    
-                            {% if form_uploadcsv.errors %}
-                            {% for error in form_uploadcsv.upload_csv.errors %}
-                            <small style="color: red;">{{error}}</small>
-                            {% endfor %}
-                            {% endif %}
-    
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label style="color: white;"></label>
-                            <div class="input-group">
-                                <button id="downloadCSVTemplate" type="button"
-                                    class="btn btn-success">Download Template</button>
-                                <button id="viewNumbers" type="button" class="btn btn-warning ml-2">Lihat
-                                    Nomor</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </fieldset>
-
-        <div style="display: none;" id="saveBtnDiv" class="form-group row float-right">
-            <button type="button" class="btn btn-secondary">Batal</button>
-            <button id="addContactBtn" type="submit" class="btn btn-primary ml-2">Simpan</button>
+            </div>
         </div>
+    </fieldset>
+</form>
 
+<form id="csvForm" method="POST">
+    {% csrf_token %}
+    <fieldset style="display: none;" id="csv-generate" class="numbergenerate-border">
+        <div class="control-group mb-3 mt-3">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"
+                    for="{{form_uploadcsv.upload_csv.id_for_label}}">{{form_uploadcsv.upload_csv.label}}</label>
+                <div class="col-sm-10">
+                    {{form_uploadcsv.upload_csv}}
+
+                    {% if form_uploadcsv.errors %}
+                    {% for error in form_uploadcsv.upload_csv.errors %}
+                    <small style="color: red;">{{error}}</small>
+                    {% endfor %}
+                    {% endif %}
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label style="color: white;"></label>
+                    <div class="input-group">
+                        <button id="downloadCSVTemplate" type="button" class="btn btn-success">Download
+                            Template</button>
+                        <a id="tempCSVContacts" href="{% url 'app:temp_csv_contacts' %}">
+                            <button id="viewNumbers" type="button" class="btn btn-warning ml-2">Lihat
+                                Nomor</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>
+
+<div class="container-fluid mt-5 mb-5">
+
+    <div style="display: none;" id="saveBtnDiv" class="form-group row float-right">
+        <button type="button" class="btn btn-secondary">Batal</button>
+        <button id="addContactBtn" type="button" class="btn btn-primary ml-2">Simpan</button>
     </div>
 
-</form>
+</div>
+
+
 {% endblock content %}
 
 {% block script %}

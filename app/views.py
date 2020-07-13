@@ -2,14 +2,18 @@ import re
 import datetime
 import requests
 import urllib
-from wsgiref.util import FileWrapper
 import os
+import pickle
+import csv
+from wsgiref.util import FileWrapper
+from random import choice
+from string import digits
 from decouple import config
 from django.db.models import Q
 from django.views import View
 from django.urls import reverse
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
+from django.template import RequestContext
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -1269,6 +1273,139 @@ class AddContactView(View):
             'form_contact' : form_contact,
             'form_contactsource' : form_contactsource,
             'form_uploadcsv' : form_uploadcsv,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([marketing_required], name='dispatch')
+class GenerateRandomContactView(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/add_contact_form.html'
+
+    def post(self, request):
+        form_contact = self.form_class['form_contact']()
+        form_contactsource = self.form_class['form_contactsource']()
+        form_uploadcsv = self.form_class['form_uploadcsv']()
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber'](request.POST or None)
+
+        if formset_generaterandomnumber.is_valid():
+            contacts = []
+            generaterandomform = formset_generaterandomnumber.cleaned_data
+            
+            for form in generaterandomform:
+                first_code = form['first_code']
+                digits_count = int(form['digits']) - 4
+                generate_numbers = int(form['generate_numbers'])
+                
+                while generate_numbers > 0:
+                    last_digits = ''.join(choice(digits) for i in range(digits_count))
+                    number = first_code + last_digits
+
+                    contacts.append(number)
+
+                    generate_numbers -= 1
+
+            if os.path.isfile('pickles/contacts_random_temp.p'):
+                os.remove('pickles/contacts_random_temp.p')
+
+            with open('pickles/contacts_random_temp.p', 'wb') as f:
+                pickle.dump(contacts, f)
+                f.close()
+
+        context = {
+            'formset_generaterandomnumber' : formset_generaterandomnumber,
+            'form_contact' : form_contact,
+            'form_contactsource' : form_contactsource,
+            'form_uploadcsv' : form_uploadcsv,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([marketing_required], name='dispatch')
+class GenerateCSVContactView(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/add_contact_form.html'
+
+    def post(self, request):
+        form_contact = self.form_class['form_contact']()
+        form_contactsource = self.form_class['form_contactsource']()
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber']()
+        form_uploadcsv = self.form_class['form_uploadcsv'](request.POST or None, request.FILES or None)
+
+        if form_uploadcsv.is_valid():
+            csv_file = form_uploadcsv['upload_csv']
+            # contacts = []
+
+            # if os.path.isfile('pickles/contacts_csv_temp.p'):
+            #     os.remove('pickles/contacts_csv_temp.p')
+
+            # with open('pickles/contacts_csv_temp.p', 'wb') as f:
+            #     pickle.dump(contacts, f)
+            #     f.close()
+
+        context = {
+            'formset_generaterandomnumber' : formset_generaterandomnumber,
+            'form_contact' : form_contact,
+            'form_contactsource' : form_contactsource,
+            'form_uploadcsv' : form_uploadcsv,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([marketing_required], name='dispatch')
+class TempRandomContactView(View):
+    initial = {'key', 'value'}
+    template_name = 'app/temp_contact.html'
+
+    def get(self, request):
+        name = request.GET.get('name')
+
+        with open('pickles/contacts_random_temp.p', 'rb') as f:
+            contacts = pickle.load(f)
+        
+        count = len(contacts)
+        contacts = [contacts[x:x+4] for x in range(0, len(contacts),4)]
+        
+        context = {
+            'name' : name,
+            'count' : count,
+            'contacts' : contacts,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([marketing_required], name='dispatch')
+class TempCSVContactView(View):
+    initial = {'key', 'value'}
+    template_name = 'app/temp_contact.html'
+
+    def get(self, request):
+        name = request.GET.get('name')
+
+        with open('pickles/contacts_csv_temp.p', 'rb') as f:
+            contacts = pickle.load(f)
+        
+        count = len(contacts)
+        contacts = [contacts[x:x+4] for x in range(0, len(contacts),4)]
+        
+        context = {
+            'name' : name,
+            'count' : count,
+            'contacts' : contacts,
         }
 
         return render(request, self.template_name, context)

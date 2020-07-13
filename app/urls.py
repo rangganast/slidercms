@@ -17,6 +17,10 @@ urlpatterns = [
     re_path(r'keywords/export$', views.export_excel, name='keywords_export'),
 
     path('smsblast/add_contact', views.AddContactView.as_view(), name='smsblast_add_contact'),
+    path('smsblast/generate_random_number', views.GenerateRandomContactView.as_view(), name='generate_random_contact'),
+    path('smsblast/generate_csv', views.GenerateCSVContactView.as_view(), name='generate_csv'),
+    path('smsblast/temp_random_contacts', views.TempRandomContactView.as_view(), name='temp_random_contacts'),
+    path('smsblast/temp_csv_contacts', views.TempCSVContactView.as_view(), name='temp_csv_contacts'),
 
     path('app', views.AppView.as_view(), name='app'),
     path('app/add_app', views.AddAppView.as_view(), name='add_app'),
