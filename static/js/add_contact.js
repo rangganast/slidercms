@@ -11,26 +11,45 @@ $('#id_source').change(function () {
     if(source === 'random') {
         $('fieldset:not(#random-generate)').hide();
         $('fieldset#random-generate').show();
+        $('#csvBool').val('False');
         $('#saveBtnDiv').show();
     }else if(source === 'csv') {
         $('fieldset:not(#csv-generate)').hide();
         $('fieldset#csv-generate').show();
+        $('#csvBool').val('True');
         $('#saveBtnDiv').show();
     }
 });
 
-$('#randomNumberForm').submit(function (e) {
+$('#generateNumber').click(function (e) {
     $('#randomNumberSpinner').show();
-    $.post('/smsblast/generate_random_number', $(this).serialize(), function (e) {});
+    $.post('/smsblast/generate_random_number', $('#randomNumberForm').serialize(), function (e) {});
     e.preventDefault();
-    setTimeout(() => {
+    setTimeout(function (){
         $('#randomNumberSpinner').hide();
     }, 1000)
 });
 
 $('#id_upload_csv').change(function () {
-    $.post('/smsblast/generate_csv', $('#csvForm').serialize(), function (e) {});
+    $('#csvForm').submit()
+    $('#csvNumberSpinner').show();
 })
+
+$('#csvForm').submit(function (event){
+    event.preventDefault();
+    $.ajax({
+        url: $(this).attr("action"),
+        type: $(this).attr("method"),
+        dataType: "JSON",
+        data: new FormData(this),
+        processData: false,
+        contentType: false,
+    });
+    
+    setTimeout(function () {
+        $('#csvNumberSpinner').hide();
+    }, 1000)
+});
 
 function addContact(input) {
     var id = Number($(input).attr('id').split('-')[1]);
@@ -81,14 +100,51 @@ function deleteContact(input) {
     $('#id_form-TOTAL_FORMS').val(id);
 }
 
-function addNametoURL(input) {
+function addNametoURLandInputs(input) {
     var name = $(input).val();
 
     if(name === '') {
         $('a#tempRandomContacts').attr('href', '/smsblast/temp_random_contacts');
         $('a#tempCSVContacts').attr('href', '/smsblast/temp_csv_contacts');
+        $('#contactName').val(name);
     } else {
         $('a#tempRandomContacts').attr('href', '/smsblast/temp_random_contacts?name=' + encodeURIComponent(name));
-        $('a#tempRandomContacts').attr('href', '/smsblast/temp_csv_contacts?name=' + encodeURIComponent(name));
+        $('a#tempCSVContacts').attr('href', '/smsblast/temp_csv_contacts?name=' + encodeURIComponent(name));
+        $('#contactName').val(name);
+    }
+
+    var url = $('#contactGroupForm').attr("data-check-name-url");
+
+    $.ajax({
+        url: url,
+        data: {
+            'name': name,
+        },
+        success: function (data) {
+            if(data === 'True') {
+                $('#contactNameErrorNotUnique').show();
+                $('#contactNameErrorEmpty').hide();
+                $('#submitForms').prop('disabled', true);
+            } else {
+                $('#contactNameErrorNotUnique').hide();
+                $('#contactNameErrorEmpty').hide();
+                $('#submitForms').prop('disabled', false);
+            }
+        }
+    });
+}
+
+function submitForms(e) {
+    if ($('#random-generate').is(':hidden')) {
+        $('#contactGroupFormBtn').click();
+    } else if ($('#csv-generate').is(':hidden')) {
+
+        if ($('#id_name').val() === ''){
+            $('#contactNameErrorEmpty').show();
+            return;
+        }
+        
+        $.post('/smsblast/add_contact_group', $('#contactGroupForm').serialize(), function (e) {});
+        $.post('/smsblast/add_random_generated_numbers', $('#randomNumberForm').serialize(), function (e) {});
     }
 }

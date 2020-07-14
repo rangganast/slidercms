@@ -172,17 +172,12 @@ class ContactSource(models.Model):
             self.id = "CONSRC" + "{0:03d}".format(max)
         super().save(*kwargs)
 
-class GenerateContact(models.Model):
-    id = models.CharField(primary_key=True, editable=False, max_length=9)
-    first_code = models.CharField(max_length=4, validators=[RegexValidator(r'^\d{0,10}$')])
-    digits = models.CharField(max_length=8, validators=[RegexValidator(r'^\d{0,10}$')])
-    generate_numbers = models.PositiveIntegerField()
-
 class Contact(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
     source = models.ForeignKey(ContactSource, on_delete=models.CASCADE, related_name='contactsources')
     name = models.CharField(max_length=100, unique=True)
     numbers = models.FileField(upload_to='csv/')
+    is_archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -198,3 +193,10 @@ class Contact(models.Model):
                 max = 1
             self.id = "CON" + "{0:03d}".format(max)
         super().save(*kwargs)
+
+class GenerateContact(models.Model):
+    id = models.CharField(primary_key=True, editable=False, max_length=9)
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='contact')
+    first_code = models.CharField(max_length=4, validators=[RegexValidator(r'^\d{0,10}$')])
+    digits = models.CharField(max_length=8, validators=[RegexValidator(r'^\d{0,10}$')])
+    generate_numbers = models.PositiveIntegerField()

@@ -3,6 +3,8 @@ import datetime
 import requests
 import urllib
 import os
+import shutil
+import io
 import pickle
 import csv
 from wsgiref.util import FileWrapper
@@ -26,7 +28,7 @@ from django.template.loader import render_to_string
 from . import services
 from .decorators import developer_required, marketing_required, superuser_required
 from .forms import AppForm, ApplicationForm, PageFormSet, LocationFormSet, BannerForm, CampaignFormSet, InstallationFormSet, UserForm, KeywordDateRangeForm, ContactForm, ContactSourceForm, GenerateRandomNumberFormSet, UploadCSVForm
-from .models import Application, Page, Location, Banner, Campaign, Installation, User
+from .models import Application, Page, Location, Banner, Campaign, Installation, User, Contact, ContactSource, GenerateContact
 
 # Create your views here.
 @method_decorator([login_required, developer_required], name='dispatch')
@@ -1252,6 +1254,14 @@ class KeywordScrapeView(View):
             return redirect(reverse('app:keywords'))
 
 @method_decorator([marketing_required], name='dispatch')
+class ContactView(View):
+    initial = {'key', 'value'}
+    template_name = 'app/contact.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+@method_decorator([marketing_required], name='dispatch')
 class AddContactView(View):
     form_class = {
         'form_contact' : ContactForm,
@@ -1277,6 +1287,110 @@ class AddContactView(View):
         }
 
         return render(request, self.template_name, context)
+
+@method_decorator([marketing_required], name='dispatch')
+class AddContactGroupView(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/add_contact_form.html'
+
+    def post(self, request):
+        form_contact = self.form_class['form_contact'](request.POST or None)
+        form_contactsource = self.form_class['form_contactsource'](request.POST or None)
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber']()
+        form_uploadcsv = self.form_class['form_uploadcsv']()
+
+        csvBool = request.POST.get('csvBool')
+
+        if form_contact.is_valid() and form_contactsource.is_valid():
+            name = form_contact.cleaned_data['name']
+            source = form_contactsource.cleaned_data['source']
+
+            if csvBool == 'True':
+                file_name = name.lower().replace(' ', '-')
+                shutil.copy('pickles/contacts_csv_temp.p', 'pickles/' + file_name + '.p')
+
+            contactsource_instance = ContactSource.objects.get(source=source)
+
+            contact_instance = Contact(name=name, source=contactsource_instance)
+            if csvBool == 'True':
+                contact_instance.numbers.name = 'pickles/' + file_name + '.p'
+
+            contact_instance.save()
+
+            if csvBool == 'True':
+                return redirect(reverse('app:smsblast_contact'))
+                
+            return redirect(reverse('app:smsblast_contact'))
+
+        else:
+            print('apaan sih ajg', form_contact.errors)
+
+            context = {
+                'formset_generaterandomnumber' : formset_generaterandomnumber,
+                'form_contact' : form_contact,
+                'form_contactsource' : form_contactsource,
+                'form_uploadcsv' : form_uploadcsv,
+            }
+
+            return render(request, self.template_name, context)
+
+@method_decorator([marketing_required], name='dispatch')
+class AddRandomGeneratedNumbersView(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/add_contact_form.html'
+
+    def post(self, request):
+        form_contact = self.form_class['form_contact']()
+        form_contactsource = self.form_class['form_contactsource']()
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber'](request.POST or None)
+        form_uploadcsv = self.form_class['form_uploadcsv']()
+
+        contact_name = request.POST.get('contactName')
+        print(contact_name)
+        
+        if formset_generaterandomnumber.is_valid():
+            file_name = contact_name.lower().replace(' ', '-')
+            shutil.copy('pickles/contacts_random_temp.p', 'pickles/' + file_name + '.p')
+
+            generaterandomform = formset_generaterandomnumber.cleaned_data
+
+            contact_instance = Contact.objects.get(name=contact_name)
+
+            for form in generaterandomform:
+                first_code = form['first_code']
+                digits = form['digits']
+                generate_numbers = form['generate_numbers']
+
+                print('first code', first_code)
+
+                generatecontact_instance = GenerateContact(first_code=first_code, digits=digits, generate_numbers=generate_numbers, contact=contact_name)
+                generatecontact_instance.save()
+
+            return redirect(reverse('app:smsblast_contact'))
+
+        else:
+            context = {
+                'formset_generaterandomnumber' : formset_generaterandomnumber,
+                'form_contact' : form_contact,
+                'form_contactsource' : form_contactsource,
+                'form_uploadcsv' : form_uploadcsv,
+            }
+
+            return render(request, self.template_name, context)
 
 @method_decorator([marketing_required], name='dispatch')
 class GenerateRandomContactView(View):
@@ -1348,26 +1462,22 @@ class GenerateCSVContactView(View):
         form_uploadcsv = self.form_class['form_uploadcsv'](data=request.POST, files=request.FILES)
 
         if form_uploadcsv.is_valid():
-            csv_file = request.FILES['upload_csv']
-            print(csv_file)
+            csv_file = request.FILES['upload_csv'].read().decode('utf-8')
+            io_string = io.StringIO(csv_file)
             contacts = []
+            for row in csv.reader(io_string, delimiter=','):
+                contacts.append(row[1])
 
-            with open(csv_file, 'r') as f:
-                reader = csv.reader(f)
-
-                for row in reader:
-                    contacts.append(row[1])
+            del contacts[0]
 
             print(contacts)
 
-            # if os.path.isfile('pickles/contacts_csv_temp.p'):
-            #     os.remove('pickles/contacts_csv_temp.p')
+            if os.path.isfile('pickles/contacts_csv_temp.p'):
+                os.remove('pickles/contacts_csv_temp.p')
 
-            # with open('pickles/contacts_csv_temp.p', 'wb') as f:
-            #     pickle.dump(contacts, f)
-            #     f.close()
-        else:
-            print(form_uploadcsv.errors)
+            with open('pickles/contacts_csv_temp.p', 'wb') as f:
+                pickle.dump(contacts, f)
+                f.close()
 
         context = {
             'formset_generaterandomnumber' : formset_generaterandomnumber,
@@ -1497,6 +1607,18 @@ def check_priority_available_add(request):
 
 @login_required
 def check_priority_available_update(request):
+    name = request.GET.get('name')
+    check = False
+
+    if value == '':
+        return HttpResponse(check)
+
+    if Contact.objects.filter(name=name).exists():
+        check = True
+    else:
+        check = False
+
+    return HttpResponse(check)
     loc_id = request.GET.get('loc_id')
     value = request.GET.get('value')
     default_value = request.GET.get('default_value')
@@ -1513,10 +1635,25 @@ def check_priority_available_update(request):
     return HttpResponse(check)
 
 @login_required
+def check_contact_name_add(request):
+    name = request.GET.get('name')
+    check = False
+
+    if name == '':
+        return HttpResponse(check)
+
+    if Contact.objects.filter(name=name).exists():
+        check = True
+    else:
+        check = False
+
+    return HttpResponse(check)
+
+@login_required
 def load_pages(request):
     app_id = request.GET.get('app_id')
     pages = Page.objects.filter(application_id=app_id, is_archived=False)
-    return render(request, 'app/pages_dropdown_list_options.html', {'pages': pages})
+    return render(request, 'app/pages_dropdown_list_options.html', {'pages': pages}) 
 
 @login_required
 def load_locations(request):

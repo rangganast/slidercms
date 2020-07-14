@@ -7,7 +7,7 @@
 {% block style %}<link rel="stylesheet" href="{% static 'css/add_contact.css' %}">{% endblock style %}
 
 {% block content %}
-<form method="POST">
+<form id="contactGroupForm" method="POST" action="{% url 'app:smsblast_add_contact_group' %}" data-check-name-url="{% url 'app:ajax_check_contact_name_add' %}">
     {% csrf_token %}
 
     <div id="card-field" class="container-fluid mt-3">
@@ -23,13 +23,8 @@
                 for="{{ form_contact.name.id_for_label }}">{{ form_contact.name.label }}</label>
             <div class="col-sm-10">
                 {{ form_contact.name }}
-
-                {% if form_contact.errors %}
-                {% for error in form_contact.name.errors %}
-                <small style="color: red;">{{error}}</small>
-                {% endfor %}
-                {% endif %}
-
+                <small id="contactNameErrorEmpty" style="color: red; display: none;">Nama tidak boleh kosong.</small>
+                <small id="contactNameErrorNotUnique" style="color: red; display: none;">Nama sudah dipakai. Silahkan coba nama lain.</small>
             </div>
         </div>
 
@@ -48,14 +43,18 @@
             </div>
         </div>
 
+        <input id="csvBool" type="hidden" name="csvBool">
+
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Generate Nomor Tujuan</label>
         </div>
 
+        <button id="contactGroupFormBtn" style="display: none;" type="submit">Submit</button>
+
     </div>
 </form>
 
-<form id="randomNumberForm" method="POST">
+<form id="randomNumberForm" method="POST" action="{% url 'app:smsblast_add_random_generated_numbers' %}">
     {% csrf_token %}
     {{ formset_generaterandomnumber.management_form }}
     <fieldset style="display: none;" id="random-generate" class="numbergenerate-border">
@@ -98,16 +97,15 @@
                     <div class="col-sm-3">
                         <label style="color: white;"></label>
                         <div class="input-group">
-                            <button id="generateNumber" type="submit" class="btn btn-success">Generate</button>
-                        <a id="tempRandomContacts" href="{% url 'app:temp_random_contacts' %}">
-                            <button id="viewNumbers" type="button" class="btn btn-warning ml-2">Lihat
-                                Nomor</button>
-                        </a>
+                            <button id="generateNumber" type="button" class="btn btn-success">Generate</button>
+                            <a id="tempRandomContacts" href="{% url 'app:temp_random_contacts' %}" target="_blank">
+                                <button id="viewRandomNumbers" type="button" class="btn btn-warning ml-2">Lihat
+                                    Nomor</button>
+                            </a>
 
-                        <div id="randomNumberSpinner" style="display: none;" class="spinner-border ml-3 mt-1" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-
+                            <div id="randomNumberSpinner" style="display: none;" class="spinner-border ml-3 mt-1" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -115,10 +113,14 @@
 
             </div>
         </div>
+
+        <input id="contactName" type="hidden" name="contactName">
+
+        <button id="generateRandomFormBtn" style="display: none;" type="submit">Submit</button>
     </fieldset>
 </form>
 
-<form id="csvForm" method="POST" enctype="multipart/form-data">
+<form id="csvForm" action="{% url 'app:generate_csv' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <fieldset style="display: none;" id="csv-generate" class="numbergenerate-border">
         <div class="control-group mb-3 mt-3">
@@ -137,15 +139,18 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-4">
                     <label style="color: white;"></label>
                     <div class="input-group">
                         <button id="downloadCSVTemplate" type="button" class="btn btn-success">Download
                             Template</button>
-                        <a id="tempCSVContacts" href="{% url 'app:temp_csv_contacts' %}">
-                            <button id="viewNumbers" type="button" class="btn btn-warning ml-2">Lihat
+                        <a id="tempCSVContacts" href="{% url 'app:temp_csv_contacts' %}" target="_blank">
+                            <button id="viewCSVNumbers" type="button" class="btn btn-warning ml-2">Lihat
                                 Nomor</button>
                         </a>
+                        <div id="csvNumberSpinner" style="display: none;" class="spinner-border ml-3 mt-1" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -157,7 +162,7 @@
 
     <div style="display: none;" id="saveBtnDiv" class="form-group row float-right">
         <button type="button" class="btn btn-secondary">Batal</button>
-        <button id="addContactBtn" type="button" class="btn btn-primary ml-2">Simpan</button>
+        <button id="submitForms" type="button" class="btn btn-primary ml-2" onclick="submitForms();">Simpan</button>
     </div>
 
 </div>

@@ -16,7 +16,10 @@ urlpatterns = [
     path('keywords/scrape/<int:pk>', views.KeywordScrapeView.as_view(), name='keywords_scrape'),
     re_path(r'keywords/export$', views.export_excel, name='keywords_export'),
 
+    path('smsblast/contact', views.ContactView.as_view(), name='smsblast_contact'),
     path('smsblast/add_contact', views.AddContactView.as_view(), name='smsblast_add_contact'),
+    path('smsblast/add_contact_group', views.AddContactGroupView.as_view(), name='smsblast_add_contact_group'),
+    path('smsblast/add_random_generated_numbers', views.AddContactGroupView.as_view(), name='smsblast_add_random_generated_numbers'),
     path('smsblast/generate_random_number', views.GenerateRandomContactView.as_view(), name='generate_random_contact'),
     path('smsblast/generate_csv', views.GenerateCSVContactView.as_view(), name='generate_csv'),
     path('smsblast/temp_random_contacts', views.TempRandomContactView.as_view(), name='temp_random_contacts'),
@@ -77,6 +80,7 @@ urlpatterns = [
     path('ajax/check-app-code-update', views.check_similar_app_code_update, name='ajax_check_app_code_update'),
     path('ajax/check-similar-date-add', views.check_similar_date_add, name='ajax_check_similar_date_add'),
     path('ajax/check-similar-date-update', views.check_similar_date_update, name='ajax_check_similar_date_update'),
+    path('ajax/check-contact-name-add', views.check_contact_name_add, name='ajax_check_contact_name_add'),
 
     re_path(r'login$', auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_authenticated_user=True), name='login'),
     path('password_reset', auth_views.PasswordResetView.as_view(form_class=PasswordResetForm, success_url=reverse_lazy('app:password_reset_done'), html_email_template_name='registration/password_reset_email.html', from_email='noreply@banner-slider-qa.holahalo.dev'), name='password_reset'),

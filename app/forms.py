@@ -264,7 +264,7 @@ class ContactForm(forms.ModelForm):
             'name' : 'Nama Kontak'
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'oninput' : 'addNametoURL(this);'}),
+            'name' : forms.TextInput(attrs={'class' : 'form-control', 'autocompete' : 'off', 'required' : True, 'oninput' : 'addNametoURLandInputs(this);'}),
         }
 
 class ContactSourceForm(forms.ModelForm):
