@@ -1262,7 +1262,7 @@ class ContactView(View):
         return render(request, self.template_name)
 
 @method_decorator([marketing_required], name='dispatch')
-class AddContactView(View):
+class AddContactMethodsView(View):
     form_class = {
         'form_contact' : ContactForm,
         'form_contactsource' : ContactSourceForm,
@@ -1276,7 +1276,7 @@ class AddContactView(View):
     def get(self, request, *args, **kwargs):
         form_contact = self.form_class['form_contact']()
         form_contactsource = self.form_class['form_contactsource']()
-        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber']()
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber'](queryset=GenerateContact.objects.none())
         form_uploadcsv = self.form_class['form_uploadcsv']()
 
         context = {
@@ -1323,15 +1323,10 @@ class AddContactGroupView(View):
                 contact_instance.numbers.name = 'pickles/' + file_name + '.p'
 
             contact_instance.save()
-
-            if csvBool == 'True':
-                return redirect(reverse('app:smsblast_contact'))
                 
             return redirect(reverse('app:smsblast_contact'))
 
         else:
-            print('apaan sih ajg', form_contact.errors)
-
             context = {
                 'formset_generaterandomnumber' : formset_generaterandomnumber,
                 'form_contact' : form_contact,
@@ -1354,13 +1349,13 @@ class AddRandomGeneratedNumbersView(View):
     template_name = 'app/add_contact_form.html'
 
     def post(self, request):
-        form_contact = self.form_class['form_contact']()
+        contact_name = request.POST.get('contactName')
+        contact_instance = Contact.objects.get(name=contact_name)
+
+        form_contact = self.form_class['form_contact'](initial={'name' : contact_name})
         form_contactsource = self.form_class['form_contactsource']()
         formset_generaterandomnumber = self.form_class['formset_generaterandomnumber'](request.POST or None)
         form_uploadcsv = self.form_class['form_uploadcsv']()
-
-        contact_name = request.POST.get('contactName')
-        print(contact_name)
         
         if formset_generaterandomnumber.is_valid():
             file_name = contact_name.lower().replace(' ', '-')
@@ -1368,17 +1363,16 @@ class AddRandomGeneratedNumbersView(View):
 
             generaterandomform = formset_generaterandomnumber.cleaned_data
 
-            contact_instance = Contact.objects.get(name=contact_name)
-
             for form in generaterandomform:
                 first_code = form['first_code']
                 digits = form['digits']
                 generate_numbers = form['generate_numbers']
 
-                print('first code', first_code)
-
-                generatecontact_instance = GenerateContact(first_code=first_code, digits=digits, generate_numbers=generate_numbers, contact=contact_name)
+                generatecontact_instance = GenerateContact(first_code=first_code, digits=digits, generate_numbers=generate_numbers, contact=contact_instance)
                 generatecontact_instance.save()
+
+            contact_instance.numbers.name = 'pickles/' + file_name + '.p'
+            contact_instance.save()
 
             return redirect(reverse('app:smsblast_contact'))
 
@@ -1390,7 +1384,7 @@ class AddRandomGeneratedNumbersView(View):
                 'form_uploadcsv' : form_uploadcsv,
             }
 
-            return render(request, self.template_name, context)
+            return redirect(reverse('app:smsblast_add_contact', kwargs=context))
 
 @method_decorator([marketing_required], name='dispatch')
 class GenerateRandomContactView(View):

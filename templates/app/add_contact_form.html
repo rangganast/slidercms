@@ -66,18 +66,37 @@
                         <label for="">{{form_generate.first_code.label}}</label>
                         <div class="input-group">
                             {{form_generate.first_code}}
+
+                            {% if form_generate.errors %}
+                            {% for error in form_generate.first_code.errors %}
+                            <small style="color: red;">{{error}}</small>
+                            {% endfor %}
+                            {% endif %}
+
                         </div>
                     </div>
                     <div class="col-sm-3 no-padding">
                         <label for="">{{form_generate.digits.label}}</label>
                         <div class="input-group">
                             {{form_generate.digits}}
+
+                            {% if form_generate.errors %}
+                            {% for error in form_generate.digits.errors %}
+                            <small style="color: red;">{{error}}</small>
+                            {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-sm-3 no-padding">
                         <label for="">{{form_generate.generate_numbers.label}}</label>
                         <div class="input-group">
                             {{form_generate.generate_numbers}}
+
+                            {% if form_generate.errors %}
+                            {% for error in form_generate.generate_numbers.errors %}
+                            <small style="color: red;">{{error}}</small>
+                            {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                     <div id="contactBtnDiv" class="col-sm-2">

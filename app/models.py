@@ -198,5 +198,17 @@ class GenerateContact(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=9)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='contact')
     first_code = models.CharField(max_length=4, validators=[RegexValidator(r'^\d{0,10}$')])
-    digits = models.CharField(max_length=8, validators=[RegexValidator(r'^\d{0,10}$')])
+    digits = models.CharField(max_length=2, validators=[RegexValidator(r'^\d{0,10}$')])
     generate_numbers = models.PositiveIntegerField()
+
+    def save(self, **kwargs):
+        if not self.id:
+            max = GenerateContact.objects.aggregate(id_max=Max('id'))['id_max']
+            if max is not None:
+                max = max[-3:]
+                max = int(max)
+                max += 1
+            else:
+                max = 1
+            self.id = "GENCON" + "{0:03d}".format(max)
+        super().save(*kwargs)

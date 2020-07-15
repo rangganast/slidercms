@@ -264,7 +264,7 @@ class ContactForm(forms.ModelForm):
             'name' : 'Nama Kontak'
         }
         widgets = {
-            'name' : forms.TextInput(attrs={'class' : 'form-control', 'autocompete' : 'off', 'required' : True, 'oninput' : 'addNametoURLandInputs(this);'}),
+            'name' : forms.TextInput(attrs={'class' : 'form-control', 'autocomplete' : 'off', 'required' : True, 'oninput' : 'addNametoURLandInputs(this);'}),
         }
 
 class ContactSourceForm(forms.ModelForm):
@@ -293,7 +293,7 @@ class GenerateRandomNumberForm(forms.ModelForm):
             'generate_numbers' : forms.NumberInput({'class' : 'form-control', 'autocomplete' : 'off', 'required' : True}),
         }
 
-GenerateRandomNumberFormSet = modelformset_factory(model=GenerateContact, form=GenerateRandomNumberForm, extra=1, can_delete=True)
+GenerateRandomNumberFormSet = modelformset_factory(GenerateContact, form=GenerateRandomNumberForm, extra=1, can_delete=True)
 
 class UploadCSVForm(forms.Form):
     upload_csv = forms.FileField(label='Pilih File Nomor', widget=forms.ClearableFileInput({'class' : 'form-control', 'accept' : '.csv'}))

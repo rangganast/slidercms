@@ -134,17 +134,18 @@ function addNametoURLandInputs(input) {
     });
 }
 
-function submitForms(e) {
+function submitForms() {    
     if ($('#random-generate').is(':hidden')) {
         $('#contactGroupFormBtn').click();
     } else if ($('#csv-generate').is(':hidden')) {
 
         if ($('#id_name').val() === ''){
+            $('#id_name').focus();
             $('#contactNameErrorEmpty').show();
-            return;
+            return false;
         }
         
         $.post('/smsblast/add_contact_group', $('#contactGroupForm').serialize(), function (e) {});
-        $.post('/smsblast/add_random_generated_numbers', $('#randomNumberForm').serialize(), function (e) {});
+        $('#randomNumberForm').submit()
     }
 }
