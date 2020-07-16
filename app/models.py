@@ -198,7 +198,7 @@ class GenerateContact(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=9)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='contact')
     first_code = models.CharField(max_length=4, validators=[RegexValidator(r'^\d{0,10}$')])
-    digits = models.CharField(max_length=2, validators=[RegexValidator(r'^\d{0,10}$')])
+    digits = models.CharField(max_length=30, validators=[RegexValidator(r'^\d{0,10}$')])
     generate_numbers = models.PositiveIntegerField()
 
     def save(self, **kwargs):

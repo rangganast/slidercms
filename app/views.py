@@ -1486,14 +1486,8 @@ class AddRandomGeneratedNumbersView(View):
 
         else:
             contact_instance.delete()
-            context = {
-                'formset_generaterandomnumber' : formset_generaterandomnumber,
-                'form_contact' : form_contact,
-                'form_contactsource' : form_contactsource,
-                'form_uploadcsv' : form_uploadcsv,
-            }
 
-            return redirect(reverse('app:smsblast_add_contact', kwargs=context))
+            return redirect(reverse('app:smsblast_add_contact'))
 
 @method_decorator([marketing_required], name='dispatch')
 class GenerateRandomContactView(View):
