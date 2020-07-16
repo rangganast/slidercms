@@ -18,6 +18,9 @@ urlpatterns = [
 
     path('smsblast/contact', views.ContactView.as_view(), name='smsblast_contact'),
     path('smsblast/add_contact', views.AddContactMethodsView.as_view(), name='smsblast_add_contact'),
+    path('smsblast/detail_contact/<str:pk>', views.DetailContactView.as_view(), name='smsblast_detail_contact'),
+    path('smsblast/archive_contact/<str:pk>', views.ArchiveContactView.as_view(), name='smsblast_archive_contact'),
+    path('smsblast/delete_contact/<str:pk>', views.DeleteContactView.as_view(), name='smsblast_delete_contact'),
     path('smsblast/add_contact_group', views.AddContactGroupView.as_view(), name='smsblast_add_contact_group'),
     path('smsblast/add_random_generated_numbers', views.AddRandomGeneratedNumbersView.as_view(), name='smsblast_add_random_generated_numbers'),
     path('smsblast/generate_random_number', views.GenerateRandomContactView.as_view(), name='generate_random_contact'),

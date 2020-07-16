@@ -74,6 +74,18 @@ ul li.table_li:before {
     box-shadow: 3px 3px #000000;
 }
 
+.btn-success,
+.btn-success:hover,
+.btn-success:active,
+.btn-success:visited,
+.btn-success:focus,
+.btn-success:disabled {
+    background-color: #FF9900 !important;
+    color: #000000;
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
 .custom-switch {
     padding-left: 2.25rem;
     padding-bottom: 1rem;

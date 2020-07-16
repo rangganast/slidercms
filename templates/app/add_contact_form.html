@@ -66,6 +66,7 @@
                         <label for="">{{form_generate.first_code.label}}</label>
                         <div class="input-group">
                             {{form_generate.first_code}}
+                            <small id="first_code-0-inaccurate" class="first_code-empty" style="color: red; display: none;">Kode Awal harus sama dengan 4 angka dan berawalan 08.</small>
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.first_code.errors %}
@@ -79,6 +80,7 @@
                         <label for="">{{form_generate.digits.label}}</label>
                         <div class="input-group">
                             {{form_generate.digits}}
+                            <small id="digits-0-inaccurate" class="digits-inaccurate" style="color: red; display: none;">Jumlah digit nomor harus diisi dengan angka 11 atau 12.</small>
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.digits.errors %}
@@ -91,6 +93,7 @@
                         <label for="">{{form_generate.generate_numbers.label}}</label>
                         <div class="input-group">
                             {{form_generate.generate_numbers}}
+                            <small id="generate_numbers-0-empty" class="generate_numbers-empty" style="color: red; display: none;">Jumlah nomor yang akan di Generate tidak boleh kosong.</small>
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.generate_numbers.errors %}
@@ -118,7 +121,7 @@
                         <div class="input-group">
                             <button id="generateNumber" type="button" class="btn btn-success">Generate</button>
                             <a id="tempRandomContacts" href="{% url 'app:temp_random_contacts' %}" target="_blank">
-                                <button id="viewRandomNumbers" type="button" class="btn btn-warning ml-2">Lihat
+                                <button id="viewRandomNumbers" type="button" class="btn btn-warning ml-2" disabled>Lihat
                                     Nomor</button>
                             </a>
 
@@ -164,7 +167,7 @@
                         <button id="downloadCSVTemplate" type="button" class="btn btn-success">Download
                             Template</button>
                         <a id="tempCSVContacts" href="{% url 'app:temp_csv_contacts' %}" target="_blank">
-                            <button id="viewCSVNumbers" type="button" class="btn btn-warning ml-2">Lihat
+                            <button id="viewCSVNumbers" type="button" class="btn btn-warning ml-2" disabled>Lihat
                                 Nomor</button>
                         </a>
                         <div id="csvNumberSpinner" style="display: none;" class="spinner-border ml-3 mt-1" role="status">

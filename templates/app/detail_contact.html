@@ -1,0 +1,61 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block title %}SMS Blast - Detail Kontak{% endblock title %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'css/detail_contact.css' %}">{% endblock style %}
+
+{% block content %}
+    <h3 class="text-center mb-2">Detail Grup Kontak
+        <span class="btn-group float-right">
+            <a href="{% url 'app:smsblast_contact' %}" style="color: white; text-decoration: none;">
+                <button type="button" class="btn btn-secondary mr-2">
+                    Kembali
+                </button>
+            </a>
+        </span>
+    </h3>
+
+<hr>
+
+<div class="form-group row mt-2">
+    <label class="col-sm-2 col-form-label" for="">
+        <strong>Nama Grup Kontak</strong>
+    </label>
+    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+    <div class="col-sm-9 no-padding">
+        <input type="text" class="form-control no-border" value="{{contact.name}}" disabled>
+    </div>
+</div>
+
+<div class="form-group row mt-2">
+    <label class="col-sm-2 col-form-label" for="">
+        <strong>Sumber Kontak</strong>
+    </label>
+    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+    <div class="col-sm-9 no-padding">
+        <input type="text" class="form-control no-border" value="{% if contact.source.source == 'random' %}Generate Nomor secara Acak{% else %}Upload File.csv{% endif %}" disabled>
+    </div>
+</div>
+
+<div class="form-group row mt-2">
+    <label class="col-sm-2 col-form-label" for="">
+        <strong>Jumlah Nomor yang sudah di Generate</strong>
+    </label>
+    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+    <div class="col-sm-9 no-padding">
+        <input type="text" class="form-control no-border" value="{{count}}" disabled>
+    </div>
+</div>
+
+<table class="table table-bordered">
+    {% for list in contacts %}
+    <tr>
+        {% for contact in list %}
+        <td>{{contact}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+{% endblock content %}

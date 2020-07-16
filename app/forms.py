@@ -288,9 +288,9 @@ class GenerateRandomNumberForm(forms.ModelForm):
             'generate_numbers' : 'Jumlah Nomor yang Akan Di-generate',
         }
         widgets = {
-            'first_code' : forms.NumberInput({'class' : 'form-control', 'autocomplete' : 'off', 'required' : True}),
-            'digits' : forms.NumberInput({'class' : 'form-control', 'autocomplete' : 'off', 'required' : True}),
-            'generate_numbers' : forms.NumberInput({'class' : 'form-control', 'autocomplete' : 'off', 'required' : True}),
+            'first_code' : forms.NumberInput({'class' : 'form-control first_code', 'autocomplete' : 'off', 'required' : True}),
+            'digits' : forms.NumberInput({'class' : 'form-control digits', 'autocomplete' : 'off', 'required' : True}),
+            'generate_numbers' : forms.NumberInput({'class' : 'form-control generate_numbers', 'autocomplete' : 'off', 'required' : True}),
         }
 
 GenerateRandomNumberFormSet = modelformset_factory(GenerateContact, form=GenerateRandomNumberForm, extra=1, can_delete=True)

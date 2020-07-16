@@ -23,11 +23,52 @@ $('#id_source').change(function () {
 
 $('#generateNumber').click(function (e) {
     $('#randomNumberSpinner').show();
-    $.post('/smsblast/generate_random_number', $('#randomNumberForm').serialize(), function (e) {});
-    e.preventDefault();
-    setTimeout(function (){
-        $('#randomNumberSpinner').hide();
-    }, 1000)
+
+    var doStop = false;
+
+    // $('.first_code').each(function (index) {
+    //     var value = $(this).val();
+    //     if (value.slice(0, 2) != '08' && value.length !== 4) {
+    //         $('#first_code-' + index + '-inaccurate').show();
+    //         $('#randomNumberSpinner').hide();
+
+    //         doStop = true;
+
+    //     }
+    // });
+
+    // $('.digits').each(function(index) {
+    //     if ($(this).val().length !== 2 && Number(($(this).val()) !== 11) && Number(($(this).val()) !== 12)) {
+    //         $('#digits-' + index + '-inaccurate').show();
+    //         $('#randomNumberSpinner').hide();
+
+    //         doStop = true;
+    //     }
+    // });
+
+    // $('.generate_numbers').each(function (index) {
+    //     if(!$(this).val()) {
+    //         $('#generate_numbers-' + index + '-empty').show();
+    //         $('#randomNumberSpinner').hide();
+
+    //         doStop = true;
+    //     }
+    // });
+
+    if(!doStop) {
+        $.post('/smsblast/generate_random_number', $('#randomNumberForm').serialize(), function (e) {});
+        e.preventDefault();
+
+        $('.first_code-inaccurate').hide();
+        $('.digits-inaccurate').hide();
+        $('.generate_numbers-inaccurate').hide();
+    
+        setTimeout(function (){
+            $('#randomNumberSpinner').hide();
+            $('#viewRandomNumbers').prop('disabled', false);
+        }, 1000)
+    }
+    
 });
 
 $('#id_upload_csv').change(function () {
@@ -48,6 +89,7 @@ $('#csvForm').submit(function (event){
     
     setTimeout(function () {
         $('#csvNumberSpinner').hide();
+        $('#viewCSVNumbers').prop('disabled', false);
     }, 1000)
 });
 
@@ -63,13 +105,31 @@ function addContact(input) {
     newElement.find('#id_form-' + id + '-first_code').attr('name', 'form-' + (id + 1) + '-first_code')
     newElement.find('#id_form-' + id + '-first_code').attr('id', 'id_form-' + (id + 1) + '-first_code')
 
+    newElement.find('#first_code-' + id + '-exceeded').hide()
+    newElement.find('#first_code-' + id + '-exceeded').attr('id', 'first_code-' + (id + 1) + '-exceeded')
+
+    newElement.find('#first_code-' + id + '-empty').hide()
+    newElement.find('#first_code-' + id + '-empty').attr('id', 'first_code-' + (id + 1) + '-empty')
+    
     newElement.find('#id_form-' + id + '-digits').val(null);
     newElement.find('#id_form-' + id + '-digits').attr('name', 'form-' + (id + 1) + '-digits')
     newElement.find('#id_form-' + id + '-digits').attr('id', 'id_form-' + (id + 1) + '-digits')
 
+    newElement.find('#digits-' + id + '-exceeded').hide()
+    newElement.find('#digits-' + id + '-exceeded').attr('id', 'digits-' + (id + 1) + '-exceeded')
+
+    newElement.find('#digits-' + id + '-empty').hide()
+    newElement.find('#digits-' + id + '-empty').attr('id', 'digits-' + (id + 1) + '-empty')
+
+    newElement.find('#digits-' + id + '-inaccurate').hide()
+    newElement.find('#digits-' + id + '-inaccurate').attr('id', 'digits-' + (id + 1) + '-inaccurate')
+    
     newElement.find('#id_form-' + id + '-generate_numbers').val(null);
     newElement.find('#id_form-' + id + '-generate_numbers').attr('name', 'form-' + (id + 1) + '-generate_numbers')
     newElement.find('#id_form-' + id + '-generate_numbers').attr('id', 'id_form-' + (id + 1) + '-generate_numbers')
+
+    newElement.find('#generate_numbers-' + id + '-empty').hide()
+    newElement.find('#generate_numbers-' + id + '-empty').attr('id', 'generate_numbers-' + (id + 1) + '-empty')
 
     newElement.find('#add-' + id + '-contact').attr('id', 'add-' + (id + 1) + '-contact')
     newElement.find('#delete-' + id + '-contact').attr('id', 'delete-' + (id + 1) + '-contact')
@@ -144,8 +204,14 @@ function submitForms() {
             $('#contactNameErrorEmpty').show();
             return false;
         }
-        
-        $.post('/smsblast/add_contact_group', $('#contactGroupForm').serialize(), function (e) {});
-        $('#randomNumberForm').submit()
+
+        $('#randomNumberForm').submit();
     }
 }
+
+$('#randomNumberForm').submit(function(event) {
+    event.preventDefault();
+    $.post('/smsblast/add_contact_group', $('#contactGroupForm').serialize(), function (e) {});
+    
+    $(this).unbind('submit').submit();
+})
