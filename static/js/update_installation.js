@@ -1,5 +1,6 @@
 $(document).ready(function () {
     $('#sliderManagement').addClass('menu-open');
+    $('#smsBlastManagement').removeClass('menu-open');
     $('a#installManagement').addClass('active');
 
     $('#id_campaign-0-daterangepicker').daterangepicker({

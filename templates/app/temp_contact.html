@@ -55,5 +55,9 @@
 {% endblock content %}
 
 {% block script %}
-
+    <script>
+        $('#sliderManagement').removeClass('menu-open');
+        $('a#contactManagement').addClass('active');
+        $('#smsBlastManagement').addClass('menu-open');
+    </script>
 {% endblock script %}

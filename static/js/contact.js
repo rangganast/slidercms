@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    $('#sliderManagement').removeClass('menu-open');
+    $('a#contactManagement').addClass('active');
+    
     $('#contactSourceFilter').select2({
         theme: 'bootstrap4',
         placeholder: 'Cari Sumber Kontak...',
@@ -19,7 +22,3 @@ table = $('#contactTable').DataTable({
 });
 
 $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/smsblast/add_contact"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Kontak</button></a></div>');
-
-$('#contactSourceFilter').change(function () {
-
-});

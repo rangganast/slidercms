@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    $('#smsBlastManagement').removeClass('menu-open');
     $('#sliderManagement').removeClass('menu-open');
     $('a#keywordCounter').addClass('active');
 

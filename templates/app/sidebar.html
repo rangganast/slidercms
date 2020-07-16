@@ -78,8 +78,8 @@
                         </p>
                     </a>
                 </li>
-                <li class="nav-item has-treeview menu-open">
-                    <a id="smsBlastManagement" href="#" class="nav-link">
+                <li id="smsBlastManagement" class="nav-item has-treeview menu-open">
+                    <a href="#" class="nav-link">
                         <i class="nav-icon fa fa-envelope"></i>
                         <p>
                             Manajemen SMS Blast
@@ -87,8 +87,8 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li id="contactManagement" class="nav-item">
-                            <a href="{% url 'app:smsblast_add_contact' %}" class="nav-link">
+                        <li class="nav-item">
+                            <a id="contactManagement" href="{% url 'app:smsblast_add_contact' %}" class="nav-link">
                                 <i class="nav-icon fas fas fa-users"></i>
                                 <p>Manajemen Kontak</p>
                             </a>

@@ -148,14 +148,14 @@ class Installation(models.Model):
             self.id = "INS" + "{0:03d}".format(max)
         super().save(*kwargs)
 
-choices = (
+source_choices = (
     ('random', 'Generate nomor secara acak'),
     ('csv', 'Upload file .csv'),
 )
 
 class ContactSource(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=9)
-    source = models.CharField(max_length=30, choices=choices)
+    source = models.CharField(max_length=30, choices=source_choices)
 
     def __str__(self):
         return self.source
@@ -211,4 +211,31 @@ class GenerateContact(models.Model):
             else:
                 max = 1
             self.id = "GENCON" + "{0:03d}".format(max)
+        super().save(*kwargs)
+
+status_choices = (
+    ('complete', 'Sudah Dikirim'),
+    ('uncomplete', 'Belum Dikirim'),
+)
+
+class SMSBlast(models.Model):
+    id = models.CharField(primary_key=True, editable=False, max_length=6)
+    message_title = models.CharField(max_length=100)
+    message_text = models.TextField()
+    send_date = models.DateField(null=True, blank=True)
+    send_time = models.TimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.message_title
+
+    def save(self, **kwargs):
+        if not self.id:
+            max = SMSBlastStatus.objects.aggregate(id_max=Max('id'))['id_max']
+            if max is not None:
+                max = max[-3:]
+                max = int(max)
+                max += 1
+            else:
+                max = 1
+            self.id = "SMS" + "{0:03d}".format(max)
         super().save(*kwargs)

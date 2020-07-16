@@ -1,0 +1,64 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block title %}SMS Blast - Tambah Kontak{% endblock title %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'css/add_smsblast.css' %}">{% endblock style %}
+
+{% block content %}
+<form id="smsBlastForm" method="POST" action="{% url 'app:smsblast_add_contact_group' %}">
+    {% csrf_token %}
+
+    <div id="card-field" class="container-fluid mt-3">
+        <h3 class="text-center mb-2">Form Tambah SMS</h3>
+    </div>
+
+    <hr>
+
+    <div class="container-fluid mt-5 mb-5">
+
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"
+                for="{{ form_smsblast.to_numbers.id_for_label }}">{{ form_smsblast.to_numbers.label }}</label>
+            <div class="col-sm-10">
+                {{ form_smsblast.to_numbers }}
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"
+                for="">Lihat Grup Kontak</label>
+            <div class="col-sm-10">
+                <button type="button" class="btn btn-warning ml-2">Lihat Nomor</button>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"
+                for="{{ form_smsblast.message_title.id_for_label }}">{{ form_smsblast.message_title.label }}</label>
+            <div class="col-sm-10">
+                {{ form_smsblast.message_title }}
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"
+                for="{{ form_smsblast.message_text.id_for_label }}">{{ form_smsblast.message_text.label }}</label>
+            <div class="col-sm-10">
+                {{ form_smsblast.message_text }}
+            </div>
+        </div>
+
+        <div class="form-group float-right">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+
+    </div>
+</form>
+
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'js/add_smsblast.js' %}"></script>
+{% endblock script %}

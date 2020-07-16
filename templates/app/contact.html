@@ -91,13 +91,13 @@
                 <span class="spanFormat">
                     <form action="{% url 'app:smsblast_archive_contact' pk=content.contact_id %}" method="POST">
                         {% csrf_token   %}
-                        <button type="submit" class="btn btn-sm btn-success">{% if content.contact_is_archived == True %}Unarchive{% else %}Archive{% endif %}</button>
+                        <button type="button" class="btn btn-sm btn-success">{% if content.contact_is_archived == True %}Unarchive{% else %}Archive{% endif %}</button>
                     </form>
                 </span>
                 <span class="spanFormat">
                     <form action="{% url 'app:smsblast_delete_contact' pk=content.contact_id %}" method="POST">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                        <button type="button" class="btn btn-sm btn-danger">Hapus</button>
                     </form>
                 </span>
             </td>

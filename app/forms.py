@@ -1,7 +1,7 @@
 from django import forms
 from PIL import Image
-from .models import Application, Page, Location, Banner, Installation, Campaign, User, Contact, ContactSource, GenerateContact
-from .models import choices
+from .models import Application, Page, Location, Banner, Installation, Campaign, User, Contact, ContactSource, GenerateContact, SMSBlast
+from .models import source_choices
 from django.forms import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
@@ -261,7 +261,7 @@ class ContactForm(forms.ModelForm):
         model = Contact
         fields = ['name']
         labels = {
-            'name' : 'Nama Kontak'
+            'name' : 'Nama Grup Kontak'
         }
         widgets = {
             'name' : forms.TextInput(attrs={'class' : 'form-control', 'autocomplete' : 'off', 'required' : True, 'oninput' : 'addNametoURLandInputs(this);'}),
@@ -275,7 +275,7 @@ class ContactSourceForm(forms.ModelForm):
             'source' : 'Sumber Kontak'
         }
         widgets = {
-            'source' : forms.Select(attrs={'class' : 'form-control', 'required' : True}, choices=choices),
+            'source' : forms.Select(attrs={'class' : 'form-control', 'required' : True}, choices=source_choices),
         }
 
 class GenerateRandomNumberForm(forms.ModelForm):
@@ -297,3 +297,22 @@ GenerateRandomNumberFormSet = modelformset_factory(GenerateContact, form=Generat
 
 class UploadCSVForm(forms.Form):
     upload_csv = forms.FileField(label='Pilih File Nomor', widget=forms.ClearableFileInput({'class' : 'form-control', 'accept' : '.csv'}))
+
+class SMSBlastForm(forms.ModelForm):
+    to_numbers = forms.CharField(widget=forms.Select(attrs={'class' : 'form-control', 'multiple' : True}), label='Nomor Tujuan')
+
+    class Meta:
+        model = SMSBlast
+        fields = ['message_title', 'message_text', 'send_date', 'send_time']
+        labels = {
+            'message_title' : 'Judul Pesan',
+            'message_text' : 'Isi Pesan',
+            'send_date' : 'Jumlah Nomor yang Akan Di-generate',
+            'send_time' : 'Jumlah Nomor yang Akan Di-generate',
+        }
+        widgets = {
+            'message_title' : forms.TextInput(attrs={'class' : 'form-control'}),
+            'message_text' : forms.Textarea(attrs={'class' : 'form-control'}),
+            'send_date' : forms.DateInput(attrs={'class' : 'form-control'}),
+            'send_time' : forms.TextInput(attrs={'class' : 'form-control'}),
+        }

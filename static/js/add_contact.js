@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    $('#sliderManagement').removeClass('menu-open');
+    $('a#contactManagement').addClass('active');
+
     $('#id_source').select2({
         theme: 'bootstrap4',
         placeholder: 'Pilih cara mendapatkan sumber kontak',
@@ -205,13 +208,9 @@ function submitForms() {
             return false;
         }
 
-        $('#randomNumberForm').submit();
+        $.post('/smsblast/add_contact_group', $('#contactGroupForm').serialize())
+        .done(function(result) {
+            $('#randomNumberForm').submit();
+        })
     }
 }
-
-$('#randomNumberForm').submit(function(event) {
-    event.preventDefault();
-    $.post('/smsblast/add_contact_group', $('#contactGroupForm').serialize(), function (e) {});
-    
-    $(this).unbind('submit').submit();
-})

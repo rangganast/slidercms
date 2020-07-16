@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    $('#smsBlastManagement').removeClass('menu-open');
     $('#sliderManagement').addClass('menu-open');
     $('a#pageManagement').addClass('active');
 

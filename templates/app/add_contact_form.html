@@ -183,7 +183,9 @@
 <div class="container-fluid mt-5 mb-5">
 
     <div style="display: none;" id="saveBtnDiv" class="form-group row float-right">
-        <button type="button" class="btn btn-secondary">Batal</button>
+        <a href="{% url 'app:smsblast_contact' %}">
+            <button type="button" class="btn btn-secondary">Batal</button>
+        </a>
         <button id="submitForms" type="button" class="btn btn-primary ml-2" onclick="submitForms();">Simpan</button>
     </div>
 

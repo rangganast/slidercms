@@ -1,5 +1,6 @@
 $(document).ready(function () {
     $('#sliderManagement').addClass('menu-open');
+    $('#smsBlastManagement').removeClass('menu-open');
     $('a#pageManagement').addClass('active');
 
     $('input').prop('disabled', false);
