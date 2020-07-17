@@ -66,3 +66,12 @@ fieldset.numbergenerate-border {
     border-color: #000000;
     box-shadow: 3px 3px #000000;
 }
+
+.select2-selection__choice {
+    color: white !important;
+    background-color: #007bff;
+}
+
+.select2-selection__choice__remove {
+    color: white !important;
+}

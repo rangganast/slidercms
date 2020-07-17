@@ -299,7 +299,8 @@ class UploadCSVForm(forms.Form):
     upload_csv = forms.FileField(label='Pilih File Nomor', widget=forms.ClearableFileInput({'class' : 'form-control', 'accept' : '.csv'}))
 
 class SMSBlastForm(forms.ModelForm):
-    to_numbers = forms.CharField(widget=forms.Select(attrs={'class' : 'form-control', 'multiple' : True}), label='Nomor Tujuan')
+    choices = tuple([(contact.name, contact.name) for contact in Contact.objects.filter(is_archived=False)])
+    to_numbers = forms.MultipleChoiceField(widget=forms.Select(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), label='Nomor Tujuan', choices=choices)
 
     class Meta:
         model = SMSBlast
@@ -307,12 +308,12 @@ class SMSBlastForm(forms.ModelForm):
         labels = {
             'message_title' : 'Judul Pesan',
             'message_text' : 'Isi Pesan',
-            'send_date' : 'Jumlah Nomor yang Akan Di-generate',
-            'send_time' : 'Jumlah Nomor yang Akan Di-generate',
+            'send_date' : 'Tanggal Pengiriman',
+            'send_time' : 'Jam Kirim',
         }
         widgets = {
-            'message_title' : forms.TextInput(attrs={'class' : 'form-control'}),
-            'message_text' : forms.Textarea(attrs={'class' : 'form-control'}),
-            'send_date' : forms.DateInput(attrs={'class' : 'form-control'}),
-            'send_time' : forms.TextInput(attrs={'class' : 'form-control'}),
+            'message_title' : forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'autocomplete' : 'off'}),
+            'message_text' : forms.Textarea(attrs={'class' : 'form-control', 'required' : True, 'autocomplete' : 'off'}),
+            'send_date' : forms.DateInput(attrs={'class' : 'form-control', 'autocomplete' : 'off', 'onclick' : 'load_datepicker(this)'}),
+            'send_time' : forms.TimeInput(attrs={'class' : 'form-control datetimepicker-input', 'autocomplete' : 'off'}),
         }

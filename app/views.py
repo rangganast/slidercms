@@ -1654,6 +1654,35 @@ class AddSMSBlast(View):
 
         return render(request, self.template_name, context)
 
+@method_decorator([login_required, marketing_required], name='dispatch')
+class ViewSMSBlastTempContacts(View):
+    initial = {'key', 'value'}
+    template_name = 'app/add_smsblast_temp_contacts.html'
+
+    def get(self, request):
+        names = request.GET.getlist('name')
+
+        contacts = []
+        for name in names:
+            file_name = Contact.objects.get(name=name).numbers
+
+            if file_name:
+                with open(str(file_name), 'rb') as f:
+                    contact = pickle.load(f)
+                    f.close()
+
+                contacts.extend(contact)
+
+        count = len(contacts)
+        contacts = [contacts[x:x+4] for x in range(0, len(contacts), 4)]
+
+        context = {
+            'count' : count,
+            'contacts' : contacts,
+        }
+
+        return render(request, self.template_name, context)
+
 @login_required
 def check_location_code_available_add(request):
     value = request.GET.get('value')

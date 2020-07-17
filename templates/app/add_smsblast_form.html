@@ -30,7 +30,9 @@
             <label class="col-sm-2 col-form-label"
                 for="">Lihat Grup Kontak</label>
             <div class="col-sm-10">
-                <button type="button" class="btn btn-warning ml-2">Lihat Nomor</button>
+                <a id="viewTempContacts" href="{% url 'app:smsblast_add_smsblast_temp_contacts' %}" target="_blank">
+                    <button id="viewTempContactsBtn" type="button" class="btn btn-warning ml-2" disabled>Lihat Nomor</button>
+                </a>
             </div>
         </div>
 
@@ -50,7 +52,42 @@
             </div>
         </div>
 
-        <div class="form-group float-right">
+        <div class="form-group row mb-0">
+            <div class="col-sm-12">
+                <strong>
+                    <label class="radio-inline mr-3" for="send_now_yes" style="color: #007bff;">Apakah pesan mau dikirim sekarang?</label>
+                    <label class="mr-3 radio-inline" for="send_now_yes" style="color: #007bff;">
+                        <input type="radio" name="send_now" id="send_now_yes" value="Ya" required>
+                        Ya
+                    </label>
+                    <label class="radio-inline" for="send_now_no" style="color: #007bff;">
+                        <input type="radio" name="send_now" id="send_now_no" value="Tidak" required>
+                        Tidak
+                    </label>
+                </strong>
+            </div>
+        </div>
+
+        <div id="send_now_div" style="display: none;">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"
+                    for="{{ form_smsblast.send_date.id_for_label }}">{{ form_smsblast.send_date.label }}</label>
+                <div class="col-sm-10">
+                    {{ form_smsblast.send_date }}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"
+                    for="{{ form_smsblast.send_time.id_for_label }}">{{ form_smsblast.send_time.label }}</label>
+                <div class="col-sm-10">
+                    {{ form_smsblast.send_time }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-group float-right mb-5">
             <button class="btn btn-primary" type="submit">Submit</button>
         </div>
 
