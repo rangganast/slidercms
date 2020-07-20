@@ -128,3 +128,6 @@ def export_excel(date1, date2, app):
                                    'Authorization': 'Token {}'.format(token)}, params=params)
 
     return r.content
+
+def sms_blast(message, to_numbers):
+    pass

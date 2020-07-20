@@ -77,8 +77,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'slidercms.wsgi.application'
 
 # Email
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 EMAIL_USE_TLS = True
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT', cast=int)

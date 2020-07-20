@@ -57,30 +57,32 @@
 <form id="randomNumberForm" method="POST" action="{% url 'app:smsblast_add_random_generated_numbers' %}">
     {% csrf_token %}
     {{ formset_generaterandomnumber.management_form }}
-    <fieldset style="display: none;" id="random-generate" class="numbergenerate-border">
+    <fieldset {% if not form_generate_fail %}style="display: none;"{% endif %} id="random-generate" class="numbergenerate-border">
         <div class="control-group mb-3 mt-3">
             <div class="col input-wrapper">
-                <div id="generate-0-div" class="row generate-div" class="row">
-                    {% for form_generate in formset_generaterandomnumber %}
+                {% for form_generate in formset_generaterandomnumber %}
+                <div id="generate-{{forloop.counter0}}-div" class="row generate-div" class="row">
                     <div class="col-sm-2 no-padding">
                         <label for="">{{form_generate.first_code.label}}</label>
                         <div class="input-group">
                             {{form_generate.first_code}}
-                            <small id="first_code-0-inaccurate" class="first_code-empty" style="color: red; display: none;">Kode Awal harus sama dengan 4 angka dan berawalan 08.</small>
+                            <small id="first_code-{{forloop.counter0}}-inaccurate" class="first_code-inaccurate"
+                                style="color: red; display: none;">Kode Awal harus berawalan 08.</small>
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.first_code.errors %}
                             <small style="color: red;">{{error}}</small>
                             {% endfor %}
                             {% endif %}
-
                         </div>
                     </div>
                     <div class="col-sm-3 no-padding">
                         <label for="">{{form_generate.digits.label}}</label>
                         <div class="input-group">
                             {{form_generate.digits}}
-                            <small id="digits-0-inaccurate" class="digits-inaccurate" style="color: red; display: none;">Jumlah digit nomor harus diisi dengan angka 11 atau 12.</small>
+                            <small id="digits-{{forloop.counter0}}-inaccurate" class="digits-inaccurate"
+                                style="color: red; display: none;">Jumlah digit nomor harus diisi dengan antara angka 9
+                                dan 14.</small>
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.digits.errors %}
@@ -93,7 +95,9 @@
                         <label for="">{{form_generate.generate_numbers.label}}</label>
                         <div class="input-group">
                             {{form_generate.generate_numbers}}
-                            <small id="generate_numbers-0-empty" class="generate_numbers-empty" style="color: red; display: none;">Jumlah nomor yang akan di Generate tidak boleh kosong.</small>
+                            <small id="generate_numbers-{{forloop.counter0}}-empty" class="generate_numbers-inaccurate"
+                                style="color: red; display: none;">Jumlah nomor yang akan di Generate tidak boleh
+                                kosong.</small>
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.generate_numbers.errors %}
@@ -105,15 +109,17 @@
                     <div id="contactBtnDiv" class="col-sm-2">
                         <label style="color: white;">tambah&hapus</label>
                         <div class="input-group">
-                            <button id="add-0-contact" type="button" class="btn btn-primary addContactBtn"
+                            <button id="add-{{forloop.counter0}}-contact" type="button"
+                                class="btn btn-primary addContactBtn"
                                 onclick="addContact(this);">Tambah</button>
-                            <button style="display: none;" id="delete-0-contact" type="button" class="btn btn-danger deleteContactBtn ml-2"
+                            <button style="display: none;" id="delete-{{forloop.counter0}}-contact" type="button"
+                                class="btn btn-danger deleteContactBtn ml-2"
                                 onclick="deleteContact(this);">Hapus</button>
                         </div>
                     </div>
-                    {% endfor %}
-
+                    
                 </div>
+                {% endfor %}
 
                 <div class="row">
                     <div class="col-sm-3">
@@ -136,7 +142,7 @@
             </div>
         </div>
 
-        <input id="contactName" type="hidden" name="contactName">
+        <input id="contactName" type="hidden" name="contactName" {% if contact_name %}value="{{contact_name}}"{% endif %}>
 
         <button id="generateRandomFormBtn" style="display: none;" type="submit">Submit</button>
     </fieldset>
@@ -182,7 +188,7 @@
 
 <div class="container-fluid mt-5 mb-5">
 
-    <div style="display: none;" id="saveBtnDiv" class="form-group row float-right">
+    <div {% if not form_generate_fail %}style="display: none;"{% endif %} id="saveBtnDiv" class="form-group row float-right">
         <a href="{% url 'app:smsblast_contact' %}">
             <button type="button" class="btn btn-secondary">Batal</button>
         </a>
@@ -195,5 +201,22 @@
 {% endblock content %}
 
 {% block script %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        {% if form_generate_fail %}
+        window.history.pushState('', '', '/smsblast/add_contact');
+        $('#id_source').val('random').attr('selected', true)
+        $('#delete-' + ($('#id_form-TOTAL_FORMS').val() - 1) + '-contact').show();
+        {% endif %}
+        $('#id_form-INITIAL_FORMS').val($('#id_form-TOTAL_FORMS').val());
+        $('#sliderManagement').removeClass('menu-open');
+        $('a#contactManagement').addClass('active');
+
+        $('#id_source').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Pilih cara mendapatkan sumber kontak',
+        });
+    });
+</script>
 <script src="{% static 'js/add_contact.js' %}"></script>
 {% endblock script %}

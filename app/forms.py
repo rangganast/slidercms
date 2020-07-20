@@ -153,7 +153,7 @@ class BannerForm(forms.ModelForm):
             if not (main == 'image' and sub.lower() in ['jpeg', 'pjpeg', 'png', 'jpg']):
                 raise forms.ValidationError(_('Format file harus JPG, JPEG atau PNG.'))
 
-            if len(image) > (1 * 1024 * 1024):
+            if len(image) > (1 * 1024 * 5120):
                 raise forms.ValidationError(_('File berukuran maksimal 1 MB.'))
 
         else:
@@ -293,6 +293,30 @@ class GenerateRandomNumberForm(forms.ModelForm):
             'generate_numbers' : forms.NumberInput({'class' : 'form-control generate_numbers', 'autocomplete' : 'off', 'required' : True}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(GenerateRandomNumberForm, self).__init__(*args, **kwargs)
+        self.fields['first_code'].error_messages = {'required': 'Field Kode Awal tidak boleh kosong (required).'}
+        self.fields['digits'].error_messages = {'required': 'Field Jumlah digit nomor tidak boleh kosong (required).'}
+        self.fields['generate_numbers'].error_messages = {'required': 'Field Jumlah nomor yang akan di Generate tidak boleh kosong (required).'}
+
+    def clean_first_code(self):
+        first_code = self.cleaned_data.get('first_code', False)
+
+        if first_code != None:
+            if first_code[:2] != '08':
+                raise forms.ValidationError(_('Kode Awal harus berawalan 08.'))
+
+        return first_code
+
+    def clean_digits(self):
+        digits = self.cleaned_data.get('digits', False)
+
+        if digits != None:
+            if int(digits) < 9 or int(digits) > 14:
+                raise forms.ValidationError(_('Jumlah digit nomor harus diisi dengan antara angka 9 dan 14.'))
+
+        return digits
+
 GenerateRandomNumberFormSet = modelformset_factory(GenerateContact, form=GenerateRandomNumberForm, extra=1, can_delete=True)
 
 class UploadCSVForm(forms.Form):
@@ -300,7 +324,8 @@ class UploadCSVForm(forms.Form):
 
 class SMSBlastForm(forms.ModelForm):
     choices = tuple([(contact.name, contact.name) for contact in Contact.objects.filter(is_archived=False)])
-    to_numbers = forms.MultipleChoiceField(widget=forms.Select(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), label='Nomor Tujuan', choices=choices)
+    to_numbers = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), label='Nomor Tujuan', choices=choices)
+    send_date = forms.DateField(input_formats=['%d/%m/%Y'], widget=forms.DateInput(attrs={'class' : 'form-control', 'autocomplete' : 'off', 'onclick' : 'load_datepicker(this)'}, format=('%d/%m/%Y')), label='Tanggal Pengiriman', required=False)
 
     class Meta:
         model = SMSBlast
@@ -308,12 +333,10 @@ class SMSBlastForm(forms.ModelForm):
         labels = {
             'message_title' : 'Judul Pesan',
             'message_text' : 'Isi Pesan',
-            'send_date' : 'Tanggal Pengiriman',
             'send_time' : 'Jam Kirim',
         }
         widgets = {
             'message_title' : forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'autocomplete' : 'off'}),
             'message_text' : forms.Textarea(attrs={'class' : 'form-control', 'required' : True, 'autocomplete' : 'off'}),
-            'send_date' : forms.DateInput(attrs={'class' : 'form-control', 'autocomplete' : 'off', 'onclick' : 'load_datepicker(this)'}),
-            'send_time' : forms.TimeInput(attrs={'class' : 'form-control datetimepicker-input', 'autocomplete' : 'off'}),
+            'send_time' : forms.TimeInput(attrs={'class' : 'form-control datetimepicker-input', 'autocomplete' : 'off'}, format=('%H:%M:%S')),
         }

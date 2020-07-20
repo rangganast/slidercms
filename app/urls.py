@@ -28,8 +28,9 @@ urlpatterns = [
     path('smsblast/temp_random_contacts', views.TempRandomContactView.as_view(), name='temp_random_contacts'),
     path('smsblast/temp_csv_contacts', views.TempCSVContactView.as_view(), name='temp_csv_contacts'),
 
-    path('smsblast/add_smsblast', views.AddSMSBlast.as_view(), name='smsblast_add_smsblast'),
-    path('smsblast/add_smsblast_temp_contacts', views.ViewSMSBlastTempContacts.as_view(), name='smsblast_add_smsblast_temp_contacts'),
+    path('smsblast', views.SMSBlastView.as_view(), name='smsblast'),
+    path('smsblast/add_smsblast', views.AddSMSBlastView.as_view(), name='smsblast_add_smsblast'),
+    path('smsblast/add_smsblast_temp_contacts', views.SMSBlastTempContactsView.as_view(), name='smsblast_add_smsblast_temp_contacts'),
 
     path('app', views.AppView.as_view(), name='app'),
     path('app/add_app', views.AddAppView.as_view(), name='add_app'),

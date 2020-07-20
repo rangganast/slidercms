@@ -1,22 +1,15 @@
-$(document).ready(function() {
-    $('#sliderManagement').removeClass('menu-open');
-    $('a#contactManagement').addClass('active');
-
-    $('#id_source').select2({
-        theme: 'bootstrap4',
-        placeholder: 'Pilih cara mendapatkan sumber kontak',
-    });
-});
-
 $('#id_source').change(function () {
     var source = $(this).find('option:selected').val()
 
-    if(source === 'random') {
+    if (source === 'random') {
         $('fieldset:not(#random-generate)').hide();
         $('fieldset#random-generate').show();
         $('#csvBool').val('False');
         $('#saveBtnDiv').show();
-    }else if(source === 'csv') {
+        $('#id_form-0-first_code').prop('required', true);
+        $('#id_form-0-digits').prop('required', true);
+        $('#id_form-0-generate_numbers').prop('required', true);
+    } else if (source === 'csv') {
         $('fieldset:not(#csv-generate)').hide();
         $('fieldset#csv-generate').show();
         $('#csvBool').val('True');
@@ -29,34 +22,38 @@ $('#generateNumber').click(function (e) {
 
     var doStop = false;
 
-    // $('.first_code').each(function (index) {
-    //     var value = $(this).val();
-    //     if (value.slice(0, 2) != '08' && value.length !== 4) {
-    //         $('#first_code-' + index + '-inaccurate').show();
-    //         $('#randomNumberSpinner').hide();
+    $('.first_code').each(function (index) {
+        if ($(this).val().slice(0, 2) != '08') {
+            $('#first_code-' + index + '-inaccurate').show();
+            $('#randomNumberSpinner').hide();
 
-    //         doStop = true;
+            doStop = true;
+        } else {
+            $('#first_code-' + index + '-inaccurate').hide();
+        }
+    });
 
-    //     }
-    // });
+    $('.digits').each(function(index) {
+        if ($(this).val() < 9 || $(this).val() > 14) {
+            $('#digits-' + index + '-inaccurate').show();
+            $('#randomNumberSpinner').hide();
+            
+            doStop = true;
+        } else{            
+            $('#digits-' + index + '-inaccurate').hide();
+        }
+    });
 
-    // $('.digits').each(function(index) {
-    //     if ($(this).val().length !== 2 && Number(($(this).val()) !== 11) && Number(($(this).val()) !== 12)) {
-    //         $('#digits-' + index + '-inaccurate').show();
-    //         $('#randomNumberSpinner').hide();
+    $('.generate_numbers').each(function (index) {
+        if(!$(this).val()) {
+            $('#generate_numbers-' + index + '-empty').show();
+            $('#randomNumberSpinner').hide();
 
-    //         doStop = true;
-    //     }
-    // });
-
-    // $('.generate_numbers').each(function (index) {
-    //     if(!$(this).val()) {
-    //         $('#generate_numbers-' + index + '-empty').show();
-    //         $('#randomNumberSpinner').hide();
-
-    //         doStop = true;
-    //     }
-    // });
+            doStop = true;
+        } else {
+            $('#generate_numbers-' + index + '-empty').hide();
+        }
+    });
 
     if(!doStop) {
         $.post('/smsblast/generate_random_number', $('#randomNumberForm').serialize(), function (e) {});
@@ -108,21 +105,12 @@ function addContact(input) {
     newElement.find('#id_form-' + id + '-first_code').attr('name', 'form-' + (id + 1) + '-first_code')
     newElement.find('#id_form-' + id + '-first_code').attr('id', 'id_form-' + (id + 1) + '-first_code')
 
-    newElement.find('#first_code-' + id + '-exceeded').hide()
-    newElement.find('#first_code-' + id + '-exceeded').attr('id', 'first_code-' + (id + 1) + '-exceeded')
-
-    newElement.find('#first_code-' + id + '-empty').hide()
-    newElement.find('#first_code-' + id + '-empty').attr('id', 'first_code-' + (id + 1) + '-empty')
+    newElement.find('#first_code-' + id + '-inaccurate').hide()
+    newElement.find('#first_code-' + id + '-inaccurate').attr('id', 'first_code-' + (id + 1) + '-inaccurate')
     
     newElement.find('#id_form-' + id + '-digits').val(null);
     newElement.find('#id_form-' + id + '-digits').attr('name', 'form-' + (id + 1) + '-digits')
     newElement.find('#id_form-' + id + '-digits').attr('id', 'id_form-' + (id + 1) + '-digits')
-
-    newElement.find('#digits-' + id + '-exceeded').hide()
-    newElement.find('#digits-' + id + '-exceeded').attr('id', 'digits-' + (id + 1) + '-exceeded')
-
-    newElement.find('#digits-' + id + '-empty').hide()
-    newElement.find('#digits-' + id + '-empty').attr('id', 'digits-' + (id + 1) + '-empty')
 
     newElement.find('#digits-' + id + '-inaccurate').hide()
     newElement.find('#digits-' + id + '-inaccurate').attr('id', 'digits-' + (id + 1) + '-inaccurate')
@@ -131,8 +119,8 @@ function addContact(input) {
     newElement.find('#id_form-' + id + '-generate_numbers').attr('name', 'form-' + (id + 1) + '-generate_numbers')
     newElement.find('#id_form-' + id + '-generate_numbers').attr('id', 'id_form-' + (id + 1) + '-generate_numbers')
 
-    newElement.find('#generate_numbers-' + id + '-empty').hide()
-    newElement.find('#generate_numbers-' + id + '-empty').attr('id', 'generate_numbers-' + (id + 1) + '-empty')
+    newElement.find('#generate_numbers-' + id + '-inaccurate').hide()
+    newElement.find('#generate_numbers-' + id + '-inaccurate').attr('id', 'generate_numbers-' + (id + 1) + '-inaccurate')
 
     newElement.find('#add-' + id + '-contact').attr('id', 'add-' + (id + 1) + '-contact')
     newElement.find('#delete-' + id + '-contact').attr('id', 'delete-' + (id + 1) + '-contact')
@@ -140,6 +128,7 @@ function addContact(input) {
     newElement.find('.deleteContactBtn').show();
 
     $('#id_form-TOTAL_FORMS').val(id + 2);
+    $('#id_form-INITIAL_FORMS').val(id + 2);
 
     $(selector).find('.addContactBtn').hide();
     $(selector).find('.deleteContactBtn').hide();
@@ -161,6 +150,7 @@ function deleteContact(input) {
     }
 
     $('#id_form-TOTAL_FORMS').val(id);
+    $('#id_form-INITIAL_FORMS').val(id);
 }
 
 function addNametoURLandInputs(input) {

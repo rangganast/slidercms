@@ -11,6 +11,7 @@ from wsgiref.util import FileWrapper
 from random import choice
 from string import digits
 from decouple import config
+from django.utils import timezone
 from django.conf import settings
 from django.db.models import Q
 from django.views import View
@@ -29,7 +30,7 @@ from django.template.loader import render_to_string
 from . import services
 from .decorators import developer_required, marketing_required, superuser_required
 from .forms import AppForm, ApplicationForm, PageFormSet, LocationFormSet, BannerForm, CampaignFormSet, InstallationFormSet, UserForm, KeywordDateRangeForm, ContactForm, ContactSourceForm, GenerateRandomNumberFormSet, UploadCSVForm, SMSBlastForm
-from .models import Application, Page, Location, Banner, Campaign, Installation, User, Contact, ContactSource, GenerateContact
+from .models import Application, Page, Location, Banner, Campaign, Installation, User, Contact, ContactSource, GenerateContact, SMSBlast, ContactAndSMS
 
 # Create your views here.
 @method_decorator([login_required, developer_required], name='dispatch')
@@ -1269,19 +1270,24 @@ class ContactView(View):
             
             content['contact_id'] = contact.id
             content['contact_name'] = contact.name
+
             if contact.source.source == 'random':
                 content['contact_source'] = 'Generate Nomor secara Acak'
             else:
                 content['contact_source'] = 'Upload File .csv'
+
             content['contact_is_archived'] = contact.is_archived
 
-            numbers = os.path.join(settings.BASE_DIR, os.path.normpath(str(contact.numbers)))
-            
-            with open(numbers, 'rb') as f:
-                itemlist = pickle.load(f)
-                f.close()
+            if contact.numbers:
+                numbers = os.path.join(settings.BASE_DIR, os.path.normpath(str(contact.numbers)))
+                
+                with open(numbers, 'rb') as f:
+                    itemlist = pickle.load(f)
+                    f.close()
 
-            content['contact_count'] = len(itemlist)
+                content['contact_count'] = len(itemlist)
+            else:
+                content['contact_count'] = None
 
             contents.append(content)
             contact_names.append(contact.name)
@@ -1423,12 +1429,15 @@ class AddContactGroupView(View):
                     f.close()
             
             if csvBool == 'True':
-                print('csv')
                 return redirect(reverse('app:smsblast_contact'))
 
             return HttpResponse(status=200)
 
         else:
+            print(formset_generaterandomnumber.errors)
+            print(form_contact.errors)
+            print(form_contactsource.errors)
+
             context = {
                 'formset_generaterandomnumber' : formset_generaterandomnumber,
                 'form_contact' : form_contact,
@@ -1494,8 +1503,18 @@ class AddRandomGeneratedNumbersView(View):
 
         else:
             contact_instance.delete()
+            print(formset_generaterandomnumber.errors)
 
-            return redirect(reverse('app:smsblast_add_contact'))
+            context = {
+                'form_generate_fail' : True,
+                'contact_name' : contact_name,
+                'formset_generaterandomnumber' : formset_generaterandomnumber,
+                'form_contact' : form_contact,
+                'form_contactsource' : form_contactsource,
+                'form_uploadcsv' : form_uploadcsv,
+            }
+
+            return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
 class GenerateRandomContactView(View):
@@ -1637,7 +1656,15 @@ class TempCSVContactView(View):
         return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
-class AddSMSBlast(View):
+class SMSBlastView(View):
+    initial = {'key', 'value'}
+    template_name = 'app/smsblast.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class AddSMSBlastView(View):
     form_class = {
         'form_smsblast' : SMSBlastForm,
     }
@@ -1653,9 +1680,41 @@ class AddSMSBlast(View):
         }
 
         return render(request, self.template_name, context)
+    
+    def post(self, request):
+        form_smsblast = self.form_class['form_smsblast'](request.POST or None)
+
+        if form_smsblast.is_valid():
+            to_numbers = form_smsblast.cleaned_data['to_numbers']
+            message_title = form_smsblast.cleaned_data['message_title']
+            message_text = form_smsblast.cleaned_data['message_text']
+            send_date = form_smsblast.cleaned_data['send_date']
+            send_time = form_smsblast.cleaned_data['send_time']
+
+            if send_date == None and send_time == None:
+                send_date = datetime.datetime.now().date()
+                send_time = datetime.datetime.now().time().replace(microsecond=0)
+
+            for name in to_numbers:
+                contact_instance = Contact.objects.get(name=name)
+
+                smsblast_instance = SMSBlast(message_title=message_title, message_text=message_text, send_date=send_date, send_time=send_time)
+                smsblast_instance.save()
+
+                contactandsms_instance = ContactAndSMS(contact=contact_instance, smsblast=smsblast_instance)
+                contactandsms_instance.save()
+
+            return redirect(reverse('app:smsblast_add_smsblast'))
+        
+        else:
+            context = {
+                'form_smsblast' : form_smsblast,
+            }
+
+            return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
-class ViewSMSBlastTempContacts(View):
+class SMSBlastTempContactsView(View):
     initial = {'key', 'value'}
     template_name = 'app/add_smsblast_temp_contacts.html'
 

@@ -222,7 +222,7 @@ status_choices = (
 class SMSBlast(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
     message_title = models.CharField(max_length=100)
-    message_text = models.TextField()
+    message_text = models.CharField(max_length=160)
     send_date = models.DateField(null=True, blank=True)
     send_time = models.TimeField(null=True, blank=True)
 
@@ -231,7 +231,7 @@ class SMSBlast(models.Model):
 
     def save(self, **kwargs):
         if not self.id:
-            max = SMSBlastStatus.objects.aggregate(id_max=Max('id'))['id_max']
+            max = SMSBlast.objects.aggregate(id_max=Max('id'))['id_max']
             if max is not None:
                 max = max[-3:]
                 max = int(max)
@@ -239,4 +239,21 @@ class SMSBlast(models.Model):
             else:
                 max = 1
             self.id = "SMS" + "{0:03d}".format(max)
+        super().save(*kwargs)
+
+class ContactAndSMS(models.Model):
+    id = models.CharField(primary_key=True, editable=False, max_length=12)
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='smsncon_contact')
+    smsblast = models.ForeignKey(SMSBlast, on_delete=models.CASCADE, related_name='smsncon_smsblast')
+
+    def save(self, **kwargs):
+        if not self.id:
+            max = ContactAndSMS.objects.aggregate(id_max=Max('id'))['id_max']
+            if max is not None:
+                max = max[-3:]
+                max = int(max)
+                max += 1
+            else:
+                max = 1
+            self.id = "CONANDSMS" + "{0:03d}".format(max)
         super().save(*kwargs)

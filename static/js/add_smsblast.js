@@ -84,7 +84,11 @@ $('input:radio[name="send_now"]').change(function () {
         $('#send_now_div').hide();
         $('#id_send_date').val('');
         $('#id_send_time').val('');
+        $('#id_send_date').prop('required', false);
+        $('#id_send_time').prop('required', false);
     } else if ($('#send_now_no').is(':checked')) {
         $('#send_now_div').show();
+        $('#id_send_date').prop('required', true);
+        $('#id_send_time').prop('required', true);
     }
 });
