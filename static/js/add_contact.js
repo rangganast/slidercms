@@ -128,7 +128,6 @@ function addContact(input) {
     newElement.find('.deleteContactBtn').show();
 
     $('#id_form-TOTAL_FORMS').val(id + 2);
-    $('#id_form-INITIAL_FORMS').val(id + 2);
 
     $(selector).find('.addContactBtn').hide();
     $(selector).find('.deleteContactBtn').hide();
@@ -150,7 +149,6 @@ function deleteContact(input) {
     }
 
     $('#id_form-TOTAL_FORMS').val(id);
-    $('#id_form-INITIAL_FORMS').val(id);
 }
 
 function addNametoURLandInputs(input) {
@@ -187,7 +185,7 @@ function addNametoURLandInputs(input) {
     });
 }
 
-function submitForms() {    
+function submitForms() {
     if ($('#random-generate').is(':hidden')) {
         $('#contactGroupFormBtn').click();
     } else if ($('#csv-generate').is(':hidden')) {

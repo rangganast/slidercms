@@ -295,27 +295,40 @@ class GenerateRandomNumberForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(GenerateRandomNumberForm, self).__init__(*args, **kwargs)
-        self.fields['first_code'].error_messages = {'required': 'Field Kode Awal tidak boleh kosong (required).'}
-        self.fields['digits'].error_messages = {'required': 'Field Jumlah digit nomor tidak boleh kosong (required).'}
-        self.fields['generate_numbers'].error_messages = {'required': 'Field Jumlah nomor yang akan di Generate tidak boleh kosong (required).'}
+        self.fields['first_code'].required = False
+        self.fields['digits'].required = False
+        self.fields['generate_numbers'].required = False
 
     def clean_first_code(self):
         first_code = self.cleaned_data.get('first_code', False)
 
-        if first_code != None:
+        if first_code != '':
             if first_code[:2] != '08':
                 raise forms.ValidationError(_('Kode Awal harus berawalan 08.'))
+        else:
+            raise forms.ValidationError(_('Field Kode Awal tidak boleh kosong.'))
+
 
         return first_code
 
     def clean_digits(self):
         digits = self.cleaned_data.get('digits', False)
 
-        if digits != None:
+        if digits != '':
             if int(digits) < 9 or int(digits) > 14:
                 raise forms.ValidationError(_('Jumlah digit nomor harus diisi dengan antara angka 9 dan 14.'))
-
+        else:
+            raise forms.ValidationError(_('Field Jumlah digit nomor tidak boleh kosong.'))
+    
         return digits
+
+    def clean_generate_numbers(self):
+        generate_numbers = self.cleaned_data.get('generate_numbers', False)
+
+        if generate_numbers == '':
+            raise forms.ValidationError(_('Field Jumlah nomor yang di Generate tidak boleh kosong.'))
+
+        return generate_numbers
 
 GenerateRandomNumberFormSet = modelformset_factory(GenerateContact, form=GenerateRandomNumberForm, extra=1, can_delete=True)
 

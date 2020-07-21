@@ -66,6 +66,8 @@
                         <label for="">{{form_generate.first_code.label}}</label>
                         <div class="input-group">
                             {{form_generate.first_code}}
+                        </div>
+                        <div class="input-group">
                             <small id="first_code-{{forloop.counter0}}-inaccurate" class="first_code-inaccurate"
                                 style="color: red; display: none;">Kode Awal harus berawalan 08.</small>
 
@@ -80,6 +82,8 @@
                         <label for="">{{form_generate.digits.label}}</label>
                         <div class="input-group">
                             {{form_generate.digits}}
+                        </div>
+                        <div class="input-group">
                             <small id="digits-{{forloop.counter0}}-inaccurate" class="digits-inaccurate"
                                 style="color: red; display: none;">Jumlah digit nomor harus diisi dengan antara angka 9
                                 dan 14.</small>
@@ -95,6 +99,8 @@
                         <label for="">{{form_generate.generate_numbers.label}}</label>
                         <div class="input-group">
                             {{form_generate.generate_numbers}}
+                        </div>
+                        <div class="input-group">
                             <small id="generate_numbers-{{forloop.counter0}}-empty" class="generate_numbers-inaccurate"
                                 style="color: red; display: none;">Jumlah nomor yang akan di Generate tidak boleh
                                 kosong.</small>
@@ -157,7 +163,8 @@
                     for="{{form_uploadcsv.upload_csv.id_for_label}}">{{form_uploadcsv.upload_csv.label}}</label>
                 <div class="col-sm-10">
                     {{form_uploadcsv.upload_csv}}
-
+                </div>
+                <div class="col-sm-10">
                     {% if form_uploadcsv.errors %}
                     {% for error in form_uploadcsv.upload_csv.errors %}
                     <small style="color: red;">{{error}}</small>
@@ -203,12 +210,18 @@
 {% block script %}
 <script type="text/javascript">
     $(document).ready(function() {
+
         {% if form_generate_fail %}
         window.history.pushState('', '', '/smsblast/add_contact');
         $('#id_source').val('random').attr('selected', true)
-        $('#delete-' + ($('#id_form-TOTAL_FORMS').val() - 1) + '-contact').show();
+
+        var showdeleteId = $('#id_form-TOTAL_FORMS').val() - 1
+        if (showdeleteId != 0) {
+            $('#delete-' + ($('#id_form-TOTAL_FORMS').val() - 1) + '-contact').show();
+        }
         {% endif %}
-        $('#id_form-INITIAL_FORMS').val($('#id_form-TOTAL_FORMS').val());
+
+        $('#id_form-INITIAL_FORMS').val(0);
         $('#sliderManagement').removeClass('menu-open');
         $('a#contactManagement').addClass('active');
 

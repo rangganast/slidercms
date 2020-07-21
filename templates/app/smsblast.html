@@ -4,7 +4,7 @@
 
 {% block title %}SMS Blast - Manajemen Kontak{% endblock title %}
 
-{% block style %}<link rel="stylesheet" href="{% static 'css/contact.css' %}">{% endblock style %}
+{% block style %}<link rel="stylesheet" href="{% static 'css/smsblast.css' %}">{% endblock style %}
 
 {% block contentheader %}Manajemen Kontak{% endblock contentheader %}
 
@@ -18,23 +18,25 @@
         <div class="col input-wrapper">
             <div class="row">
                 <div class="col-sm-3 no-padding">
-                    <label for="contactSourceFilter"><small>Cari Sumber Kontak</small></label>
+                    <label for="contactGroupFilter"><small>Cari Grup Kontak</small></label>
                     <div class="input-group">
-                        <select id="contactSourceFilter" class="form-control">
-                            <option value=""></option>
-                            <option value="Generate Nomor secara Acak">Generate Nomor secara Acak</option>
-                            <option value="Upload File .csv">Upload File .csv</option>
+                        <select id="contactGroupFilter" class="form-control">
                         </select>
                     </div>
                 </div>
                 <div class="col-sm-3 no-padding">
-                    <label for="contactGroupFilter"><small>Cari Grup Kontak</small></label>
+                    <label for=""><small>Cari Tanggal Pengiriman</small></label>
                     <div class="input-group">
-                        <select id="contactGroupFilter" class="form-control">
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-sm-3 no-padding">
+                    <label for="sentFilter"><small>Cari Status Pengiriman</small></label>
+                    <div class="input-group">
+                        <select id="sentFilter" class="form-control">
                             <option value=""></option>
-                            {% for name in contact_names %}
-                            <option value="{{name}}">{{name}}</option>
-                            {% endfor %}
+                            <option value="sent">Sudah Dikirim</option>
+                            <option value="notsent">Belum Dikirim</option>
                         </select>
                     </div>
                 </div>
@@ -61,13 +63,16 @@
 
 </fieldset>
 
-<table id="contactTable" class="table table-striped table-bordered mt-3">
+<table id="smsTable" class="table table-striped table-bordered mt-3">
     <thead>
         <tr>
             <th style="vertical-align: middle; text-align: center;" scope="col">No</th>
+            <th style="vertical-align: middle; text-align: center;" scope="col">Judul Pesan</th>
             <th style="vertical-align: middle; text-align: center;" scope="col">Nama Grup Kontak</th>
-            <th style="vertical-align: middle; text-align: center;" scope="col">Sumber Kontak</th>
-            <th style="vertical-align: middle; text-align: center;" scope="col">Jumlah Nomor yang di Generate</th>
+            <th style="vertical-align: middle; text-align: center;" scope="col">Jumlah SMS</th>
+            <th style="vertical-align: middle; text-align: center;" scope="col">Tanggal Pengiriman</th>
+            <th style="vertical-align: middle; text-align: center;" scope="col">Jam Kirim</th>
+            <th style="vertical-align: middle; text-align: center;" scope="col">Status</th>
             <th style="vertical-align: middle; text-align: center;"  scope="col">Aksi</th>
         </tr>
     </thead>
@@ -76,29 +81,33 @@
         {% for content in contents  %}
         <tr>
             <td style="vertical-align: middle; text-align: center;">{{forloop.counter}}</td>
-            <td>{{content.contact_name}}</td>
-            <td>{{content.contact_source}}</td>
-            <td style="vertical-align: middle; text-align: center;">{{content.contact_count}}</td>
+            <td>{{content.message_title}}</td>
+            <td>
+                <ul>
+                    {% for group in content.contact_groups %}
+                    <li class="table_li">{{group}}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>{{content.sms_count}}</td>
+            <td>{{content.send_date|date:"d/m/Y"}}</td>
+            <td>{{content.send_time|time:"H:i:s"}}</td>
+            <td style="vertical-align: middle; text-align: center;">{{content.status}}</td>
             <td style="vertical-align: middle; text-align: center;">
                 <span class="spanFormat">
-                    <a href="{% url 'app:smsblast_detail_contact' pk=content.contact_id %}">
-                        <button type="button" class="btn btn-sm btn-primary">Lihat Nomor</button>
+                    <a href="">
+                        <button type="button" class="btn btn-sm btn-primary">Detail</button>
                     </a>
                 </span>
                 <span class="spanFormat">
-                    <button type="button" class="btn btn-sm btn-warning">Update</button>
+                    <a href="">
+                        <button type="button" class="btn btn-sm btn-warning">Update</button>
+                    </a>
                 </span>
                 <span class="spanFormat">
-                    <form action="{% url 'app:smsblast_archive_contact' pk=content.contact_id %}" method="POST">
-                        {% csrf_token   %}
-                        <button type="button" class="btn btn-sm btn-success">{% if content.contact_is_archived == True %}Unarchive{% else %}Archive{% endif %}</button>
-                    </form>
-                </span>
-                <span class="spanFormat">
-                    <form action="{% url 'app:smsblast_delete_contact' pk=content.contact_id %}" method="POST">
-                        {% csrf_token %}
+                    <a href="">
                         <button type="button" class="btn btn-sm btn-danger">Hapus</button>
-                    </form>
+                    </a>
                 </span>
             </td>
         </tr>
@@ -108,5 +117,5 @@
 {% endblock content %}
 
 {% block script %}
-<script src="{% static 'js/contact.js' %}"></script>
+<script src="{% static 'js/smsblast.js' %}"></script>
 {% endblock script %}

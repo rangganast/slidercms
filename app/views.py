@@ -1661,7 +1661,39 @@ class SMSBlastView(View):
     template_name = 'app/smsblast.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        contents = []
+        all_sms = SMSBlast.objects.all()
+
+        for sms in all_sms:
+            conandsms = ContactAndSMS.objects.filter(smsblast=sms)
+
+            contacts = []
+            sms_count = 0
+            for con in conandsms:
+                contacts.append(con.contact.name)
+
+                with open(str(con.contact.numbers), 'rb') as f:
+                    contact = pickle.load(f)
+                    f.close()
+
+                sms_count += len(contact)
+
+            con_datetime = datetime.datetime.combine(sms.send_date, sms.send_time)
+            now_datetime = datetime.datetime.now()
+
+            status = ''
+            if con_datetime < now_datetime:
+                status = 'Sudah Dikirim'
+            else:
+                status = 'Belum Dikirim'
+
+            contents.append({'message_title' : sms.message_title, 'contact_groups' : contacts, 'sms_count' : sms_count, 'send_date' : sms.send_date, 'send_time' : sms.send_time, 'status' : status})
+
+        context = {
+            'contents' : contents,
+        }
+
+        return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
 class AddSMSBlastView(View):
@@ -1704,7 +1736,7 @@ class AddSMSBlastView(View):
                 contactandsms_instance = ContactAndSMS(contact=contact_instance, smsblast=smsblast_instance)
                 contactandsms_instance.save()
 
-            return redirect(reverse('app:smsblast_add_smsblast'))
+            return redirect(reverse('app:smsblast'))
         
         else:
             context = {
