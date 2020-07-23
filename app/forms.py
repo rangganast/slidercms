@@ -336,7 +336,7 @@ class UploadCSVForm(forms.Form):
     upload_csv = forms.FileField(label='Pilih File Nomor', widget=forms.ClearableFileInput({'class' : 'form-control', 'accept' : '.csv'}))
 
 class SMSBlastForm(forms.ModelForm):
-    choices = tuple([(contact.name, contact.name) for contact in Contact.objects.filter(is_archived=False)])
+    choices = tuple([(contact.name, contact.name) for contact in Contact.objects.all()])
     to_numbers = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), label='Nomor Tujuan', choices=choices)
     send_date = forms.DateField(input_formats=['%d/%m/%Y'], widget=forms.DateInput(attrs={'class' : 'form-control', 'autocomplete' : 'off', 'onclick' : 'load_datepicker(this)'}, format=('%d/%m/%Y')), label='Tanggal Pengiriman', required=False)
 

@@ -42,7 +42,11 @@
                 <select id="app_filter" class="form-control">
                     <option value="all_apps">Semua Aplikasi</option>
                     {% for key, app in apps.items %}
+                    
+                    {% if app == 'Holahalo Website' %}
                     <option value="{{key}}">{{app}}</option>
+                    {% endif %}
+                        
                     {% endfor %}
                 </select>
             </div>
@@ -61,7 +65,7 @@
 
 </fieldset>
 
-<table id="keywordTable" class="table table-sm table-striped table-bordered nowrap">
+<table style="table-layout: fixed; width: 100%;" id="keywordTable" class="table table-sm table-striped table-bordered wrap">
     <thead>
         <tr>                    
             <th>No</th>
@@ -77,17 +81,18 @@
         {% for item in counts %}
         <tr>
             <td style="vertical-align:middle; text-align:center;">{{forloop.counter}}</td>
-            <td style="vertical-align:middle;">{{item.keyword}}</td>
+            <td style="vertical-align:middle; word-wrap:break-word">{{item.keyword}}
+            </td>
             <td style="vertical-align:middle;">
                 <ul>
                     <li class="holahalo_website">
                         Holahalo Website: {{item.holahalo_website}}
                     </li>
                     <li class="holahalo_mobile_website">
-                        Holahalo Mobile Website: {{item.holahalo_mobile_website}}
+                        Holahalo Website: {{item.holahalo_mobile_website}}
                     </li>
                     <li class="holahalo_android">
-                        Holahalo Android: {{item.holahalo_android}}
+                        Holahalo Website: {{item.holahalo_android}}
                     </li>
                 </ul>
             </td>
@@ -97,7 +102,7 @@
                 </a>
             </td>
             <td style="vertical-align:middle; text-align:center;">{{item.keyword_count}}</td>
-            <td>
+            <td style="vertical-align:middle;">
                 <ul>
                     <li class="scraperesult">
                         Tanggal: {{item.lastscrape_date|default_if_none:""}}
@@ -170,6 +175,16 @@ $(document).ready(function () {
 table = $('#keywordTable').DataTable({
     bInfo: false,
     aaSorting: [],
+    autoWidth: false,
+    columns: [
+    { "width": "5%" },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
     dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
 });
 

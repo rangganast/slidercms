@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'django_rq',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -73,6 +75,20 @@ TEMPLATES = [
         },
     },
 ]
+
+# REDIS_QUEUE
+RQ_QUEUES = {  
+    'default': {
+        'HOST': '0.0.0.0',
+        'PORT': 6379,
+        'DB': 0,
+        'QUEUE_CLASS' : 'rq.queue.Queue'
+    }
+}
+
+RQ = {
+    'DEFAULT_RESULT_TTL': 5000,
+}
 
 WSGI_APPLICATION = 'slidercms.wsgi.application'
 

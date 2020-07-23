@@ -7,6 +7,8 @@ import shutil
 import io
 import pickle
 import csv
+import pytz
+import django_rq
 from wsgiref.util import FileWrapper
 from random import choice
 from string import digits
@@ -30,7 +32,7 @@ from django.template.loader import render_to_string
 from . import services
 from .decorators import developer_required, marketing_required, superuser_required
 from .forms import AppForm, ApplicationForm, PageFormSet, LocationFormSet, BannerForm, CampaignFormSet, InstallationFormSet, UserForm, KeywordDateRangeForm, ContactForm, ContactSourceForm, GenerateRandomNumberFormSet, UploadCSVForm, SMSBlastForm
-from .models import Application, Page, Location, Banner, Campaign, Installation, User, Contact, ContactSource, GenerateContact, SMSBlast, ContactAndSMS
+from .models import Application, Page, Location, Banner, Campaign, Installation, User, Contact, ContactSource, GenerateContact, SMSBlast, ContactAndSMS, SMSBlastJob
 
 # Create your views here.
 @method_decorator([login_required, developer_required], name='dispatch')
@@ -1240,7 +1242,7 @@ class KeywordIpDetailPage(View):
             
         return render(request, self.template_name, context)
 
-@method_decorator([login_required, superuser_required], name='dispatch')
+@method_decorator([login_required, marketing_required], name='dispatch')
 class KeywordScrapeView(View):
     def post(self, request, pk):
         keyword = request.POST.get('keyword')
@@ -1403,28 +1405,28 @@ class AddContactGroupView(View):
 
             if csvBool == 'True':
                 file_name = name.lower().replace(' ', '-')
-                shutil.copy('pickles/contacts_csv_temp.p', 'pickles/' + file_name + '.p')
+                shutil.copy('pickles/contact/contacts_csv_temp.p', 'pickles/contact/' + file_name + '.p')
 
             contactsource_instance = ContactSource.objects.get(source=source)
 
             contact_instance = Contact(name=name, source=contactsource_instance)
             if csvBool == 'True':
-                contact_instance.numbers.name = 'pickles/' + file_name + '.p'
+                contact_instance.numbers.name = 'pickles/contact/' + file_name + '.p'
 
             contact_instance.save()
 
             if csvBool == 'True':
-                with open('pickles/' + file_name + '.p', 'rb') as f:
+                with open('pickles/contact/' + file_name + '.p', 'rb') as f:
                     itemlist = pickle.load(f)
                     f.close()
 
-                with open('pickles/all_contacts.p', 'rb') as f:
+                with open('pickles/contact/all_contacts.p', 'rb') as f:
                     all_contacts = pickle.load(f)
                     f.close()
 
                 all_contacts.extend(itemlist)
 
-                with open('pickles/all_contacts.p', 'wb') as f:
+                with open('pickles/contact/all_contacts.p', 'wb') as f:
                     pickle.dump(all_contacts, f)
                     f.close()
             
@@ -1434,9 +1436,6 @@ class AddContactGroupView(View):
             return HttpResponse(status=200)
 
         else:
-            print(formset_generaterandomnumber.errors)
-            print(form_contact.errors)
-            print(form_contactsource.errors)
 
             context = {
                 'formset_generaterandomnumber' : formset_generaterandomnumber,
@@ -1470,7 +1469,7 @@ class AddRandomGeneratedNumbersView(View):
         
         if formset_generaterandomnumber.is_valid():
             file_name = contact_name.lower().replace(' ', '-')
-            shutil.copy('pickles/contacts_random_temp.p', 'pickles/' + file_name + '.p')
+            shutil.copy('pickles/contact/contacts_random_temp.p', 'pickles/contact/' + file_name + '.p')
 
             generaterandomform = formset_generaterandomnumber.cleaned_data
 
@@ -1482,20 +1481,20 @@ class AddRandomGeneratedNumbersView(View):
                 generatecontact_instance = GenerateContact(first_code=first_code, digits=digits, generate_numbers=generate_numbers, contact=contact_instance)
                 generatecontact_instance.save()
 
-            contact_instance.numbers = 'pickles/' + file_name + '.p'
+            contact_instance.numbers = 'pickles/contact/' + file_name + '.p'
             contact_instance.save()
 
-            with open('pickles/' + file_name + '.p', 'rb') as f:
+            with open('pickles/contact/' + file_name + '.p', 'rb') as f:
                 itemlist = pickle.load(f)
                 f.close()
 
-            with open('pickles/all_contacts.p', 'rb') as f:
+            with open('pickles/contact/all_contacts.p', 'rb') as f:
                 all_contacts = pickle.load(f)
                 f.close()
 
             all_contacts.extend(itemlist)
 
-            with open('pickles/all_contacts.p', 'wb') as f:
+            with open('pickles/contact/all_contacts.p', 'wb') as f:
                 pickle.dump(all_contacts, f)
                 f.close()
 
@@ -1551,10 +1550,10 @@ class GenerateRandomContactView(View):
 
                     generate_numbers -= 1
 
-            if os.path.isfile('pickles/contacts_random_temp.p'):
-                os.remove('pickles/contacts_random_temp.p')
+            if os.path.isfile('pickles/contact/contacts_random_temp.p'):
+                os.remove('pickles/contact/contacts_random_temp.p')
 
-            with open('pickles/contacts_random_temp.p', 'wb') as f:
+            with open('pickles/contact/contacts_random_temp.p', 'wb') as f:
                 pickle.dump(contacts, f)
                 f.close()
 
@@ -1594,10 +1593,10 @@ class GenerateCSVContactView(View):
 
             del contacts[0]
 
-            if os.path.isfile('pickles/contacts_csv_temp.p'):
-                os.remove('pickles/contacts_csv_temp.p')
+            if os.path.isfile('pickles/contact/contacts_csv_temp.p'):
+                os.remove('pickles/contact/contacts_csv_temp.p')
 
-            with open('pickles/contacts_csv_temp.p', 'wb') as f:
+            with open('pickles/contact/contacts_csv_temp.p', 'wb') as f:
                 pickle.dump(contacts, f)
                 f.close()
 
@@ -1618,7 +1617,7 @@ class TempRandomContactView(View):
     def get(self, request):
         name = request.GET.get('name')
 
-        with open('pickles/contacts_random_temp.p', 'rb') as f:
+        with open('pickles/contact/contacts_random_temp.p', 'rb') as f:
             contacts = pickle.load(f)
             f.close()
         
@@ -1641,7 +1640,7 @@ class TempCSVContactView(View):
     def get(self, request):
         name = request.GET.get('name')
 
-        with open('pickles/contacts_csv_temp.p', 'rb') as f:
+        with open('pickles/contact/contacts_csv_temp.p', 'rb') as f:
             contacts = pickle.load(f)
         
         count = len(contacts)
@@ -1714,6 +1713,9 @@ class AddSMSBlastView(View):
         return render(request, self.template_name, context)
     
     def post(self, request):
+        scheduler = django_rq.get_scheduler('default')
+        tz = pytz.timezone('Asia/Jakarta')
+
         form_smsblast = self.form_class['form_smsblast'](request.POST or None)
 
         if form_smsblast.is_valid():
@@ -1729,12 +1731,31 @@ class AddSMSBlastView(View):
 
             for name in to_numbers:
                 contact_instance = Contact.objects.get(name=name)
+                file_name = contact_instance.numbers
+
+                execute_time = (datetime.datetime.now() + datetime.timedelta(minutes=1)).time()
+
+                date_time = datetime.datetime.combine(send_date, execute_time)
+                local_datetime = tz.localize(date_time, is_dst=None)
+                utc_datetime = local_datetime.astimezone(pytz.utc)
 
                 smsblast_instance = SMSBlast(message_title=message_title, message_text=message_text, send_date=send_date, send_time=send_time)
                 smsblast_instance.save()
 
                 contactandsms_instance = ContactAndSMS(contact=contact_instance, smsblast=smsblast_instance)
                 contactandsms_instance.save()
+
+                smsjob_instance = SMSBlastJob(smsblast=smsblast_instance)
+                smsjob_instance.save()
+
+                if file_name:
+                    with open(str(file_name), 'rb') as f:
+                        contacts = pickle.load(f)
+                        f.close()
+
+                    job = scheduler.schedule(scheduled_time=utc_datetime, func=services.sms_blast, args=[file_name, name, message_text, contacts, send_date, send_time, smsjob_instance.id], repeat=0)
+                    smsjob_instance.job_id = job.id
+                    smsjob_instance.save()
 
             return redirect(reverse('app:smsblast'))
         

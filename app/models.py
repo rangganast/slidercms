@@ -177,7 +177,7 @@ class Contact(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
     source = models.ForeignKey(ContactSource, on_delete=models.CASCADE, related_name='contactsources')
     name = models.CharField(max_length=100, unique=True)
-    numbers = models.FileField(upload_to='csv/')
+    numbers = models.FileField(upload_to='pickles/contact/')
     is_archived = models.BooleanField(default=False)
 
     def __str__(self):
@@ -256,4 +256,45 @@ class ContactAndSMS(models.Model):
             else:
                 max = 1
             self.id = "CONANDSMS" + "{0:03d}".format(max)
+        super().save(*kwargs)
+
+class SMSBlastJob(models.Model):
+    id = models.CharField(primary_key=True, editable=False, max_length=9)
+    job_id = models.CharField(max_length=100, blank=True, null=True)
+    smsblast = models.ForeignKey(SMSBlast, on_delete=models.CASCADE, related_name='smsblast')
+
+    def __str__(self):
+        return self.job_id
+
+    def save(self, **kwargs):
+        if not self.id:
+            max = SMSBlastJob.objects.aggregate(id_max=Max('id'))['id_max']
+            if max is not None:
+                max = max[-3:]
+                max = int(max)
+                max += 1
+            else:
+                max = 1
+            self.id = "SMSJOB" + "{0:03d}".format(max)
+        super().save(*kwargs)
+
+class SMSStatus(models.Model):
+    id = models.CharField(primary_key=True, editable=False, max_length=10)
+    job = models.ForeignKey(SMSBlastJob, on_delete=models.CASCADE, related_name='job_status')
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='contact_status')
+    status = models.FileField(upload_to='pickles/status/')
+
+    def __str__(self):
+        return self.job_id
+
+    def save(self, **kwargs):
+        if not self.id:
+            max = SMSStatus.objects.aggregate(id_max=Max('id'))['id_max']
+            if max is not None:
+                max = max[-3:]
+                max = int(max)
+                max += 1
+            else:
+                max = 1
+            self.id = "SMSSTAT" + "{0:03d}".format(max)
         super().save(*kwargs)

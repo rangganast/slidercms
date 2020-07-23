@@ -7,6 +7,7 @@ from api.router import router
 urlpatterns = [
     path('', include('app.urls', namespace='app')),
     path('admin/', admin.site.urls),
+    path('django-rq/', include('django_rq.urls')),
     path('api/v1/', include(router.urls)),
 ]
 

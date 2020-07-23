@@ -2,8 +2,11 @@ import requests
 import json
 import datetime
 import time
+import pickle
 from decouple import config
-from io import BytesIO
+from io import StringIO, BytesIO
+from lxml import etree
+from .models import SMSStatus, SMSBlast, SMSBlastJob, Contact
 
 token = config('TOKEN')
 domain = config('DOMAIN')
@@ -101,13 +104,13 @@ def post_products_total(id, keyword):
     url =  domain + '/api/v1/keyword/scrape'
     products_total_url = 'https://qaweb.holahalo.dev/api/v1/public/search-product?q=' + keyword
     r = requests.get(products_total_url, headers={'Content-Type': 'application/json'}, params={'q' : keyword})
-
+    
     products_data = r.json()
 
     products_num = 0
 
     if(products_data):
-        products_num = len(products_data['data'])
+        products_num = products_data['meta']['total']
 
     if id:
         data = {
@@ -129,5 +132,31 @@ def export_excel(date1, date2, app):
 
     return r.content
 
-def sms_blast(message, to_numbers):
-    pass
+def sms_blast(file_name, name, message_text, contacts, send_date, send_time, job_instance_id):
+    message_text = message_text.replace(' ', '+')
+
+    smsjob_instance = SMSBlastJob.objects.get(pk=job_instance_id)
+    contact_instance = Contact.objects.get(name=name)
+    statuses = []
+    
+    for contact in contacts:
+        sms_api_url = 'http://api-sms.nadyne.com/sms.php?user=regholahalo&pwd=reg778899&sender=HOLAHALO&msisdn=62' + contact[1:] + '&message=' + message_text + '&desc=pesanhhmarketing'
+        r = requests.get(sms_api_url)
+
+        file_like_xml = BytesIO(r.content)
+        response = etree.parse(file_like_xml)
+        message = response.getroot()
+        
+        status = message.find('Status').text
+
+        statuses.append(status)
+
+    with open('pickles/status/' + str(file_name).split('/')[-1], 'wb') as f:
+        pickle.dump(statuses, f)
+        f.close()
+
+    smsstatus_instance = SMSStatus(job=smsjob_instance, contact=contact_instance)
+    smsstatus_instance.status.name = 'pickles/status/' + str(file_name).split('/')[-1]
+    smsstatus_instance.save()
+
+    return statuses
