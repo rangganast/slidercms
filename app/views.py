@@ -1753,7 +1753,7 @@ class AddSMSBlastView(View):
                         contacts = pickle.load(f)
                         f.close()
 
-                    job = scheduler.schedule(scheduled_time=utc_datetime, func=services.sms_blast, args=[file_name, name, message_text, contacts, send_date, send_time, smsjob_instance.id], repeat=0)
+                    job = scheduler.schedule(scheduled_time=utc_datetime, func=services.sms_blast, args=[name, message_title, message_text, contacts, send_date, send_time, smsjob_instance.id], repeat=0)
                     smsjob_instance.job_id = job.id
                     smsjob_instance.save()
 

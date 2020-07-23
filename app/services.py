@@ -132,7 +132,7 @@ def export_excel(date1, date2, app):
 
     return r.content
 
-def sms_blast(file_name, name, message_text, contacts, send_date, send_time, job_instance_id):
+def sms_blast(name, message_title, message_text, contacts, send_date, send_time, job_instance_id):
     message_text = message_text.replace(' ', '+')
 
     smsjob_instance = SMSBlastJob.objects.get(pk=job_instance_id)
@@ -151,12 +151,12 @@ def sms_blast(file_name, name, message_text, contacts, send_date, send_time, job
 
         statuses.append(status)
 
-    with open('pickles/status/' + str(file_name).split('/')[-1], 'wb') as f:
+    with open('pickles/status/' + message_title.replace(' ', '-') + '.p', 'wb') as f:
         pickle.dump(statuses, f)
         f.close()
 
     smsstatus_instance = SMSStatus(job=smsjob_instance, contact=contact_instance)
-    smsstatus_instance.status.name = 'pickles/status/' + str(file_name).split('/')[-1]
+    smsstatus_instance.status.name = 'pickles/status/' + message_title.replace(' ', '-') + '.p'
     smsstatus_instance.save()
 
     return statuses

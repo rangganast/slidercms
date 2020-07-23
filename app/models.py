@@ -221,7 +221,7 @@ status_choices = (
 
 class SMSBlast(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
-    message_title = models.CharField(max_length=100)
+    message_title = models.CharField(max_length=100, unique=True)
     message_text = models.CharField(max_length=160)
     send_date = models.DateField(null=True, blank=True)
     send_time = models.TimeField(null=True, blank=True)
