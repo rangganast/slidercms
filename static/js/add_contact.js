@@ -90,6 +90,7 @@ $('#csvForm').submit(function (event){
     setTimeout(function () {
         $('#csvNumberSpinner').hide();
         $('#viewCSVNumbers').prop('disabled', false);
+        $('#csv-inaccurate').hide();
     }, 1000)
 });
 
@@ -107,10 +108,12 @@ function addContact(input) {
 
     newElement.find('#first_code-' + id + '-inaccurate').hide()
     newElement.find('#first_code-' + id + '-inaccurate').attr('id', 'first_code-' + (id + 1) + '-inaccurate')
+    newElement.find('.first_code-backend-error').hide();
     
     newElement.find('#id_form-' + id + '-digits').val(null);
     newElement.find('#id_form-' + id + '-digits').attr('name', 'form-' + (id + 1) + '-digits')
     newElement.find('#id_form-' + id + '-digits').attr('id', 'id_form-' + (id + 1) + '-digits')
+    newElement.find('.digits-backend-error').hide();
 
     newElement.find('#digits-' + id + '-inaccurate').hide()
     newElement.find('#digits-' + id + '-inaccurate').attr('id', 'digits-' + (id + 1) + '-inaccurate')
@@ -118,6 +121,7 @@ function addContact(input) {
     newElement.find('#id_form-' + id + '-generate_numbers').val(null);
     newElement.find('#id_form-' + id + '-generate_numbers').attr('name', 'form-' + (id + 1) + '-generate_numbers')
     newElement.find('#id_form-' + id + '-generate_numbers').attr('id', 'id_form-' + (id + 1) + '-generate_numbers')
+    newElement.find('.generate_numbers-backend-error').hide();
 
     newElement.find('#generate_numbers-' + id + '-inaccurate').hide()
     newElement.find('#generate_numbers-' + id + '-inaccurate').attr('id', 'generate_numbers-' + (id + 1) + '-inaccurate')
@@ -128,6 +132,7 @@ function addContact(input) {
     newElement.find('.deleteContactBtn').show();
 
     $('#id_form-TOTAL_FORMS').val(id + 2);
+    $('#id_form-INITIAL_FORMS').val(id + 2);
 
     $(selector).find('.addContactBtn').hide();
     $(selector).find('.deleteContactBtn').hide();
@@ -149,6 +154,7 @@ function deleteContact(input) {
     }
 
     $('#id_form-TOTAL_FORMS').val(id);
+    $('#id_form-INITIAL_FORMS').val(id);
 }
 
 function addNametoURLandInputs(input) {
@@ -187,7 +193,17 @@ function addNametoURLandInputs(input) {
 
 function submitForms() {
     if ($('#random-generate').is(':hidden')) {
+        if ($('#id_name').val() === '') {
+            $('#id_name').focus();
+            $('#contactNameErrorEmpty').show();
+            return false;
+        } else if ($('#id_upload_csv').get(0).files.length == 0) {
+            $('#csv-inaccurate').show();
+            return false;
+        }
+
         $('#contactGroupFormBtn').click();
+
     } else if ($('#csv-generate').is(':hidden')) {
 
         if ($('#id_name').val() === ''){

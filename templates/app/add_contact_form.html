@@ -73,7 +73,7 @@
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.first_code.errors %}
-                            <small style="color: red;">{{error}}</small>
+                            <small class="first_code-backend-error" style="color: red;">{{error}}</small>
                             {% endfor %}
                             {% endif %}
                         </div>
@@ -90,7 +90,7 @@
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.digits.errors %}
-                            <small style="color: red;">{{error}}</small>
+                            <small class="digits-backend-error" style="color: red;">{{error}}</small>
                             {% endfor %}
                             {% endif %}
                         </div>
@@ -107,7 +107,7 @@
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.generate_numbers.errors %}
-                            <small style="color: red;">{{error}}</small>
+                            <small class="generate_numbers-backend-error" style="color: red;">{{error}}</small>
                             {% endfor %}
                             {% endif %}
                         </div>
@@ -163,14 +163,7 @@
                     for="{{form_uploadcsv.upload_csv.id_for_label}}">{{form_uploadcsv.upload_csv.label}}</label>
                 <div class="col-sm-10">
                     {{form_uploadcsv.upload_csv}}
-                </div>
-                <div class="col-sm-10">
-                    {% if form_uploadcsv.errors %}
-                    {% for error in form_uploadcsv.upload_csv.errors %}
-                    <small style="color: red;">{{error}}</small>
-                    {% endfor %}
-                    {% endif %}
-
+                    <small id="csv-inaccurate" style="color: red; display: none;">File tidak sesuai atau tidak boleh kosong.</small>
                 </div>
             </div>
             <div class="row">
@@ -221,7 +214,7 @@
         }
         {% endif %}
 
-        $('#id_form-INITIAL_FORMS').val(0);
+        $('#id_form-INITIAL_FORMS').val(1);
         $('#sliderManagement').removeClass('menu-open');
         $('a#contactManagement').addClass('active');
 

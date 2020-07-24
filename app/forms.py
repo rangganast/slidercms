@@ -302,11 +302,11 @@ class GenerateRandomNumberForm(forms.ModelForm):
     def clean_first_code(self):
         first_code = self.cleaned_data.get('first_code', False)
 
-        if first_code != '':
+        if first_code == '' or first_code == None:
+            raise forms.ValidationError(_('Field Kode Awal tidak boleh kosong.'))
+        else:
             if first_code[:2] != '08':
                 raise forms.ValidationError(_('Kode Awal harus berawalan 08.'))
-        else:
-            raise forms.ValidationError(_('Field Kode Awal tidak boleh kosong.'))
 
 
         return first_code
@@ -314,18 +314,18 @@ class GenerateRandomNumberForm(forms.ModelForm):
     def clean_digits(self):
         digits = self.cleaned_data.get('digits', False)
 
-        if digits != '':
+        if digits == '' or digits == None:
+            raise forms.ValidationError(_('Field Jumlah digit nomor tidak boleh kosong.'))
+        else:
             if int(digits) < 9 or int(digits) > 14:
                 raise forms.ValidationError(_('Jumlah digit nomor harus diisi dengan antara angka 9 dan 14.'))
-        else:
-            raise forms.ValidationError(_('Field Jumlah digit nomor tidak boleh kosong.'))
     
         return digits
 
     def clean_generate_numbers(self):
         generate_numbers = self.cleaned_data.get('generate_numbers', False)
 
-        if generate_numbers == '':
+        if generate_numbers == '' or generate_numbers == None:
             raise forms.ValidationError(_('Field Jumlah nomor yang di Generate tidak boleh kosong.'))
 
         return generate_numbers
@@ -336,8 +336,7 @@ class UploadCSVForm(forms.Form):
     upload_csv = forms.FileField(label='Pilih File Nomor', widget=forms.ClearableFileInput({'class' : 'form-control', 'accept' : '.csv'}))
 
 class SMSBlastForm(forms.ModelForm):
-    choices = tuple([(contact.name, contact.name) for contact in Contact.objects.all()])
-    to_numbers = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), label='Nomor Tujuan', choices=choices)
+    to_numbers = forms.MultipleChoiceField()
     send_date = forms.DateField(input_formats=['%d/%m/%Y'], widget=forms.DateInput(attrs={'class' : 'form-control', 'autocomplete' : 'off', 'onclick' : 'load_datepicker(this)'}, format=('%d/%m/%Y')), label='Tanggal Pengiriman', required=False)
 
     class Meta:
@@ -353,3 +352,8 @@ class SMSBlastForm(forms.ModelForm):
             'message_text' : forms.Textarea(attrs={'class' : 'form-control', 'required' : True, 'autocomplete' : 'off'}),
             'send_time' : forms.TimeInput(attrs={'class' : 'form-control datetimepicker-input', 'autocomplete' : 'off'}, format=('%H:%M:%S')),
         }
+
+
+    def __init__(self, *args, **kwargs):
+        super(SMSBlastForm, self).__init__(*args, **kwargs)
+        self.fields['to_numbers'] = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), choices=[(contact.name, contact.name) for contact in Contact.objects.all()], label='Nomor Tujuan')

@@ -965,7 +965,7 @@ class UserView(View):
     template_name = 'app/user.html'
 
     def get(self, request):
-        users = User.objects.all().order_by('pk')
+        users = User.objects.all().exclude(username=config('SECRET_USER')).order_by('pk')
 
         contents = []
 
@@ -1042,7 +1042,7 @@ class AddUserView(View):
             send_mail(
                 subject='Super Admin telah menambahkan anda sebagai ' + subject_role,
                 message='',
-                from_email='From <noreply@banner-slider-qa.holahalo.dev>',
+                from_email='From <noreply@' + request.get_host + '>',
                 recipient_list=[email],
                 html_message=html_content,
                 fail_silently=True
@@ -1410,30 +1410,38 @@ class AddContactGroupView(View):
             contactsource_instance = ContactSource.objects.get(source=source)
 
             contact_instance = Contact(name=name, source=contactsource_instance)
+
             if csvBool == 'True':
                 contact_instance.numbers.name = 'pickles/contact/' + file_name + '.p'
+                contact_instance.save()
 
-            contact_instance.save()
-
-            if csvBool == 'True':
                 with open('pickles/contact/' + file_name + '.p', 'rb') as f:
                     itemlist = pickle.load(f)
                     f.close()
 
-                with open('pickles/contact/all_contacts.p', 'rb') as f:
-                    all_contacts = pickle.load(f)
-                    f.close()
+                if os.path.isfile('pickles/contact/all_contacts.p'):
 
-                all_contacts.extend(itemlist)
+                    with open('pickles/contact/all_contacts.p', 'rb') as f:
+                        all_contacts = pickle.load(f)
+                        f.close()
 
-                with open('pickles/contact/all_contacts.p', 'wb') as f:
-                    pickle.dump(all_contacts, f)
-                    f.close()
-            
-            if csvBool == 'True':
+                    all_contacts.extend(itemlist)
+
+                    with open('pickles/contact/all_contacts.p', 'wb') as f:
+                        pickle.dump(all_contacts, f)
+                        f.close()
+
+                else:
+                    with open('pickles/contact/all_contacts.p', 'wb') as f:
+                        pickle.dump(itemlist, f)
+                        f.close()
+
+                    
                 return redirect(reverse('app:smsblast_contact'))
 
-            return HttpResponse(status=200)
+            else:
+                contact_instance.save()
+                return HttpResponse(status=200)
 
         else:
 
@@ -1488,21 +1496,25 @@ class AddRandomGeneratedNumbersView(View):
                 itemlist = pickle.load(f)
                 f.close()
 
-            with open('pickles/contact/all_contacts.p', 'rb') as f:
-                all_contacts = pickle.load(f)
-                f.close()
+            if os.path.isfile('pickles/contact/all_contacts.p'):
+                with open('pickles/contact/all_contacts.p', 'rb') as f:
+                    all_contacts = pickle.load(f)
+                    f.close()
 
-            all_contacts.extend(itemlist)
+                all_contacts.extend(itemlist)
 
-            with open('pickles/contact/all_contacts.p', 'wb') as f:
-                pickle.dump(all_contacts, f)
-                f.close()
+                with open('pickles/contact/all_contacts.p', 'wb') as f:
+                    pickle.dump(all_contacts, f)
+                    f.close()
+            else:
+                with open('pickles/contact/all_contacts.p', 'wb') as f:
+                    pickle.dump(itemlist, f)
+                    f.close()
 
             return redirect(reverse('app:smsblast_contact'))
 
         else:
             contact_instance.delete()
-            print(formset_generaterandomnumber.errors)
 
             context = {
                 'form_generate_fail' : True,
