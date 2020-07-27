@@ -295,6 +295,7 @@ class GenerateRandomNumberForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(GenerateRandomNumberForm, self).__init__(*args, **kwargs)
+        self.empty_permitted = False
         self.fields['first_code'].required = False
         self.fields['digits'].required = False
         self.fields['generate_numbers'].required = False
@@ -308,14 +309,13 @@ class GenerateRandomNumberForm(forms.ModelForm):
             if first_code[:2] != '08':
                 raise forms.ValidationError(_('Kode Awal harus berawalan 08.'))
 
-
         return first_code
 
     def clean_digits(self):
         digits = self.cleaned_data.get('digits', False)
 
         if digits == '' or digits == None:
-            raise forms.ValidationError(_('Field Jumlah digit nomor tidak boleh kosong.'))
+            raise forms.ValidationError(_('Field Jumlah Digit Nomor tidak boleh kosong.'))
         else:
             if int(digits) < 9 or int(digits) > 14:
                 raise forms.ValidationError(_('Jumlah digit nomor harus diisi dengan antara angka 9 dan 14.'))
@@ -349,11 +349,11 @@ class SMSBlastForm(forms.ModelForm):
         }
         widgets = {
             'message_title' : forms.TextInput(attrs={'class' : 'form-control', 'required' : True, 'autocomplete' : 'off'}),
-            'message_text' : forms.Textarea(attrs={'class' : 'form-control', 'required' : True, 'autocomplete' : 'off'}),
+            'message_text' : forms.Textarea(attrs={'class' : 'form-control', 'required' : True, 'autocomplete' : 'off', 'placeholder' : 'maks. 160 karakter'}),
             'send_time' : forms.TimeInput(attrs={'class' : 'form-control datetimepicker-input', 'autocomplete' : 'off'}, format=('%H:%M:%S')),
         }
 
 
     def __init__(self, *args, **kwargs):
         super(SMSBlastForm, self).__init__(*args, **kwargs)
-        self.fields['to_numbers'] = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), choices=[(contact.name, contact.name) for contact in Contact.objects.all()], label='Nomor Tujuan')
+        self.fields['to_numbers'] = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), choices=[(contact.name, contact.name) for contact in Contact.objects.filter(is_archived=False)], label='Nomor Tujuan')

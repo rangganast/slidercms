@@ -1352,6 +1352,61 @@ class DetailContactView(View):
         return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
+class UpdateContactView(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/update_contact_form.html'
+
+    def get(self, request, pk):
+        contact_instance = Contact.objects.get(pk=pk)
+
+        form_contact = self.form_class['form_contact'](initial={'name' : contact_instance.name})
+        form_contactsource = self.form_class['form_contactsource'](initial={'source' : contact_instance.source})
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber'](queryset=GenerateContact.objects.filter(contact=contact_instance))
+        form_uploadcsv = self.form_class['form_uploadcsv']()
+
+        generatecontact = False
+        csvcontact = False
+        if GenerateContact.objects.filter(contact=contact_instance):
+            generatecontact = True
+
+            with open(str(contact_instance.numbers.name), 'rb') as f:
+                contacts = pickle.load(f)
+                f.close()
+
+            with open('pickles/contact/contacts_random_temp_update.p', 'wb') as f:
+                pickle.dump(contacts, f)
+                f.close()
+        else:
+            csvcontact = True
+
+            with open(str(contact_instance.numbers.name), 'rb') as f:
+                contacts = pickle.load(f)
+                f.close()
+
+            with open('pickles/contact/contacts_csv_temp_update.p', 'wb') as f:
+                pickle.dump(contacts, f)
+                f.close()
+
+        context = {
+            'pk' : pk,
+            'generatecontact' : generatecontact,
+            'csvcontact' : csvcontact,
+            'formset_generaterandomnumber' : formset_generaterandomnumber,
+            'form_contact' : form_contact,
+            'form_contactsource' : form_contactsource,
+            'form_uploadcsv' : form_uploadcsv,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
 class ArchiveContactView(View):
     def post(self, request, pk):
         contact_instance = Contact.objects.get(pk=pk)
@@ -1373,6 +1428,20 @@ class DeleteContactView(View):
         generate_contacts = GenerateContact.objects.filter(contact=contact_instance)
         for generate in generate_contacts:
             generate.delete()
+
+        with open(str(contact_instance.numbers.name), 'rb') as f:
+            file_contact = pickle.load(f)
+            f.close()
+
+        with open('pickles/contact/all_contacts.p', 'rb') as f:
+            all_contacts = pickle.load(f)
+            f.close()
+
+        all_contacts_reduced = [contact for contact in all_contacts if contact not in file_contact]
+
+        with open('pickles/contact/all_contacts.p', 'wb') as f:
+            pickle.dump(all_contacts_reduced, f)
+            f.close()
 
         os.remove(str(contact_instance.numbers.name))
         contact_instance.delete()
@@ -1405,7 +1474,7 @@ class AddContactGroupView(View):
 
             if csvBool == 'True':
                 file_name = name.lower().replace(' ', '-')
-                shutil.copy('pickles/contact/contacts_csv_temp.p', 'pickles/contact/' + file_name + '.p')
+                shutil.copy('pickles/contact/contacts_csv_temp_add.p', 'pickles/contact/' + file_name + '.p')
 
             contactsource_instance = ContactSource.objects.get(source=source)
 
@@ -1477,7 +1546,7 @@ class AddRandomGeneratedNumbersView(View):
         
         if formset_generaterandomnumber.is_valid():
             file_name = contact_name.lower().replace(' ', '-')
-            shutil.copy('pickles/contact/contacts_random_temp.p', 'pickles/contact/' + file_name + '.p')
+            shutil.copy('pickles/contact/contacts_random_temp_add.p', 'pickles/contact/' + file_name + '.p')
 
             generaterandomform = formset_generaterandomnumber.cleaned_data
 
@@ -1528,7 +1597,7 @@ class AddRandomGeneratedNumbersView(View):
             return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
-class GenerateRandomContactView(View):
+class GenerateRandomContactViewAdd(View):
     form_class = {
         'form_contact' : ContactForm,
         'form_contactsource' : ContactSourceForm,
@@ -1562,10 +1631,10 @@ class GenerateRandomContactView(View):
 
                     generate_numbers -= 1
 
-            if os.path.isfile('pickles/contact/contacts_random_temp.p'):
-                os.remove('pickles/contact/contacts_random_temp.p')
+            if os.path.isfile('pickles/contact/contacts_random_temp_add.p'):
+                os.remove('pickles/contact/contacts_random_temp_add.p')
 
-            with open('pickles/contact/contacts_random_temp.p', 'wb') as f:
+            with open('pickles/contact/contacts_random_temp_add.p', 'wb') as f:
                 pickle.dump(contacts, f)
                 f.close()
 
@@ -1579,7 +1648,7 @@ class GenerateRandomContactView(View):
         return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
-class GenerateCSVContactView(View):
+class GenerateCSVContactViewAdd(View):
     form_class = {
         'form_contact' : ContactForm,
         'form_contactsource' : ContactSourceForm,
@@ -1605,10 +1674,10 @@ class GenerateCSVContactView(View):
 
             del contacts[0]
 
-            if os.path.isfile('pickles/contact/contacts_csv_temp.p'):
-                os.remove('pickles/contact/contacts_csv_temp.p')
+            if os.path.isfile('pickles/contact/contacts_csv_temp_add.p'):
+                os.remove('pickles/contact/contacts_csv_temp_add.p')
 
-            with open('pickles/contact/contacts_csv_temp.p', 'wb') as f:
+            with open('pickles/contact/contacts_csv_temp_add.p', 'wb') as f:
                 pickle.dump(contacts, f)
                 f.close()
 
@@ -1622,14 +1691,14 @@ class GenerateCSVContactView(View):
         return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
-class TempRandomContactView(View):
+class TempRandomContactViewAdd(View):
     initial = {'key', 'value'}
     template_name = 'app/temp_contact.html'
 
     def get(self, request):
         name = request.GET.get('name')
 
-        with open('pickles/contact/contacts_random_temp.p', 'rb') as f:
+        with open('pickles/contact/contacts_random_temp_add.p', 'rb') as f:
             contacts = pickle.load(f)
             f.close()
         
@@ -1645,14 +1714,330 @@ class TempRandomContactView(View):
         return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
-class TempCSVContactView(View):
+class TempCSVContactViewAdd(View):
     initial = {'key', 'value'}
     template_name = 'app/temp_contact.html'
 
     def get(self, request):
         name = request.GET.get('name')
 
-        with open('pickles/contact/contacts_csv_temp.p', 'rb') as f:
+        with open('pickles/contact/contacts_csv_temp_add.p', 'rb') as f:
+            contacts = pickle.load(f)
+        
+        count = len(contacts)
+        contacts = [contacts[x:x+4] for x in range(0, len(contacts),4)]
+        
+        context = {
+            'name' : name,
+            'count' : count,
+            'contacts' : contacts,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class UpdateContactGroupView(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/add_contact_form.html'
+
+    def post(self, request, pk):
+        form_contact = self.form_class['form_contact'](request.POST or None)
+        form_contactsource = self.form_class['form_contactsource'](request.POST or None)
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber']()
+        form_uploadcsv = self.form_class['form_uploadcsv']()
+
+        csvBool = request.POST.get('csvBool')
+
+        if form_contact.is_valid() and form_contactsource.is_valid():
+            name = form_contact.cleaned_data['name']
+            source = form_contactsource.cleaned_data['source']
+
+            contactsource_instance = ContactSource.objects.get(source=source)
+            contact_instance = Contact.objects.get(pk=pk)
+
+            contact_instance.name = name
+            contact_instance.source = contactsource_instance
+
+            if csvBool == 'True':
+                if os.path.isfile(str(contact_instance.numbers.name)):
+                    with open(str(contact_instance.numbers.name), 'rb') as f:
+                        old_itemlist = pickle.load(f)
+                        f.close()
+                    
+                    os.remove(str(contact_instance.numbers.name))
+
+                file_name = name.lower().replace(' ', '-')
+                shutil.copy('pickles/contact/contacts_csv_temp_update.p', 'pickles/contact/' + file_name + '.p')
+
+                contact_instance.numbers.name = 'pickles/contact/' + file_name + '.p'
+                contact_instance.save()
+
+                generatecontacts = GenerateContact.objects.filter(contact=contact_instance)
+                for generatecontact in generatecontacts:
+                    generatecontact.delete()
+
+                with open('pickles/contact/' + file_name + '.p', 'rb') as f:
+                    itemlist = pickle.load(f)
+                    f.close()
+
+                if os.path.isfile('pickles/contact/all_contacts.p'):
+
+                    with open('pickles/contact/all_contacts.p', 'rb') as f:
+                        all_contacts = pickle.load(f)
+                        f.close()
+
+                    all_contacts = [contact for contact in all_contacts if contact not in old_itemlist]
+
+                    all_contacts.extend(itemlist)
+
+                    with open('pickles/contact/all_contacts.p', 'wb') as f:
+                        pickle.dump(all_contacts, f)
+                        f.close()
+
+                else:
+                    with open('pickles/contact/all_contacts.p', 'wb') as f:
+                        pickle.dump(itemlist, f)
+                        f.close()
+                    
+                return redirect(reverse('app:smsblast_contact'))
+
+            else:
+                contact_instance.save()
+                return HttpResponse(status=200)
+
+        else:
+
+            context = {
+                'formset_generaterandomnumber' : formset_generaterandomnumber,
+                'form_contact' : form_contact,
+                'form_contactsource' : form_contactsource,
+                'form_uploadcsv' : form_uploadcsv,
+            }
+
+            return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class UpdateRandomGeneratedNumbersView(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/add_contact_form.html'
+
+    def post(self, request, pk):
+        contact_name = request.POST.get('contactName')
+        contact_instance = Contact.objects.get(pk=pk)
+
+        form_contact = self.form_class['form_contact'](initial={'name' : contact_name})
+        form_contactsource = self.form_class['form_contactsource']()
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber'](request.POST or None)
+        form_uploadcsv = self.form_class['form_uploadcsv']()
+        
+        if formset_generaterandomnumber.is_valid():
+            with open(str(contact_instance.numbers.name), 'rb') as f:
+                old_itemlist = pickle.load(f)
+                f.close()
+
+            os.remove(str(contact_instance.numbers.name))
+
+            file_name = contact_name.lower().replace(' ', '-')
+            shutil.copy('pickles/contact/contacts_random_temp_update.p', 'pickles/contact/' + file_name + '.p')
+
+            for form in formset_generaterandomnumber:
+                form_id = form.cleaned_data['id']
+                first_code = form.cleaned_data['first_code']
+                digits = form.cleaned_data['digits']
+                generate_numbers = form.cleaned_data['generate_numbers']
+
+                if form_id:
+                    generatecontact_instance = form_id
+                    generatecontact_instance.first_code = first_code
+                    generatecontact_instance.digits = digits
+                    generatecontact_instance.generate_numbers = generate_numbers
+
+                    generatecontact_instance.save()
+                
+                else:
+                    generatecontact_instance = GenerateContact(first_code=first_code, digits=digits, generate_numbers=generate_numbers, contact=contact_instance)
+                    generatecontact_instance.save()
+
+            contact_instance.numbers = 'pickles/contact/' + file_name + '.p'
+            contact_instance.save()
+
+            with open('pickles/contact/' + file_name + '.p', 'rb') as f:
+                itemlist = pickle.load(f)
+                f.close()
+
+            if os.path.isfile('pickles/contact/all_contacts.p'):
+                with open('pickles/contact/all_contacts.p', 'rb') as f:
+                    all_contacts = pickle.load(f)
+                    f.close()
+
+                all_contacts = [contact for contact in all_contacts if contact not in old_itemlist]
+
+                all_contacts.extend(itemlist)
+
+                with open('pickles/contact/all_contacts.p', 'wb') as f:
+                    pickle.dump(all_contacts, f)
+                    f.close()
+            else:
+                with open('pickles/contact/all_contacts.p', 'wb') as f:
+                    pickle.dump(itemlist, f)
+                    f.close()
+
+            return redirect(reverse('app:smsblast_contact'))
+
+        else:
+            contact_instance.delete()
+
+            context = {
+                'form_generate_fail' : True,
+                'contact_name' : contact_name,
+                'formset_generaterandomnumber' : formset_generaterandomnumber,
+                'form_contact' : form_contact,
+                'form_contactsource' : form_contactsource,
+                'form_uploadcsv' : form_uploadcsv,
+            }
+
+            return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class GenerateRandomContactViewUpdate(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/add_contact_form.html'
+
+    def post(self, request):
+        form_contact = self.form_class['form_contact']()
+        form_contactsource = self.form_class['form_contactsource']()
+        form_uploadcsv = self.form_class['form_uploadcsv']()
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber'](request.POST or None)
+
+        if formset_generaterandomnumber.is_valid():
+            contacts = []
+            generaterandomform = formset_generaterandomnumber.cleaned_data
+            
+            for form in generaterandomform:
+                first_code = form['first_code']
+                digits_count = int(form['digits']) - len(first_code)
+                generate_numbers = int(form['generate_numbers'])
+                
+                while generate_numbers > 0:
+                    last_digits = ''.join(choice(digits) for i in range(digits_count))
+                    number = first_code + last_digits
+
+                    contacts.append(number)
+
+                    generate_numbers -= 1
+
+            if os.path.isfile('pickles/contact/contacts_random_temp_update.p'):
+                os.remove('pickles/contact/contacts_random_temp_update.p')
+
+            with open('pickles/contact/contacts_random_temp_update.p', 'wb') as f:
+                pickle.dump(contacts, f)
+                f.close()
+
+        context = {
+            'formset_generaterandomnumber' : formset_generaterandomnumber,
+            'form_contact' : form_contact,
+            'form_contactsource' : form_contactsource,
+            'form_uploadcsv' : form_uploadcsv,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class GenerateCSVContactViewUpdate(View):
+    form_class = {
+        'form_contact' : ContactForm,
+        'form_contactsource' : ContactSourceForm,
+        'formset_generaterandomnumber' : GenerateRandomNumberFormSet,
+        'form_uploadcsv' : UploadCSVForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/add_contact_form.html'
+
+    def post(self, request):
+        form_contact = self.form_class['form_contact']()
+        form_contactsource = self.form_class['form_contactsource']()
+        formset_generaterandomnumber = self.form_class['formset_generaterandomnumber']()
+        form_uploadcsv = self.form_class['form_uploadcsv'](data=request.POST, files=request.FILES)
+
+        if form_uploadcsv.is_valid():
+            csv_file = request.FILES['upload_csv'].read().decode('utf-8')
+            io_string = io.StringIO(csv_file)
+            contacts = []
+            for row in csv.reader(io_string, delimiter=','):
+                contacts.append(row[1])
+
+            del contacts[0]
+
+            if os.path.isfile('pickles/contact/contacts_csv_temp_update.p'):
+                os.remove('pickles/contact/contacts_csv_temp_update.p')
+
+            with open('pickles/contact/contacts_csv_temp_update.p', 'wb') as f:
+                pickle.dump(contacts, f)
+                f.close()
+
+        context = {
+            'formset_generaterandomnumber' : formset_generaterandomnumber,
+            'form_contact' : form_contact,
+            'form_contactsource' : form_contactsource,
+            'form_uploadcsv' : form_uploadcsv,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class TempRandomContactViewUpdate(View):
+    initial = {'key', 'value'}
+    template_name = 'app/temp_contact.html'
+
+    def get(self, request):
+        name = request.GET.get('name')
+
+        with open('pickles/contact/contacts_random_temp_update.p', 'rb') as f:
+            contacts = pickle.load(f)
+            f.close()
+        
+        count = len(contacts)
+        contacts = [contacts[x:x+4] for x in range(0, len(contacts),4)]
+        
+        context = {
+            'name' : name,
+            'count' : count,
+            'contacts' : contacts,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class TempCSVContactViewUpdate(View):
+    initial = {'key', 'value'}
+    template_name = 'app/temp_contact.html'
+
+    def get(self, request):
+        name = request.GET.get('name')
+
+        with open('pickles/contact/contacts_csv_temp_update.p', 'rb') as f:
             contacts = pickle.load(f)
         
         count = len(contacts)
@@ -1740,12 +2125,13 @@ class AddSMSBlastView(View):
             if send_date == None and send_time == None:
                 send_date = datetime.datetime.now().date()
                 send_time = datetime.datetime.now().time().replace(microsecond=0)
+                execute_time = (datetime.datetime.now() + datetime.timedelta(minutes=1)).time()
+            else:
+                execute_time = send_time
 
             for name in to_numbers:
                 contact_instance = Contact.objects.get(name=name)
                 file_name = contact_instance.numbers
-
-                execute_time = (datetime.datetime.now() + datetime.timedelta(minutes=1)).time()
 
                 date_time = datetime.datetime.combine(send_date, execute_time)
                 local_datetime = tz.localize(date_time, is_dst=None)
@@ -1797,10 +2183,15 @@ class SMSBlastTempContactsView(View):
 
                 contacts.extend(contact)
 
+        contact_list = ''
+        if names:
+            contact_list = ', '.join(names)
+            
         count = len(contacts)
         contacts = [contacts[x:x+4] for x in range(0, len(contacts), 4)]
 
         context = {
+            'contact_list' : contact_list,
             'count' : count,
             'contacts' : contacts,
         }
@@ -1918,6 +2309,22 @@ def check_contact_name_add(request):
         return HttpResponse(check)
 
     if Contact.objects.filter(name=name).exists():
+        check = True
+    else:
+        check = False
+
+    return HttpResponse(check)
+
+@login_required
+def check_contact_name_update(request):
+    pk = request.GET.get('pk')
+    name = request.GET.get('name')
+    check = False
+
+    if name == '':
+        return HttpResponse(check)
+
+    if Contact.objects.filter(name=name).exclude(pk=pk).exists():
         check = True
     else:
         check = False

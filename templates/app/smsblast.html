@@ -81,8 +81,8 @@
         {% for content in contents  %}
         <tr>
             <td style="vertical-align: middle; text-align: center;">{{forloop.counter}}</td>
-            <td>{{content.message_title}}</td>
-            <td>
+            <td style="vertical-align: middle;">{{content.message_title}}</td>
+            <td style="vertical-align: middle;">
                 <ul>
                     {% for group in content.contact_groups %}
                     <li class="table_li">{{group}}</li>

@@ -176,7 +176,7 @@ class ContactSource(models.Model):
 class Contact(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
     source = models.ForeignKey(ContactSource, on_delete=models.CASCADE, related_name='contactsources')
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     numbers = models.FileField(upload_to='pickles/contact/')
     is_archived = models.BooleanField(default=False)
 
@@ -221,7 +221,7 @@ status_choices = (
 
 class SMSBlast(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=6)
-    message_title = models.CharField(max_length=100, unique=True)
+    message_title = models.CharField(max_length=100)
     message_text = models.CharField(max_length=160)
     send_date = models.DateField(null=True, blank=True)
     send_time = models.TimeField(null=True, blank=True)

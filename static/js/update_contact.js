@@ -56,7 +56,7 @@ $('#generateNumber').click(function (e) {
     });
 
     if(!doStop) {
-        $.post('/smsblast/generate_random_number_add', $('#randomNumberForm').serialize(), function (e) {});
+        $.post('/smsblast/generate_random_number_update', $('#randomNumberForm').serialize(), function (e) {});
         e.preventDefault();
 
         $('.first_code-inaccurate').hide();
@@ -109,12 +109,16 @@ $('#csvForm').submit(function (event){
 });
 
 function addContact(input) {
-    var id = Number($(input).attr('id').split('-')[1]);
+    var id = $('#id_form-TOTAL_FORMS').val() - 1;
     var selector = 'div#generate-' + id + '-div';
     
     var newElement = $(selector).clone(true, true);
 
+    newElement.show();
     newElement.attr('id', 'generate-' + (id + 1) + '-div');
+    
+    newElement.find('input[type="checkbox"]').remove();
+    newElement.find('input[type="hidden"]').remove();
 
     newElement.find('#id_form-' + id + '-first_code').val(null);
     newElement.find('#id_form-' + id + '-first_code').attr('name', 'form-' + (id + 1) + '-first_code')
@@ -157,7 +161,13 @@ function deleteContact(input) {
     var id = Number($(input).attr('id').split('-')[1]);
     var selector = 'div#generate-' + id + '-div';
 
-    $(selector).remove();
+    if ($('#id_form-' + id + '-DELETE').length > 0) {
+        $('#id_form-' + id + '-DELETE').prop('checked', true);
+        $(selector).hide();
+    } else {
+        $(selector).remove();
+        $('#id_form-TOTAL_FORMS').val(id);
+    }
 
     if((id - 1) != 0) {
         $('#delete-' + (id - 1) + '-contact').show();
@@ -166,67 +176,4 @@ function deleteContact(input) {
         $('#add-' + (id - 1) + '-contact').show();
     }
 
-    $('#id_form-TOTAL_FORMS').val(id);
-}
-
-function addNametoURLandInputs(input) {
-    var name = $(input).val();
-
-    if(name === '') {
-        $('a#tempRandomContacts').attr('href', '/smsblast/temp_random_contacts_add');
-        $('a#tempCSVContacts').attr('href', '/smsblast/temp_csv_contacts_add');
-        $('#contactName').val(name);
-    } else {
-        $('a#tempRandomContacts').attr('href', '/smsblast/temp_random_contacts_add?name=' + encodeURIComponent(name));
-        $('a#tempCSVContacts').attr('href', '/smsblast/temp_csv_contacts_add?name=' + encodeURIComponent(name));
-        $('#contactName').val(name);
-    }
-
-    var url = $('#contactGroupForm').attr("data-check-name-url");
-
-    $.ajax({
-        url: url,
-        data: {
-            'name': name,
-        },
-        success: function (data) {
-            if(data === 'True') {
-                $('#contactNameErrorNotUnique').show();
-                $('#contactNameErrorEmpty').hide();
-                $('#submitForms').prop('disabled', true);
-            } else {
-                $('#contactNameErrorNotUnique').hide();
-                $('#contactNameErrorEmpty').hide();
-                $('#submitForms').prop('disabled', false);
-            }
-        }
-    });
-}
-
-function submitForms() {
-    if ($('#random-generate').is(':hidden')) {
-        if ($('#id_name').val() === '') {
-            $('#id_name').focus();
-            $('#contactNameErrorEmpty').show();
-            return false;
-        } else if ($('#id_upload_csv').get(0).files.length == 0) {
-            $('#csv-inaccurate').show();
-            return false;
-        }
-
-        $('#contactGroupFormBtn').click();
-
-    } else if ($('#csv-generate').is(':hidden')) {
-
-        if ($('#id_name').val() === ''){
-            $('#id_name').focus();
-            $('#contactNameErrorEmpty').show();
-            return false;
-        }
-
-        $.post('/smsblast/add_contact_group', $('#contactGroupForm').serialize())
-        .done(function(result) {
-            $('#randomNumberForm').submit();
-        })
-    }
 }

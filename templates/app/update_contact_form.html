@@ -2,16 +2,16 @@
 
 {% load static %}
 
-{% block title %}SMS Blast - Tambah Kontak{% endblock title %}
+{% block title %}SMS Blast - Update Kontak{% endblock title %}
 
-{% block style %}<link rel="stylesheet" href="{% static 'css/add_contact.css' %}">{% endblock style %}
+{% block style %}<link rel="stylesheet" href="{% static 'css/update_contact.css' %}">{% endblock style %}
 
 {% block content %}
-<form id="contactGroupForm" method="POST" action="{% url 'app:smsblast_add_contact_group' %}" data-check-name-url="{% url 'app:ajax_check_contact_name_add' %}">
+<form id="contactGroupForm" method="POST" action="{% url 'app:smsblast_update_contact_group' pk=pk %}" data-check-name-url="{% url 'app:ajax_check_contact_name_update' %}">
     {% csrf_token %}
 
     <div id="card-field" class="container-fluid mt-3">
-        <h3 class="text-center mb-2">Form Tambah Kontak</h3>
+        <h3 class="text-center mb-2">Form Update Kontak</h3>
     </div>
 
     <hr>
@@ -54,14 +54,16 @@
     </div>
 </form>
 
-<form id="randomNumberForm" method="POST" action="{% url 'app:smsblast_add_random_generated_numbers' %}">
+<form id="randomNumberForm" method="POST" action="{% url 'app:smsblast_update_random_generated_numbers' pk=pk %}">
     {% csrf_token %}
     {{ formset_generaterandomnumber.management_form }}
-    <fieldset {% if not form_generate_fail %}style="display: none;"{% endif %} id="random-generate" class="numbergenerate-border">
+    <fieldset {% if csvcontact %}style="display: none;"{% endif %} id="random-generate" class="numbergenerate-border">
         <div class="control-group mb-3 mt-3">
             <div class="col input-wrapper">
                 {% for form_generate in formset_generaterandomnumber %}
                 <div id="generate-{{forloop.counter0}}-div" class="row generate-div" class="row">
+                    {{form_generate.id}}
+                    {{form_generate.DELETE}}
                     <div class="col-sm-2 no-padding">
                         <label for="">{{form_generate.first_code.label}}</label>
                         <div class="input-group">
@@ -116,7 +118,7 @@
                         <label style="color: white;">tambah&hapus</label>
                         <div class="input-group">
                             <button id="add-{{forloop.counter0}}-contact" type="button"
-                                class="btn btn-primary addContactBtn"
+                                class="btn btn-primary addContactBtn" style="display: none;"
                                 onclick="addContact(this);">Tambah</button>
                             <button style="display: none;" id="delete-{{forloop.counter0}}-contact" type="button"
                                 class="btn btn-danger deleteContactBtn ml-2"
@@ -132,8 +134,8 @@
                         <label style="color: white;"></label>
                         <div class="input-group">
                             <button id="generateNumber" type="button" class="btn btn-success">Generate</button>
-                            <a id="tempRandomContacts" href="{% url 'app:temp_random_contacts_add' %}" target="_blank">
-                                <button id="viewRandomNumbers" type="button" class="btn btn-warning ml-2" disabled>Lihat
+                            <a id="tempRandomContacts" href="{% url 'app:temp_random_contacts_update' %}" target="_blank">
+                                <button id="viewRandomNumbers" type="button" class="btn btn-warning ml-2" {% if csvcontact %}disabled{% endif %}>Lihat
                                     Nomor</button>
                             </a>
 
@@ -154,9 +156,9 @@
     </fieldset>
 </form>
 
-<form id="csvForm" action="{% url 'app:generate_csv_add' %}" method="POST" enctype="multipart/form-data">
+<form id="csvForm" action="{% url 'app:generate_csv_udpate' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <fieldset style="display: none;" id="csv-generate" class="numbergenerate-border">
+    <fieldset {% if generatecontact %}style="display: none;"{% endif %} id="csv-generate" class="numbergenerate-border">
         <div class="control-group mb-3 mt-3">
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label"
@@ -172,8 +174,8 @@
                     <div class="input-group">
                         <button id="downloadCSVTemplate" type="button" class="btn btn-success">Download
                             Template</button>
-                        <a id="tempCSVContacts" href="{% url 'app:temp_csv_contacts_add' %}" target="_blank">
-                            <button id="viewCSVNumbers" type="button" class="btn btn-warning ml-2" disabled>Lihat
+                        <a id="tempCSVContacts" href="{% url 'app:temp_csv_contacts_update' %}" target="_blank">
+                            <button id="viewCSVNumbers" type="button" class="btn btn-warning ml-2" {% if generatecontact %}disabled{% endif %}>Lihat
                                 Nomor</button>
                         </a>
                         <div id="csvNumberSpinner" style="display: none;" class="spinner-border ml-3 mt-1" role="status">
@@ -188,7 +190,7 @@
 
 <div class="container-fluid mt-5 mb-5">
 
-    <div {% if not form_generate_fail %}style="display: none;"{% endif %} id="saveBtnDiv" class="form-group row float-right">
+    <div id="saveBtnDiv" class="form-group row float-right">
         <a href="{% url 'app:smsblast_contact' %}">
             <button type="button" class="btn btn-secondary">Batal</button>
         </a>
@@ -214,6 +216,25 @@
         }
         {% endif %}
 
+        {% if csvcontact %}
+        $('#csvBool').val('True');
+        $('#add-0-contact').show();
+        {% endif %}
+
+        {% if generatecontact %}
+        var last_id = $('#id_form-INITIAL_FORMS').val()
+
+        $('#generate-' + last_id + '-div').remove()
+        $('#id_form-TOTAL_FORMS').val(last_id)
+
+        if (last_id != 0) {
+            $('#delete-' + ($('#id_form-TOTAL_FORMS').val() - 1) + '-contact').show();
+            $('#add-' + ($('#id_form-TOTAL_FORMS').val() - 1) + '-contact').show();
+        }
+
+        $('#contactName').val('{{ form_contact.name.value }}')
+        {% endif %}
+
         $('#sliderManagement').removeClass('menu-open');
         $('a#contactManagement').addClass('active');
 
@@ -222,6 +243,70 @@
             placeholder: 'Pilih cara mendapatkan sumber kontak',
         });
     });
+
+    function addNametoURLandInputs(input) {
+        var name = $(input).val();
+        var pk = '{{pk}}'
+
+        if(name === '') {
+            $('a#tempRandomContacts').attr('href', '/smsblast/temp_random_contacts_update');
+            $('a#tempCSVContacts').attr('href', '/smsblast/temp_csv_contacts_update');
+            $('#contactName').val(name);
+        } else {
+            $('a#tempRandomContacts').attr('href', '/smsblast/temp_random_contacts_update?name=' + encodeURIComponent(name));
+            $('a#tempCSVContacts').attr('href', '/smsblast/temp_csv_contacts_update?name=' + encodeURIComponent(name));
+            $('#contactName').val(name);
+        }
+
+        var url = $('#contactGroupForm').attr("data-check-name-url");
+
+        $.ajax({
+            url: url,
+            data: {
+                'name': name,
+                'pk' : pk,
+            },
+            success: function (data) {
+                if(data === 'True') {
+                    $('#contactNameErrorNotUnique').show();
+                    $('#contactNameErrorEmpty').hide();
+                    $('#submitForms').prop('disabled', true);
+                } else {
+                    $('#contactNameErrorNotUnique').hide();
+                    $('#contactNameErrorEmpty').hide();
+                    $('#submitForms').prop('disabled', false);
+                }
+            }
+        });
+    }
+
+    function submitForms() {
+        if ($('#random-generate').is(':hidden')) {
+            if ($('#id_name').val() === '') {
+                $('#id_name').focus();
+                $('#contactNameErrorEmpty').show();
+                return false;
+            } else if ($('#id_upload_csv').get(0).files.length == 0) {
+                $('#csv-inaccurate').show();
+                return false;
+            }
+
+            $('#contactGroupFormBtn').click();
+
+        } else if ($('#csv-generate').is(':hidden')) {
+
+            if ($('#id_name').val() === ''){
+                $('#id_name').focus();
+                $('#contactNameErrorEmpty').show();
+                return false;
+            }
+
+            $.post('/smsblast/update_contact_group/{{pk}}', $('#contactGroupForm').serialize())
+            .done(function(result) {
+                $('#randomNumberForm').submit();
+            })
+        }
+    }
 </script>
-<script src="{% static 'js/add_contact.js' %}"></script>
+<script src="{% static 'js/update_contact.js' %}"></script>
 {% endblock script %}
