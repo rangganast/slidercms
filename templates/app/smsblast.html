@@ -95,19 +95,20 @@
             <td style="vertical-align: middle; text-align: center;">{{content.status}}</td>
             <td style="vertical-align: middle; text-align: center;">
                 <span class="spanFormat">
-                    <a href="">
+                    <a href="{% url 'app:smsblast_detail_smsblast' pk=content.pk %}">
                         <button type="button" class="btn btn-sm btn-primary">Detail</button>
                     </a>
                 </span>
                 <span class="spanFormat">
-                    <a href="">
-                        <button type="button" class="btn btn-sm btn-warning">Update</button>
-                    </a>
+                    <form action="{% url 'app:smsblast_update_smsblast' pk=content.pk %}" method="GET">
+                        <button type="submit" class="btn btn-sm btn-warning">Update</button>
+                    </form>
                 </span>
                 <span class="spanFormat">
-                    <a href="">
-                        <button type="button" class="btn btn-sm btn-danger">Hapus</button>
-                    </a>
+                    <form action="{% url 'app:smsblast_delete_smsblast' pk=content.pk %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                    </form>
                 </span>
             </td>
         </tr>

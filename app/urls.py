@@ -20,7 +20,6 @@ urlpatterns = [
     path('smsblast/add_contact', views.AddContactMethodsView.as_view(), name='smsblast_add_contact'),
     path('smsblast/detail_contact/<str:pk>', views.DetailContactView.as_view(), name='smsblast_detail_contact'),
     path('smsblast/update_contact/<str:pk>', views.UpdateContactView.as_view(), name='smsblast_update_contact'),
-    path('smsblast/archive_contact/<str:pk>', views.ArchiveContactView.as_view(), name='smsblast_archive_contact'),
     path('smsblast/delete_contact/<str:pk>', views.DeleteContactView.as_view(), name='smsblast_delete_contact'),
 
     path('smsblast/add_contact_group', views.AddContactGroupView.as_view(), name='smsblast_add_contact_group'),
@@ -39,7 +38,11 @@ urlpatterns = [
 
     path('smsblast', views.SMSBlastView.as_view(), name='smsblast'),
     path('smsblast/add_smsblast', views.AddSMSBlastView.as_view(), name='smsblast_add_smsblast'),
-    path('smsblast/add_smsblast_temp_contacts', views.SMSBlastTempContactsView.as_view(), name='smsblast_add_smsblast_temp_contacts'),
+    path('smsblast/add_smsblast_temp_contacts', views.SMSBlastTempContactsViewAdd.as_view(), name='smsblast_add_smsblast_temp_contacts'),
+    path('smsblast/update_smsblast_temp_contacts', views.SMSBlastTempContactsViewUpdate.as_view(), name='smsblast_update_smsblast_temp_contacts'),
+    path('smsblast/detail_smsblast/<str:pk>', views.DetailSMSBlastView.as_view(), name='smsblast_detail_smsblast'),
+    path('smsblast/update_smsblast/<str:pk>', views.UpdateSMSBlastView.as_view(), name='smsblast_update_smsblast'),
+    path('smsblast/delete_smsblast/<str:pk>', views.DeleteSMSBlastView.as_view(), name='smsblast_delete_smsblast'),
 
     path('app', views.AppView.as_view(), name='app'),
     path('app/add_app', views.AddAppView.as_view(), name='add_app'),

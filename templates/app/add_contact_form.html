@@ -69,7 +69,7 @@
                         </div>
                         <div class="input-group">
                             <small id="first_code-{{forloop.counter0}}-inaccurate" class="first_code-inaccurate"
-                                style="color: red; display: none;">Kode Awal harus berawalan 08.</small>
+                                style="color: red; display: none;">Kode Awal harus berawalan 08 dan maksimal 4 karakter.</small>
 
                             {% if form_generate.errors %}
                             {% for error in form_generate.first_code.errors %}
@@ -192,7 +192,7 @@
         <a href="{% url 'app:smsblast_contact' %}">
             <button type="button" class="btn btn-secondary">Batal</button>
         </a>
-        <button id="submitForms" type="button" class="btn btn-primary ml-2" onclick="submitForms();">Simpan</button>
+        <button id="submitForms" type="button" class="btn btn-primary ml-2" onclick="submitForms();" disabled>Simpan</button>
     </div>
 
 </div>

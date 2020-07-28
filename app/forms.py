@@ -308,6 +308,8 @@ class GenerateRandomNumberForm(forms.ModelForm):
         else:
             if first_code[:2] != '08':
                 raise forms.ValidationError(_('Kode Awal harus berawalan 08.'))
+            elif len(first_code) > 4:
+                raise forms.ValidationError(_('Kode Awal harus diisi maksimal 4 karakter'))
 
         return first_code
 
@@ -356,4 +358,4 @@ class SMSBlastForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SMSBlastForm, self).__init__(*args, **kwargs)
-        self.fields['to_numbers'] = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), choices=[(contact.name, contact.name) for contact in Contact.objects.filter(is_archived=False)], label='Nomor Tujuan')
+        self.fields['to_numbers'] = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), choices=[(contact.name, contact.name) for contact in Contact.objects.all()], label='Nomor Tujuan')

@@ -23,7 +23,7 @@ $('#generateNumber').click(function (e) {
     var doStop = false;
 
     $('.first_code').each(function (index) {
-        if ($(this).val().slice(0, 2) != '08') {
+        if ($(this).val().slice(0, 2) != '08' || $(this).val().length > 4) {
             $('#first_code-' + index + '-inaccurate').show();
             $('#randomNumberSpinner').hide();
 

@@ -210,10 +210,6 @@
         window.history.pushState('', '', '/smsblast/add_contact');
         $('#id_source').val('random').attr('selected', true)
 
-        var showdeleteId = $('#id_form-TOTAL_FORMS').val() - 1
-        if (showdeleteId != 0) {
-            $('#delete-' + ($('#id_form-TOTAL_FORMS').val() - 1) + '-contact').show();
-        }
         {% endif %}
 
         {% if csvcontact %}
@@ -227,13 +223,19 @@
         $('#generate-' + last_id + '-div').remove()
         $('#id_form-TOTAL_FORMS').val(last_id)
 
-        if (last_id != 0) {
+        if (last_id != 1) {
             $('#delete-' + ($('#id_form-TOTAL_FORMS').val() - 1) + '-contact').show();
             $('#add-' + ($('#id_form-TOTAL_FORMS').val() - 1) + '-contact').show();
+        } else {
+            $('#add-' + ($('#id_form-TOTAL_FORMS').val() - 1) + '-contact').show();
+
         }
 
         $('#contactName').val('{{ form_contact.name.value }}')
         {% endif %}
+
+        $('a#tempRandomContacts').attr('href', '/smsblast/temp_random_contacts_update?name=' + encodeURIComponent('{{form_contact.name.value}}'))
+        $('a#tempCSVContacts').attr('href', '/smsblast/temp_csv_contacts_update?name=' + encodeURIComponent('{{form_contact.name.value}}'))
 
         $('#sliderManagement').removeClass('menu-open');
         $('a#contactManagement').addClass('active');

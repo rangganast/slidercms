@@ -15,6 +15,8 @@ $('#id_source').change(function () {
         $('#csvBool').val('True');
         $('#saveBtnDiv').show();
     }
+
+    $('#submitForms').prop('disabled', true);
 });
 
 $('#generateNumber').click(function (e) {
@@ -23,7 +25,7 @@ $('#generateNumber').click(function (e) {
     var doStop = false;
 
     $('.first_code').each(function (index) {
-        if ($(this).val().slice(0, 2) != '08') {
+        if ($(this).val().slice(0, 2) != '08' || $(this).val().length > 4) {
             $('#first_code-' + index + '-inaccurate').show();
             $('#randomNumberSpinner').hide();
 
@@ -66,6 +68,9 @@ $('#generateNumber').click(function (e) {
         setTimeout(function (){
             $('#randomNumberSpinner').hide();
             $('#viewRandomNumbers').prop('disabled', false);
+            if ($('#id_name').val().length > 0) {
+                $('#submitForms').prop('disabled', false);
+            }
         }, 1000)
     }
     
@@ -105,6 +110,9 @@ $('#csvForm').submit(function (event){
         $('#csvNumberSpinner').hide();
         $('#viewCSVNumbers').prop('disabled', false);
         $('#csv-inaccurate').hide();
+        if ($('#id_name').val().length > 0) {
+            $('#submitForms').prop('disabled', false);
+        }
     }, 1000)
 });
 
@@ -197,7 +205,23 @@ function addNametoURLandInputs(input) {
             } else {
                 $('#contactNameErrorNotUnique').hide();
                 $('#contactNameErrorEmpty').hide();
-                $('#submitForms').prop('disabled', false);
+                if ($('#random-generate').is(':visible')) {
+                    
+                    if ($('#viewRandomNumbers').is(':disabled')) {
+                        $('#submitForms').prop('disabled', true);
+                    } else {
+                        $('#submitForms').prop('disabled', false);
+                    }
+
+                } else if ($('#csv-generate').is(':visible')) {
+
+                    if ($('#viewCSVNumbers').is(':disabled')) {
+                        $('#submitForms').prop('disabled', true);
+                    } else {
+                        $('#submitForms').prop('disabled', false);
+                    }
+                    
+                }
             }
         }
     });

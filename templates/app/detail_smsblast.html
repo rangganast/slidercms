@@ -1,0 +1,82 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+
+{% block title %}SMS Blast - Detail Kontak{% endblock title %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'css/detail_smsblast.css' %}">{% endblock style %}
+
+{% block content %}
+    <h3 class="text-center mb-2">Detail Grup Kontak
+        <span class="btn-group float-right">
+            <a href="{% url 'app:smsblast_contact' %}" style="color: white; text-decoration: none;">
+                <button type="button" class="btn btn-secondary mr-2">
+                    Kembali
+                </button>
+            </a>
+        </span>
+    </h3>
+
+<hr>
+
+<div class="form-group row mt-2">
+    <label class="col-sm-2 col-form-label" for="">
+        <strong>Nama Grup Kontak</strong>
+    </label>
+    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+    <div class="col-sm-9 no-padding">
+        <input type="text" class="form-control no-border" value="{{contacts}}" disabled>
+    </div>
+</div>
+
+<div class="form-group row mt-2">
+    <label class="col-sm-2 col-form-label" for="">
+        <strong>Lihat Status Pesan</strong>
+    </label>
+    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+    <div class="col-sm-9 no-padding">
+        <button class="btn btn-warning">Lihat Nomor</button>
+    </div>
+</div>
+
+<div class="form-group row mt-2">
+    <label class="col-sm-2 col-form-label" for="">
+        <strong>Judul Pesan</strong>
+    </label>
+    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+    <div class="col-sm-9 no-padding">
+        <input type="text" class="form-control no-border" value="{{smsblast.message_title}}" disabled>
+    </div>
+</div>
+
+<div class="form-group row mt-2">
+    <label class="col-sm-2 col-form-label" for="">
+        <strong>Isi Pesan</strong>
+    </label>
+    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+    <div class="col-sm-9 no-padding">
+        <textarea a rows="3" cols="50" class="form-control no-border" disabled>{{smsblast.message_text}}</textarea>
+    </div>
+</div>
+
+<div class="form-group row mt-2">
+    <label class="col-sm-2 col-form-label" for="">
+        <strong>Tanggal Pengiriman</strong>
+    </label>
+    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+    <div class="col-sm-9 no-padding">
+        <input type="text" class="form-control no-border" value="{{smsblast.send_date|date:'d/m/Y'}}" disabled>
+    </div>
+</div>
+
+<div class="form-group row mt-2">
+    <label class="col-sm-2 col-form-label" for="">
+        <strong>Jam Kirim</strong>
+    </label>
+    <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
+    <div class="col-sm-9 no-padding">
+        <input type="text" class="form-control no-border" value="{{smsblast.send_time|time:'H:i:s'}}" disabled>
+    </div>
+</div>
+
+{% endblock content %}

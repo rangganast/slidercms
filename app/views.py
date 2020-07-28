@@ -32,7 +32,7 @@ from django.template.loader import render_to_string
 from . import services
 from .decorators import developer_required, marketing_required, superuser_required
 from .forms import AppForm, ApplicationForm, PageFormSet, LocationFormSet, BannerForm, CampaignFormSet, InstallationFormSet, UserForm, KeywordDateRangeForm, ContactForm, ContactSourceForm, GenerateRandomNumberFormSet, UploadCSVForm, SMSBlastForm
-from .models import Application, Page, Location, Banner, Campaign, Installation, User, Contact, ContactSource, GenerateContact, SMSBlast, ContactAndSMS, SMSBlastJob
+from .models import Application, Page, Location, Banner, Campaign, Installation, User, Contact, ContactSource, GenerateContact, SMSBlast, ContactAndSMS, SMSBlastJob, SMSStatus
 
 # Create your views here.
 @method_decorator([login_required, developer_required], name='dispatch')
@@ -1268,7 +1268,7 @@ class ContactView(View):
 
         contacts = Contact.objects.all().order_by('pk')
         for contact in contacts:
-            content = {'contact_id' : None, 'contact_name' : None, 'contact_source' : None, 'contact_is_archived' : None, 'contact_count': None}
+            content = {'contact_id' : None, 'contact_name' : None, 'contact_source' : None, 'contact_is_deleted' : None, 'contact_count': None}
             
             content['contact_id'] = contact.id
             content['contact_name'] = contact.name
@@ -1278,7 +1278,7 @@ class ContactView(View):
             else:
                 content['contact_source'] = 'Upload File .csv'
 
-            content['contact_is_archived'] = contact.is_archived
+            content['contact_is_deleted'] = contact.is_deleted
 
             if contact.numbers:
                 numbers = os.path.join(settings.BASE_DIR, os.path.normpath(str(contact.numbers)))
@@ -1407,44 +1407,13 @@ class UpdateContactView(View):
         return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
-class ArchiveContactView(View):
-    def post(self, request, pk):
-        contact_instance = Contact.objects.get(pk=pk)
-
-        if contact_instance.is_archived == False:
-            contact_instance.is_archived = True
-            contact_instance.save()
-        else:
-            contact_instance.is_archived = False
-            contact_instance.save()
-
-        return redirect(reverse('app:smsblast_contact'))
-
-@method_decorator([login_required, marketing_required], name='dispatch')
 class DeleteContactView(View):
     def post(self, request, pk):
         contact_instance = Contact.objects.get(pk=pk)
 
-        generate_contacts = GenerateContact.objects.filter(contact=contact_instance)
-        for generate in generate_contacts:
-            generate.delete()
-
-        with open(str(contact_instance.numbers.name), 'rb') as f:
-            file_contact = pickle.load(f)
-            f.close()
-
-        with open('pickles/contact/all_contacts.p', 'rb') as f:
-            all_contacts = pickle.load(f)
-            f.close()
-
-        all_contacts_reduced = [contact for contact in all_contacts if contact not in file_contact]
-
-        with open('pickles/contact/all_contacts.p', 'wb') as f:
-            pickle.dump(all_contacts_reduced, f)
-            f.close()
-
-        os.remove(str(contact_instance.numbers.name))
-        contact_instance.delete()
+        contact_instance.is_deleted = True
+        contact_instance.deleted_datetime = datetime.datetime.now()
+        contact_instance.save()
 
         return redirect(reverse('app:smsblast_contact'))
 
@@ -1854,23 +1823,31 @@ class UpdateRandomGeneratedNumbersView(View):
             file_name = contact_name.lower().replace(' ', '-')
             shutil.copy('pickles/contact/contacts_random_temp_update.p', 'pickles/contact/' + file_name + '.p')
 
+            deleted_numbers = formset_generaterandomnumber.deleted_forms
+
             for form in formset_generaterandomnumber:
-                form_id = form.cleaned_data['id']
-                first_code = form.cleaned_data['first_code']
-                digits = form.cleaned_data['digits']
-                generate_numbers = form.cleaned_data['generate_numbers']
+                if form['id'].value() not in [deleted['id'].value() for deleted in deleted_numbers]:
+                    form_id = form.cleaned_data['id']
+                    first_code = form.cleaned_data['first_code']
+                    digits = form.cleaned_data['digits']
+                    generate_numbers = form.cleaned_data['generate_numbers']
 
-                if form_id:
-                    generatecontact_instance = form_id
-                    generatecontact_instance.first_code = first_code
-                    generatecontact_instance.digits = digits
-                    generatecontact_instance.generate_numbers = generate_numbers
+                    if form_id:
+                        generatecontact_instance = form_id
+                        generatecontact_instance.first_code = first_code
+                        generatecontact_instance.digits = digits
+                        generatecontact_instance.generate_numbers = generate_numbers
 
-                    generatecontact_instance.save()
-                
-                else:
-                    generatecontact_instance = GenerateContact(first_code=first_code, digits=digits, generate_numbers=generate_numbers, contact=contact_instance)
-                    generatecontact_instance.save()
+                        generatecontact_instance.save()
+                    
+                    else:
+                        generatecontact_instance = GenerateContact(first_code=first_code, digits=digits, generate_numbers=generate_numbers, contact=contact_instance)
+                        generatecontact_instance.save()
+
+            for deleted in deleted_numbers:
+                print(deleted['id'].value())
+                # generatecontact_instance = GenerateContact.objects.get(pk=deleted['id'].value)
+                # generatecontact_instance.delete()
 
             contact_instance.numbers = 'pickles/contact/' + file_name + '.p'
             contact_instance.save()
@@ -2083,7 +2060,7 @@ class SMSBlastView(View):
             else:
                 status = 'Belum Dikirim'
 
-            contents.append({'message_title' : sms.message_title, 'contact_groups' : contacts, 'sms_count' : sms_count, 'send_date' : sms.send_date, 'send_time' : sms.send_time, 'status' : status})
+            contents.append({'pk' : sms.pk, 'message_title' : sms.message_title, 'contact_groups' : contacts, 'sms_count' : sms_count, 'send_date' : sms.send_date, 'send_time' : sms.send_time, 'status' : status})
 
         context = {
             'contents' : contents,
@@ -2121,13 +2098,18 @@ class AddSMSBlastView(View):
             message_text = form_smsblast.cleaned_data['message_text']
             send_date = form_smsblast.cleaned_data['send_date']
             send_time = form_smsblast.cleaned_data['send_time']
+            is_now = False
 
             if send_date == None and send_time == None:
                 send_date = datetime.datetime.now().date()
-                send_time = datetime.datetime.now().time().replace(microsecond=0)
                 execute_time = (datetime.datetime.now() + datetime.timedelta(minutes=1)).time()
+                is_now = True
+                send_time = execute_time
             else:
                 execute_time = send_time
+            
+            smsblast_instance = SMSBlast(message_title=message_title, message_text=message_text, send_date=send_date, send_time=send_time, is_now=is_now)
+            smsblast_instance.save()
 
             for name in to_numbers:
                 contact_instance = Contact.objects.get(name=name)
@@ -2137,13 +2119,10 @@ class AddSMSBlastView(View):
                 local_datetime = tz.localize(date_time, is_dst=None)
                 utc_datetime = local_datetime.astimezone(pytz.utc)
 
-                smsblast_instance = SMSBlast(message_title=message_title, message_text=message_text, send_date=send_date, send_time=send_time)
-                smsblast_instance.save()
-
                 contactandsms_instance = ContactAndSMS(contact=contact_instance, smsblast=smsblast_instance)
                 contactandsms_instance.save()
 
-                smsjob_instance = SMSBlastJob(smsblast=smsblast_instance)
+                smsjob_instance = SMSBlastJob(smsblast=smsblast_instance, contact=contact_instance)
                 smsjob_instance.save()
 
                 if file_name:
@@ -2165,9 +2144,187 @@ class AddSMSBlastView(View):
             return render(request, self.template_name, context)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
-class SMSBlastTempContactsView(View):
+class DetailSMSBlastView(View):
+    initial = {'key', 'value'}
+    template_name = 'app/detail_smsblast.html'
+
+    def get(self, request, pk):
+        smsblast_instance = SMSBlast.objects.get(pk=pk)
+        contactandsms = ContactAndSMS.objects.filter(smsblast=smsblast_instance).values_list('contact')
+        contacts = Contact.objects.filter(pk__in=contactandsms).order_by('id').values_list('name', flat=True)
+        
+        context = {
+            'contacts' : ', '.join(list(contacts)),
+            'smsblast' : smsblast_instance,
+        }
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class UpdateSMSBlastView(View):
+    form_class = {
+        'form_smsblast' : SMSBlastForm,
+    }
+
+    initial = {'key', 'value'}
+    template_name = 'app/update_smsblast_form.html'
+
+    def get(self, request, pk):
+        smsblast_instance = SMSBlast.objects.get(pk=pk)
+        contactandsms = ContactAndSMS.objects.filter(smsblast=smsblast_instance).values_list('contact')
+        contacts = Contact.objects.filter(pk__in=contactandsms).values_list('name', flat=True)
+
+        if smsblast_instance.is_now:
+            form_smsblast = self.form_class['form_smsblast'](initial={'to_numbers' : list(contacts), 'message_title' : smsblast_instance.message_title, 'message_text' : smsblast_instance.message_text})
+        else:
+            form_smsblast = self.form_class['form_smsblast'](initial={'to_numbers' : list(contacts), 'message_title' : smsblast_instance.message_title, 'message_text' : smsblast_instance.message_text, 'send_date' : smsblast_instance.send_date, 'send_time' : smsblast_instance.send_time})
+
+        view_contacts_params = ''
+        for i, contact in enumerate(contacts):
+            if i == 0:
+                view_contacts_params += 'name=' + contact
+            else:
+                view_contacts_params += '&name=' + contact
+
+        context = {
+            'pk' : pk,
+            'is_now' : smsblast_instance.is_now,
+            'view_contacts_params' :view_contacts_params,
+            'form_smsblast' : form_smsblast,
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        scheduler = django_rq.get_scheduler('default')
+        tz = pytz.timezone('Asia/Jakarta')
+
+        form_smsblast = self.form_class['form_smsblast'](request.POST or None)
+
+        if form_smsblast.is_valid():
+            smsblast_instance = SMSBlast.objects.get(pk=pk)
+            contactandsms = ContactAndSMS.objects.filter(smsblast=smsblast_instance)
+            smsjobs = SMSBlastJob.objects.filter(smsblast=smsblast_instance)
+
+            to_numbers = form_smsblast.cleaned_data['to_numbers']
+            message_title = form_smsblast.cleaned_data['message_title']
+            message_text = form_smsblast.cleaned_data['message_text']
+            send_date = form_smsblast.cleaned_data['send_date']
+            send_time = form_smsblast.cleaned_data['send_time']
+            is_now = False
+
+            if send_date == None and send_time == None:
+                send_date = datetime.datetime.now().date()
+                execute_time = (datetime.datetime.now() + datetime.timedelta(minutes=1)).time()
+                is_now = True
+                send_time = execute_time
+            else:
+                execute_time = send_time
+
+            smsblast_instance.message_title = message_title
+            smsblast_instance.message_text = message_text
+            smsblast_instance.send_date = send_date
+            smsblast_instance.send_time = send_time
+
+            smsblast_instance.save()
+
+            for name in to_numbers:
+                contact_instance = Contact.objects.get(name=name)
+                file_name = contact_instance.numbers
+
+                date_time = datetime.datetime.combine(send_date, execute_time)
+                local_datetime = tz.localize(date_time, is_dst=None)
+                utc_datetime = local_datetime.astimezone(pytz.utc)
+
+                if contactandsms.filter(contact=contact_instance).exists():
+                    contactandsms.exclude(contact=contact_instance)
+                else:
+                    new_contactandsms = ContactAndSMS(contact=contact_instance, smsblast=smsblast_instance)
+                    new_contactandsms.save()
+
+                smsjob_instance = SMSBlastJob.objects.get(smsblast=smsblast_instance, contact=contact_instance)
+                scheduler.cancel(smsjob_instance.job_id)
+                
+                if file_name:
+                    with open(str(file_name), 'rb') as f:
+                        contacts = pickle.load(f)
+                        f.close()
+
+                    job = scheduler.schedule(scheduled_time=utc_datetime, func=services.sms_blast, args=[name, message_title, message_text, contacts, send_date, send_time, smsjob_instance.id], repeat=0)
+                    smsjob_instance.job_id = job.id
+                    smsjob_instance.save()
+
+            return redirect(reverse('app:smsblast'))
+        
+        else:
+            context = {
+                'form_smsblast' : form_smsblast,
+            }
+
+            return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class DeleteSMSBlastView(View):
+    def post(self, request, pk):
+        scheduler = django_rq.get_scheduler('default')
+        
+        smsblast_instance = SMSBlast.objects.get(pk=pk)
+        contactandsms = ContactAndSMS.objects.filter(smsblast=smsblast_instance)
+        smsblastjobs = SMSBlastJob.objects.filter(smsblast=smsblast_instance)
+        smsblast_statuses = SMSStatus.objects.filter(job__in=smsblastjobs)
+
+        for status in smsblast_statuses:
+            os.remove(str(status.status.name))
+            status.delete()
+
+        for job in smsblastjobs:
+            scheduler.cancel(job.job_id)
+            job.delete()
+
+        for instance in contactandsms:
+            instance.delete()
+
+        smsblast_instance.delete()
+
+        return redirect(reverse('app:smsblast'))
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class SMSBlastTempContactsViewAdd(View):
     initial = {'key', 'value'}
     template_name = 'app/add_smsblast_temp_contacts.html'
+
+    def get(self, request):
+        names = request.GET.getlist('name')
+
+        contacts = []
+        for name in names:
+            file_name = Contact.objects.get(name=name).numbers
+
+            if file_name:
+                with open(str(file_name), 'rb') as f:
+                    contact = pickle.load(f)
+                    f.close()
+
+                contacts.extend(contact)
+
+        contact_list = ''
+        if names:
+            contact_list = ', '.join(names)
+            
+        count = len(contacts)
+        contacts = [contacts[x:x+4] for x in range(0, len(contacts), 4)]
+
+        context = {
+            'contact_list' : contact_list,
+            'count' : count,
+            'contacts' : contacts,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class SMSBlastTempContactsViewUpdate(View):
+    initial = {'key', 'value'}
+    template_name = 'app/update_smsblast_temp_contacts.html'
 
     def get(self, request):
         names = request.GET.getlist('name')

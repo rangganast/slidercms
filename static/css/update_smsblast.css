@@ -1,0 +1,77 @@
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+fieldset.numbergenerate-border {
+    border: 1px groove #ddd !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow: 0px 0px 0px 0px #000;
+    box-shadow: 0px 0px 0px 0px #000;
+}
+
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:active,
+.btn-secondary:visited,
+.btn-secondary:focus,
+.btn-secondary:disabled {
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus,
+.btn-primary:disabled {
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.btn-danger,
+.btn-danger:hover,
+.btn-danger:active,
+.btn-danger:visited,
+.btn-danger:focus,
+.btn-danger:disabled {
+    background-color: #dc3545 !important;
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.btn-success,
+.btn-success:hover,
+.btn-success:active,
+.btn-success:visited,
+.btn-success:focus,
+.btn-success:disabled {
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.btn-warning,
+.btn-warning:hover,
+.btn-warning:active,
+.btn-warning:visited,
+.btn-warning:focus,
+.btn-warning:disabled {
+    border-color: #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.select2-selection__choice {
+    color: white !important;
+    background-color: #007bff;
+}
+
+.select2-selection__choice__remove {
+    color: white !important;
+}

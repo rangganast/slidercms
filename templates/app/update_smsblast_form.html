@@ -4,14 +4,14 @@
 
 {% block title %}SMS Blast - Tambah Kontak{% endblock title %}
 
-{% block style %}<link rel="stylesheet" href="{% static 'css/add_smsblast.css' %}">{% endblock style %}
+{% block style %}<link rel="stylesheet" href="{% static 'css/update_smsblast.css' %}">{% endblock style %}
 
 {% block content %}
-<form id="smsBlastForm" method="POST" action="{% url 'app:smsblast_add_smsblast' %}">
+<form id="smsBlastForm" method="POST" action="{% url 'app:smsblast_update_smsblast' pk=pk %}">
     {% csrf_token %}
 
     <div id="card-field" class="container-fluid mt-3">
-        <h3 class="text-center mb-2">Form Tambah SMS</h3>
+        <h3 class="text-center mb-2">Form Update SMS</h3>
     </div>
 
     <hr>
@@ -37,7 +37,7 @@
                 for="">Lihat Grup Kontak</label>
             <div class="col-sm-10">
                 <a id="viewTempContacts" href="{% url 'app:smsblast_add_smsblast_temp_contacts' %}" target="_blank">
-                    <button id="viewTempContactsBtn" type="button" class="btn btn-warning" disabled>Lihat Nomor</button>
+                    <button id="viewTempContactsBtn" type="button" class="btn btn-warning">Lihat Nomor</button>
                 </a>
             </div>
         </div>
@@ -75,18 +75,18 @@
                 <strong>
                     <label class="radio-inline mr-3" for="send_now_yes" style="color: #007bff;">Apakah pesan mau dikirim sekarang?</label>
                     <label class="mr-3 radio-inline" for="send_now_yes" style="color: #007bff;">
-                        <input type="radio" name="send_now" id="send_now_yes" value="Ya" required checked>
+                        <input type="radio" name="send_now" id="send_now_yes" value="Ya" required {% if is_now %}checked{% endif %}>
                         Ya
                     </label>
                     <label class="radio-inline" for="send_now_no" style="color: #007bff;">
-                        <input type="radio" name="send_now" id="send_now_no" value="Tidak" required>
+                        <input type="radio" name="send_now" id="send_now_no" value="Tidak" required {% if not is_now %}checked{% endif %}>
                         Tidak
                     </label>
                 </strong>
             </div>
         </div>
 
-        <div id="send_now_div" style="display: none;">
+        <div id="send_now_div" {% if is_now %}style="display: none;"{% endif %}>
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label"
                     for="{{ form_smsblast.send_date.id_for_label }}">{{ form_smsblast.send_date.label }}</label>
@@ -130,5 +130,49 @@
 {% endblock content %}
 
 {% block script %}
-<script src="{% static 'js/add_smsblast.js' %}"></script>
+<script>
+    $(document).ready(function() {
+    $('#sliderManagement').removeClass('menu-open');
+    $('a#smsBlast').addClass('active');
+
+    $('#id_to_numbers').select2({
+        theme: 'bootstrap4',
+    });
+    
+    $('#id_send_date').daterangepicker({
+        autoUpdateInput: false,
+        singleDatePicker: true,
+        cancelButtonClasses: 'btn btn-secondary',
+        minDate: new Date(),
+        drops: 'up',
+        locale: {
+            format: 'DD/MM/YYYY',
+            cancelLabel: 'Clear'
+        },
+    });
+    
+    $('#id_send_time').daterangepicker({
+        autoUpdateInput: false,
+        cancelButtonClasses: 'btn btn-secondary',
+        timePicker: true,
+        singleDatePicker: true,
+        timePicker24Hour: true,
+        timePickerIncrement: 1,
+        timePickerSeconds: true,
+        locale: {
+            format: 'HH:mm:ss',
+            cancelLabel: 'Clear'
+        },
+    }).on('show.daterangepicker', function (ev, picker) {
+        picker.container.find(".calendar-table").hide();
+    }).on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('HH:mm:ss'));
+    }).on('cancel.daterangepicker', function (ev, picker) {
+        $(this).val('');
+    });
+
+    $('#viewTempContacts').attr('href', '/smsblast/update_smsblast_temp_contacts?' + '{{view_contacts_params}}')
+});
+</script>
+<script src="{% static 'js/update_smsblast.js' %}"></script>
 {% endblock script %}

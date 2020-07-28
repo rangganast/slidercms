@@ -178,7 +178,8 @@ class Contact(models.Model):
     source = models.ForeignKey(ContactSource, on_delete=models.CASCADE, related_name='contactsources')
     name = models.CharField(max_length=100)
     numbers = models.FileField(upload_to='pickles/contact/')
-    is_archived = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+    deleted_datetime = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -225,6 +226,7 @@ class SMSBlast(models.Model):
     message_text = models.CharField(max_length=160)
     send_date = models.DateField(null=True, blank=True)
     send_time = models.TimeField(null=True, blank=True)
+    is_now = models.BooleanField(default=False)
 
     def __str__(self):
         return self.message_title
@@ -261,7 +263,8 @@ class ContactAndSMS(models.Model):
 class SMSBlastJob(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=9)
     job_id = models.CharField(max_length=100, blank=True, null=True)
-    smsblast = models.ForeignKey(SMSBlast, on_delete=models.CASCADE, related_name='smsblast')
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='contact_job')
+    smsblast = models.ForeignKey(SMSBlast, on_delete=models.CASCADE, related_name='smsblast_job')
 
     def __str__(self):
         return self.job_id
