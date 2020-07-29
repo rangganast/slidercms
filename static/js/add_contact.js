@@ -145,20 +145,26 @@ function addContact(input) {
     newElement.find('#id_form-' + id + '-generate_numbers').attr('id', 'id_form-' + (id + 1) + '-generate_numbers')
     newElement.find('.generate_numbers-backend-error').hide();
 
+    
     newElement.find('#generate_numbers-' + id + '-inaccurate').hide()
     newElement.find('#generate_numbers-' + id + '-inaccurate').attr('id', 'generate_numbers-' + (id + 1) + '-inaccurate')
-
+    
     newElement.find('#add-' + id + '-contact').attr('id', 'add-' + (id + 1) + '-contact')
     newElement.find('#delete-' + id + '-contact').attr('id', 'delete-' + (id + 1) + '-contact')
-
+    
     newElement.find('.deleteContactBtn').show();
-
+    
     $('#id_form-TOTAL_FORMS').val(id + 2);
 
     $(selector).find('.addContactBtn').hide();
     $(selector).find('.deleteContactBtn').hide();
     
     $(selector).after(newElement);
+
+    new AutoNumeric('#id_form-' + (id + 1) + '-generate_numbers', {
+        digitGroupSeparator: ',',
+        decimalPlaces: '0',
+    });
 }
 
 function deleteContact(input) {

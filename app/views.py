@@ -1022,6 +1022,8 @@ class AddUserView(View):
             username = form_user.cleaned_data['username']
             password = form_user.cleaned_data['password']
 
+            print(str(request.get_host()))
+
             subject_role = None
 
             if role == '1':
@@ -1037,12 +1039,12 @@ class AddUserView(View):
             user_instance.set_password(password)
             user_instance.save()
 
-            html_content = render_to_string('app/mail_template.html', {'username' : username, 'email' : email, 'password' : password, 'role' : subject_role, 'protocol' : request.scheme, 'domain' : request.get_host})
+            html_content = render_to_string('app/mail_template.html', {'username' : username, 'email' : email, 'password' : password, 'role' : subject_role, 'protocol' : request.scheme, 'domain' : str(request.get_host())})
 
             send_mail(
                 subject='Super Admin telah menambahkan anda sebagai ' + subject_role,
                 message='',
-                from_email='From <noreply@' + request.get_host + '>',
+                from_email='From <noreply@' + str(request.get_host()) + '>',
                 recipient_list=[email],
                 html_message=html_content,
                 fail_silently=True
@@ -1415,6 +1417,7 @@ class DeleteContactView(View):
         contact_instance.deleted_datetime = datetime.datetime.now()
         contact_instance.save()
 
+        messages.add_message(request, messages.INFO, "Grup Kontak berhasil dihapus!", extra_tags="contact_deleted")
         return redirect(reverse('app:smsblast_contact'))
 
 @method_decorator([login_required, marketing_required], name='dispatch')
@@ -1474,7 +1477,7 @@ class AddContactGroupView(View):
                         pickle.dump(itemlist, f)
                         f.close()
 
-                    
+                messages.add_message(request, messages.INFO, "Grup Kontak berhasil ditambahkan!", extra_tags="contact_added")
                 return redirect(reverse('app:smsblast_contact'))
 
             else:
@@ -1549,6 +1552,7 @@ class AddRandomGeneratedNumbersView(View):
                     pickle.dump(itemlist, f)
                     f.close()
 
+            messages.add_message(request, messages.INFO, "Grup Kontak berhasil ditambahkan!", extra_tags="contact_added")
             return redirect(reverse('app:smsblast_contact'))
 
         else:
@@ -1774,7 +1778,8 @@ class UpdateContactGroupView(View):
                     with open('pickles/contact/all_contacts.p', 'wb') as f:
                         pickle.dump(itemlist, f)
                         f.close()
-                    
+
+                messages.add_message(request, messages.INFO, "Grup Kontak berhasil di-update!", extra_tags="contact_updated")
                 return redirect(reverse('app:smsblast_contact'))
 
             else:
@@ -1818,7 +1823,7 @@ class UpdateRandomGeneratedNumbersView(View):
                 old_itemlist = pickle.load(f)
                 f.close()
 
-            os.remove(str(contact_instance.numbers.name))
+            os.remove(str(contact_instance.numbers))
 
             file_name = contact_name.lower().replace(' ', '-')
             shutil.copy('pickles/contact/contacts_random_temp_update.p', 'pickles/contact/' + file_name + '.p')
@@ -1845,9 +1850,8 @@ class UpdateRandomGeneratedNumbersView(View):
                         generatecontact_instance.save()
 
             for deleted in deleted_numbers:
-                print(deleted['id'].value())
-                # generatecontact_instance = GenerateContact.objects.get(pk=deleted['id'].value)
-                # generatecontact_instance.delete()
+                generatecontact_instance = GenerateContact.objects.get(pk=deleted['id'].value())
+                generatecontact_instance.delete()
 
             contact_instance.numbers = 'pickles/contact/' + file_name + '.p'
             contact_instance.save()
@@ -1873,6 +1877,7 @@ class UpdateRandomGeneratedNumbersView(View):
                     pickle.dump(itemlist, f)
                     f.close()
 
+            messages.add_message(request, messages.INFO, "Grup Kontak berhasil di-update!", extra_tags="contact_updated")
             return redirect(reverse('app:smsblast_contact'))
 
         else:
@@ -2061,8 +2066,11 @@ class SMSBlastView(View):
                 status = 'Belum Dikirim'
 
             contents.append({'pk' : sms.pk, 'message_title' : sms.message_title, 'contact_groups' : contacts, 'sms_count' : sms_count, 'send_date' : sms.send_date, 'send_time' : sms.send_time, 'status' : status})
+        
+        contacts = Contact.objects.all().values_list('name', flat=True)
 
         context = {
+            'contacts' : list(contacts),
             'contents' : contents,
         }
 
@@ -2134,6 +2142,7 @@ class AddSMSBlastView(View):
                     smsjob_instance.job_id = job.id
                     smsjob_instance.save()
 
+            messages.add_message(request, messages.INFO, "SMS Blast berhasil ditambahkan!", extra_tags="smsblast_added")
             return redirect(reverse('app:smsblast'))
         
         else:
@@ -2154,8 +2163,57 @@ class DetailSMSBlastView(View):
         contacts = Contact.objects.filter(pk__in=contactandsms).order_by('id').values_list('name', flat=True)
         
         context = {
+            'pk' : pk,
             'contacts' : ', '.join(list(contacts)),
             'smsblast' : smsblast_instance,
+        }
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class DetailSMSBlastStatusView(View):
+    initial = {'key', 'value'}
+    template_name = 'app/detail_smsblast_status.html'
+
+    def get(self, request, pk):
+        smsblast_instance = SMSBlast.objects.get(pk=pk)
+        contactandsms = list(ContactAndSMS.objects.filter(smsblast=smsblast_instance).values_list('contact', flat=True))
+        smsjobs = SMSBlastJob.objects.filter(smsblast=smsblast_instance)
+        smsstatus = SMSStatus.objects.filter(job__in=smsjobs)
+
+        contacts = []
+        contact_names = []
+        statuses = []
+        count = 0
+
+        for instance in contactandsms:
+            contact_instance = Contact.objects.get(pk=instance)
+
+            with open(str(contact_instance.numbers), 'rb') as f:
+                contact = pickle.load(f)
+                f.close()
+
+            contacts.extend(contact)
+            count += len(contact)
+
+            contact_names.append(contact_instance.name)
+        
+        for status in smsstatus:
+            with open(str(status.status), 'rb') as f:
+                status = pickle.load(f)
+                f.close()
+            
+            status = ['Gagal Terkirim' if stat.split('|')[0] == 'FAILED' else 'Berhasil Terkirim' for stat in status]
+
+            statuses.extend(status)
+
+        contact_names = ', '.join(contact_names)
+
+        context = {
+            'pk' : pk,
+            'contacts' : contacts,
+            'statuses' : statuses,
+            'contact_names' : contact_names,
+            'count' : count,
         }
         return render(request, self.template_name, context)
 
@@ -2253,6 +2311,7 @@ class UpdateSMSBlastView(View):
                     smsjob_instance.job_id = job.id
                     smsjob_instance.save()
 
+            messages.add_message(request, messages.INFO, "SMS Blast berhasil di-update!", extra_tags="smsblast_updated")
             return redirect(reverse('app:smsblast'))
         
         else:
@@ -2285,6 +2344,7 @@ class DeleteSMSBlastView(View):
 
         smsblast_instance.delete()
 
+        messages.add_message(request, messages.INFO, "SMS Blast berhasil dihapus!", extra_tags="smsblast_deleted")
         return redirect(reverse('app:smsblast'))
 
 @method_decorator([login_required, marketing_required], name='dispatch')
@@ -2533,6 +2593,14 @@ def load_cities(request):
     cities = services.get_cities(id, country, value)
 
     return HttpResponse(cities)
+
+@login_required
+def load_contacts(request):
+    source = request.GET.get('source')
+    source_instance = ContactSource.objects.get(source=source)
+    contacts = Contact.objects.filter(source=source_instance)
+
+    return render(request, 'app/contacts_dropdown_list_options.html', {'contacts': contacts})
     
 @login_required
 def check_similar_page_add(request):

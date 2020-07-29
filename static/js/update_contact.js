@@ -66,9 +66,22 @@ $('#generateNumber').click(function (e) {
         setTimeout(function (){
             $('#randomNumberSpinner').hide();
             $('#viewRandomNumbers').prop('disabled', false);
+            $('#submitForms').prop('disabled', false);
         }, 1000)
     }
     
+});
+
+$('.first_code').on('input', function () {
+    $('#submitForms').prop('disabled', true)
+});
+
+$('.digits').on('input', function () {
+    $('#submitForms').prop('disabled', true)
+});
+
+$('.generate_numbers').on('input', function () {
+    $('#submitForms').prop('disabled', true)
 });
 
 $('#id_upload_csv').on('change', function () {
@@ -151,6 +164,8 @@ function addContact(input) {
 
     $('#id_form-TOTAL_FORMS').val(id + 2);
 
+    $('#submitForms').prop('disabled', true);
+
     $(selector).find('.addContactBtn').hide();
     $(selector).find('.deleteContactBtn').hide();
     
@@ -168,6 +183,8 @@ function deleteContact(input) {
         $(selector).remove();
         $('#id_form-TOTAL_FORMS').val(id);
     }
+
+    $('#submitForms').prop('disabled', true);
 
     if((id - 1) != 0) {
         $('#delete-' + (id - 1) + '-contact').show();

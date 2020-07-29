@@ -21,13 +21,17 @@
                     <label for="contactGroupFilter"><small>Cari Grup Kontak</small></label>
                     <div class="input-group">
                         <select id="contactGroupFilter" class="form-control">
+                            <option value="">Cari Grup Kontak</option>
+                            {% for contact in contacts %}
+                            <option value="{{contact}}">{{contact}}</option>
+                            {% endfor %}                                
                         </select>
                     </div>
                 </div>
                 <div class="col-sm-3 no-padding">
                     <label for=""><small>Cari Tanggal Pengiriman</small></label>
                     <div class="input-group">
-                        <input type="text" class="form-control">
+                        <input id="sendDateFilter" type="text" class="form-control">
                     </div>
                 </div>
                 <div class="col-sm-3 no-padding">
@@ -105,9 +109,9 @@
                     </form>
                 </span>
                 <span class="spanFormat">
-                    <form action="{% url 'app:smsblast_delete_smsblast' pk=content.pk %}" method="POST">
+                    <form id="form_smsblast_delete-{{forloop.counter0}}" action="{% url 'app:smsblast_delete_smsblast' pk=content.pk %}" method="POST">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                        <button id="deleteSMSBlastBtn-{{forloop.counter0}}" type="button" class="btn btn-sm btn-danger" onclick="deleteSMSBlast(this);">Hapus</button>
                     </form>
                 </span>
             </td>
@@ -119,4 +123,39 @@
 
 {% block script %}
 <script src="{% static 'js/smsblast.js' %}"></script>
+<script type="text/javascript">
+    {% if messages %}
+    {% for message in messages %}
+    
+    {% if 'smsblast_added' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'smsblast_updated' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'smsblast_deleted' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+        
+    {% endfor %}
+    {% endif %}
+        
+</script>
 {% endblock script %}

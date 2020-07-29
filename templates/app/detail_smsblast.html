@@ -7,9 +7,9 @@
 {% block style %}<link rel="stylesheet" href="{% static 'css/detail_smsblast.css' %}">{% endblock style %}
 
 {% block content %}
-    <h3 class="text-center mb-2">Detail Grup Kontak
+    <h3 class="text-center mb-2">Detail Pengiriman SMS
         <span class="btn-group float-right">
-            <a href="{% url 'app:smsblast_contact' %}" style="color: white; text-decoration: none;">
+            <a href="{% url 'app:smsblast' %}" style="color: white; text-decoration: none;">
                 <button type="button" class="btn btn-secondary mr-2">
                     Kembali
                 </button>
@@ -35,7 +35,9 @@
     </label>
     <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
     <div class="col-sm-9 no-padding">
-        <button class="btn btn-warning">Lihat Nomor</button>
+        <a href="{% url 'app:smsblast_detail_smsblast_status' pk=pk %}">
+            <button class="btn btn-warning">Lihat Nomor</button>
+        </a>
     </div>
 </div>
 

@@ -13,8 +13,7 @@
 
     <legend class="contact-border">Filter</legend>
 
-    <div id="filterDiv" class="control-group mb-3" data-page-url="{% url 'app:ajax_load_pages' %}"
-        data-location-url="{% url 'app:ajax_load_locations' %}">
+    <div id="filterDiv" class="control-group mb-3" data-contact-url="{% url 'app:ajax_load_contacts' %}">
         <div class="col input-wrapper">
             <div class="row">
                 <div class="col-sm-3 no-padding">
@@ -22,19 +21,16 @@
                     <div class="input-group">
                         <select id="contactSourceFilter" class="form-control">
                             <option value=""></option>
-                            <option value="Generate Nomor secara Acak">Generate Nomor secara Acak</option>
-                            <option value="Upload File .csv">Upload File .csv</option>
+                            <option value="random">Generate Nomor secara Acak</option>
+                            <option value="csv">Upload File .csv</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-sm-3 no-padding">
                     <label for="contactGroupFilter"><small>Cari Grup Kontak</small></label>
                     <div class="input-group">
-                        <select id="contactGroupFilter" class="form-control">
-                            <option value=""></option>
-                            {% for name in contact_names %}
-                            <option value="{{name}}">{{name}}</option>
-                            {% endfor %}
+                        <select id="contactGroupFilter" class="form-control" disabled>
+                            {% include 'app/contacts_dropdown_list_options.html' %}
                         </select>
                     </div>
                 </div>
@@ -92,9 +88,9 @@
                     </form>
                 </span>
                 <span class="spanFormat">
-                    <form action="{% url 'app:smsblast_delete_contact' pk=content.contact_id %}" method="POST">
+                    <form id="form_contact_delete-{{forloop.counter0}}" action="{% url 'app:smsblast_delete_contact' pk=content.contact_id %}" method="POST">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                        <button id="deleteContactBtn-{{forloop.counter0}}" type="button" class="btn btn-sm btn-danger" onclick="deleteContact(this);">Hapus</button>
                     </form>
                 </span>
             </td>
@@ -107,4 +103,39 @@
 
 {% block script %}
 <script src="{% static 'js/contact.js' %}"></script>
+<script type="text/javascript">
+    {% if messages %}
+    {% for message in messages %}
+    
+    {% if 'contact_added' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'contact_updated' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+    
+    {% if 'contact_deleted' in message.tags %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ message }}',
+            confirmButtonClass: 'btn btn-primary',
+        })
+    {% endif %}
+        
+    {% endfor %}
+    {% endif %}
+        
+</script>
 {% endblock script %}

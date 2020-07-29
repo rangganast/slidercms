@@ -41,6 +41,7 @@ urlpatterns = [
     path('smsblast/add_smsblast_temp_contacts', views.SMSBlastTempContactsViewAdd.as_view(), name='smsblast_add_smsblast_temp_contacts'),
     path('smsblast/update_smsblast_temp_contacts', views.SMSBlastTempContactsViewUpdate.as_view(), name='smsblast_update_smsblast_temp_contacts'),
     path('smsblast/detail_smsblast/<str:pk>', views.DetailSMSBlastView.as_view(), name='smsblast_detail_smsblast'),
+    path('smsblast/detail_smsblast_status/<str:pk>', views.DetailSMSBlastStatusView.as_view(), name='smsblast_detail_smsblast_status'),
     path('smsblast/update_smsblast/<str:pk>', views.UpdateSMSBlastView.as_view(), name='smsblast_update_smsblast'),
     path('smsblast/delete_smsblast/<str:pk>', views.DeleteSMSBlastView.as_view(), name='smsblast_delete_smsblast'),
 
@@ -87,6 +88,7 @@ urlpatterns = [
     path('ajax/load-location-size', views.load_location_size, name='ajax_load_location_size'),
     path('ajax/load-regions', views.load_regions, name='ajax_load_regions'),
     path('ajax/load-cities', views.load_cities, name='ajax_load_cities'),
+    path('ajax/load-contacts', views.load_contacts, name='ajax_load_contacts'),
     path('ajax/check-similar-page-add', views.check_similar_page_add, name='ajax_check_similar_page_add'),
     path('ajax/check-similar-page-update', views.check_similar_page_update, name='ajax_check_similar_page_update'),
     path('ajax/check-similar-location-add', views.check_similar_location_add, name='ajax_check_similar_location_add'),

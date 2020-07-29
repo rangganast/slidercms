@@ -1,4 +1,7 @@
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
 import json
 import datetime
 import time
@@ -11,10 +14,16 @@ from .models import SMSStatus, SMSBlast, SMSBlastJob, Contact
 token = config('TOKEN')
 domain = config('DOMAIN')
 
+session = requests.Session()
+retry = Retry(connect=3, backoff_factor=0.5)
+adapter = HTTPAdapter(max_retries=retry)
+session.mount('http://', adapter)
+session.mount('https://', adapter)
+
 def get_list():
     url = domain + '/api/v1/keyword/list'
 
-    r = requests.get(url, headers={'Content-Type': 'application/json',
+    r = session.get(url, headers={'Content-Type': 'application/json',
                                     'Authorization': 'Token {}'.format(token)})
     keywords_list = r.json()
     return keywords_list
@@ -22,7 +31,7 @@ def get_list():
 def get_keywords():
     url =  domain + '/api/v1/keyword/search'
 
-    r = requests.get(url, headers={'Content-Type': 'application/json',
+    r = session.get(url, headers={'Content-Type': 'application/json',
                                    'Authorization': 'Token {}'.format(token)})
     keywords_list = r.json()
     return keywords_list
@@ -35,7 +44,7 @@ def get_keyword_ips(id, date1, date2):
 
     params = {"date1" : date1, "date2": date2}
 
-    r = requests.get(url, headers={'Content-Type': 'application/json',
+    r = session.get(url, headers={'Content-Type': 'application/json',
                                    'Authorization': 'Token {}'.format(token)}, params=params)
     ip_list = r.json()
     return ip_list
@@ -45,7 +54,7 @@ def get_regions(id, country):
 
     params = {"keyword_id" : id, "country": country}
 
-    r = requests.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
+    r = session.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
 
     regions = r.json()
     regions = list(set([item['keyword_ip_region'] + '/' for item in regions if item['keyword_ip_region'] is not None]))
@@ -57,7 +66,7 @@ def get_cities(id, country, region):
 
     params = {"keyword_id": id, "country": country, "region": region}
 
-    r = requests.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
+    r = session.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
 
     cities = r.json()
     cities = list(set([item['keyword_ip_city'] + '/' for item in cities if item['keyword_ip_city'] is not None]))
@@ -67,7 +76,7 @@ def get_cities(id, country, region):
 def get_count_keywords():
     url =  domain + '/api/v1/keyword/count'
 
-    r = requests.get(url, headers={'Content-Type': 'application/json',
+    r = session.get(url, headers={'Content-Type': 'application/json',
                                    'Authorization': 'Token {}'.format(token)})
 
     count_list = r.json()
@@ -92,7 +101,7 @@ def get_count_keywords_with_params(date1=None, date2=None):
     if date1_check and date2_check:
         params = {"date1" : date1, "date2": date2}
 
-        r = requests.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
+        r = session.get(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)}, params=params)
 
         count_list = r.json()
         return count_list
@@ -103,7 +112,7 @@ def get_count_keywords_with_params(date1=None, date2=None):
 def post_products_total(id, keyword):
     url =  domain + '/api/v1/keyword/scrape'
     products_total_url = 'https://qaweb.holahalo.dev/api/v1/public/search-product?q=' + keyword
-    r = requests.get(products_total_url, headers={'Content-Type': 'application/json'}, params={'q' : keyword})
+    r = session.get(products_total_url, headers={'Content-Type': 'application/json'}, params={'q' : keyword})
     
     products_data = r.json()
 
@@ -120,14 +129,14 @@ def post_products_total(id, keyword):
             "lastscrape_products" : products_num,
         }
 
-        return requests.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)})
+        return session.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json', 'Authorization': 'Token {}'.format(token)})
 
 def export_excel(date1, date2, app):
     url =  domain + '/api/v1/keyword/export'
 
     params = {"date1" : date1, "date2": date2, "app": app}
 
-    r = requests.get(url, stream=True, headers={'Content-Type': 'application/vnd.ms-excel',
+    r = session.get(url, stream=True, headers={'Content-Type': 'application/vnd.ms-excel',
                                    'Authorization': 'Token {}'.format(token)}, params=params)
 
     return r.content
@@ -141,7 +150,7 @@ def sms_blast(name, message_title, message_text, contacts, send_date, send_time,
     
     for contact in contacts:
         sms_api_url = 'http://api-sms.nadyne.com/sms.php?user=regholahalo&pwd=reg778899&sender=HOLAHALO&msisdn=62' + contact[1:] + '&message=' + message_text + '&desc=pesanhhmarketing'
-        r = requests.get(sms_api_url)
+        r = session.get(sms_api_url)
 
         file_like_xml = BytesIO(r.content)
         response = etree.parse(file_like_xml)

@@ -290,7 +290,7 @@ class GenerateRandomNumberForm(forms.ModelForm):
         widgets = {
             'first_code' : forms.NumberInput({'class' : 'form-control first_code', 'autocomplete' : 'off', 'required' : True}),
             'digits' : forms.NumberInput({'class' : 'form-control digits', 'autocomplete' : 'off', 'required' : True}),
-            'generate_numbers' : forms.NumberInput({'class' : 'form-control generate_numbers', 'autocomplete' : 'off', 'required' : True}),
+            'generate_numbers' : forms.TextInput({'class' : 'form-control generate_numbers', 'autocomplete' : 'off', 'required' : True}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -358,4 +358,4 @@ class SMSBlastForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SMSBlastForm, self).__init__(*args, **kwargs)
-        self.fields['to_numbers'] = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), choices=[(contact.name, contact.name) for contact in Contact.objects.all()], label='Nomor Tujuan')
+        self.fields['to_numbers'] = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class' : 'form-control', 'multiple' : True, 'required' : True}), choices=[(contact.name, contact.name) for contact in Contact.objects.filter(is_deleted=False)], label='Nomor Tujuan')

@@ -171,6 +171,29 @@
                         </li>
                     </ul>
                 </li>
+                <li id="smsBlastManagement" class="nav-item has-treeview menu-open">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fa fa-envelope"></i>
+                        <p>
+                            Manajemen SMS Blast
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a id="contactManagement" href="{% url 'app:smsblast_contact' %}" class="nav-link">
+                                <i class="nav-icon fas fas fa-users"></i>
+                                <p>Manajemen Kontak</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="smsBlast" href="{% url 'app:smsblast' %}" class="nav-link">
+                                <i class="nav-icon fas fa-comments"></i>
+                                <p>SMS Blast</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

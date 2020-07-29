@@ -201,8 +201,13 @@
 {% endblock content %}
 
 {% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autonumeric/4.1.0/autoNumeric.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        new AutoNumeric('.generate_numbers', {
+            digitGroupSeparator : ',',
+            decimalPlaces : '0',
+        });
 
         {% if form_generate_fail %}
         window.history.pushState('', '', '/smsblast/add_contact');
