@@ -1663,14 +1663,14 @@ class GenerateCSVContactViewAdd(View):
                 return HttpResponse('wrong_csv_format')
 
             contacts = []
-            for index, row in enumerate(csv.reader(io_string, delimiter=',')):
+            for index, row in enumerate(reader):
                 if index != 0:
                     if row[1][:2] != '08':
                         return HttpResponse('prefix_invalid')
                     elif len(row[1]) < 9 or len(row[1]) > 14:
                         return HttpResponse('length_invalid')
 
-                    contacts.append(row[1])
+                contacts.append(row[1])
 
             if os.path.isfile('pickles/contact/contacts_csv_temp_add.p'):
                 os.remove('pickles/contact/contacts_csv_temp_add.p')
@@ -2019,14 +2019,14 @@ class GenerateCSVContactViewUpdate(View):
                 return HttpResponse('wrong_csv_format')
 
             contacts = []
-            for index, row in enumerate(csv.reader(io_string, delimiter=',')):
+            for index, row in enumerate(reader):
                 if index != 0:
                     if row[1][:2] != '08':
                         return HttpResponse('prefix_invalid')
                     elif len(row[1]) < 9 or len(row[1]) > 14:
                         return HttpResponse('length_invalid')
 
-                    contacts.append(row[1])
+                contacts.append(row[1])
 
             if os.path.isfile('pickles/contact/contacts_csv_temp_update.p'):
                 os.remove('pickles/contact/contacts_csv_temp_update.p')
@@ -2035,7 +2035,7 @@ class GenerateCSVContactViewUpdate(View):
                 pickle.dump(contacts, f)
                 f.close()
 
-        return HttpResponse(status=200)
+            return HttpResponse(status=200)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
 class TempRandomContactViewUpdate(View):
