@@ -77,7 +77,7 @@ $('#resetFilter').click(function () {
         dom: "<'tableWidget top row'<'col-sm-12 col-md-6'l>>rt<'bottom'p>",
     });
 
-    $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/installation/add_installation"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Pemasangan</button></a></div>');
+    $("div.tableWidget.top").append('<div class="col-sm-12 col-md-6"><a href="/smsblast/add_contact"><button class="btn btn-primary float-right"><i class="fas fa-plus mr-1"></i>Tambah Kontak</button></a></div>');
 
     table.draw();
 });

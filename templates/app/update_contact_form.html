@@ -165,7 +165,10 @@
                     for="{{form_uploadcsv.upload_csv.id_for_label}}">{{form_uploadcsv.upload_csv.label}}</label>
                 <div class="col-sm-10">
                     {{form_uploadcsv.upload_csv}}
-                    <small id="csv-inaccurate" style="color: red; display: none;">File tidak sesuai atau tidak boleh kosong.</small>
+                    <small id="csv-inaccurate" class="csv-errors" style="color: red; display: none;">File tidak sesuai atau tidak boleh kosong.</small>
+                    <small id="csv-invalid-format" class="csv-errors" style="color: red; display: none;">Format CSV tidak sesuai dengan template.</small>
+                    <small id="csv-invalid-prefix" class="csv-errors" style="color: red; display: none;">Nomor harus berawalan 08.</small>
+                    <small id="csv-invalid-length" class="csv-errors" style="color: red; display: none;">Jumlah digit nomor harus di antara 9 - 14.</small>
                 </div>
             </div>
             <div class="row">
@@ -205,6 +208,11 @@
 {% block script %}
 <script type="text/javascript">
     $(document).ready(function() {
+        new AutoNumeric('.generate_numbers', {
+            digitGroupSeparator : '.',
+            decimalPlaces : '0',
+        });
+
         {% if form_generate_fail %}
         window.history.pushState('', '', '/smsblast/add_contact');
         $('#id_source').val('random').attr('selected', true)

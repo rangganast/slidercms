@@ -15,7 +15,7 @@ token = config('TOKEN')
 domain = config('DOMAIN')
 
 session = requests.Session()
-retry = Retry(connect=3, backoff_factor=0.5)
+retry = Retry(total=3, connect=3, backoff_factor=0.5)
 adapter = HTTPAdapter(max_retries=retry)
 session.mount('http://', adapter)
 session.mount('https://', adapter)
@@ -146,8 +146,8 @@ def sms_blast(name, message_title, message_text, contacts, send_date, send_time,
 
     smsjob_instance = SMSBlastJob.objects.get(pk=job_instance_id)
     contact_instance = Contact.objects.get(name=name)
-    statuses = []
     
+    statuses = []
     for contact in contacts:
         sms_api_url = 'http://api-sms.nadyne.com/sms.php?user=regholahalo&pwd=reg778899&sender=HOLAHALO&msisdn=62' + contact[1:] + '&message=' + message_text + '&desc=pesanhhmarketing'
         r = session.get(sms_api_url)
@@ -160,12 +160,12 @@ def sms_blast(name, message_title, message_text, contacts, send_date, send_time,
 
         statuses.append(status)
 
-    with open('pickles/status/' + message_title.replace(' ', '-') + '.p', 'wb') as f:
+    with open('pickles/status/status-' + message_title.replace(' ', '-') + '-' + name.replace(' ', '-') + '.p', 'wb') as f:
         pickle.dump(statuses, f)
         f.close()
 
     smsstatus_instance = SMSStatus(job=smsjob_instance, contact=contact_instance)
-    smsstatus_instance.status.name = 'pickles/status/' + message_title.replace(' ', '-') + '.p'
+    smsstatus_instance.status.name = 'pickles/status/status-' + message_title.replace(' ', '-') + '-' + name.replace(' ', '-') + '.p'
     smsstatus_instance.save()
 
     return statuses

@@ -74,14 +74,17 @@ $('#generateNumber').click(function (e) {
 
 $('.first_code').on('input', function () {
     $('#submitForms').prop('disabled', true)
+    $('#viewRandomNumbers').prop('disabled', true)
 });
 
 $('.digits').on('input', function () {
     $('#submitForms').prop('disabled', true)
+    $('#viewRandomNumbers').prop('disabled', true)
 });
 
 $('.generate_numbers').on('input', function () {
     $('#submitForms').prop('disabled', true)
+    $('#viewRandomNumbers').prop('disabled', true)
 });
 
 $('#id_upload_csv').on('change', function () {
@@ -112,6 +115,18 @@ $('#csvForm').submit(function (event){
         data: new FormData(this),
         processData: false,
         contentType: false,
+        error: function (data) {
+            if (data['responseText'] == 'prefix_invalid') {
+                $('#csv-invalid-prefix').show();
+                doStop = false;
+            } else if (data['responseText'] == 'length_invalid') {
+                $('#csv-invalid-length').show();
+                doStop = false;
+            } else if (data['responseText'] == 'wrong_csv_format') {
+                $('#csv-invalid-format').show();
+                doStop = false;
+            }
+        }
     });
     
     setTimeout(function () {
@@ -170,6 +185,12 @@ function addContact(input) {
     $(selector).find('.deleteContactBtn').hide();
     
     $(selector).after(newElement);
+
+    new AutoNumeric('#id_form-' + (id + 1) + '-generate_numbers', {
+        digitGroupSeparator: '.',
+        decimalPlaces: '0',
+        decimalCharacter: ',',
+    });
 }
 
 function deleteContact(input) {

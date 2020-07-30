@@ -1268,7 +1268,7 @@ class ContactView(View):
         contents = []
         contact_names = []
 
-        contacts = Contact.objects.all().order_by('pk')
+        contacts = Contact.objects.filter(is_deleted=False).order_by('pk')
         for contact in contacts:
             content = {'contact_id' : None, 'contact_name' : None, 'contact_source' : None, 'contact_is_deleted' : None, 'contact_count': None}
             
@@ -1415,6 +1415,21 @@ class DeleteContactView(View):
 
         contact_instance.is_deleted = True
         contact_instance.deleted_datetime = datetime.datetime.now()
+
+        with open(str(contact_instance.numbers), 'rb') as f:
+            contacts = pickle.load(f)
+            f.close()
+
+        with open('pickles/contact/all_contacts.p', 'rb') as f:
+            all_contacts = pickle.load(f)
+            f.close()
+
+        all_contacts = [contact for contact in all_contacts if contact not in contacts]
+
+        with open('pickles/contact/all_contacts.p', 'wb') as f:
+            pickle.dump(all_contacts, f)
+            f.close()
+
         contact_instance.save()
 
         messages.add_message(request, messages.INFO, "Grup Kontak berhasil dihapus!", extra_tags="contact_deleted")
@@ -1636,16 +1651,26 @@ class GenerateCSVContactViewAdd(View):
         form_contact = self.form_class['form_contact']()
         form_contactsource = self.form_class['form_contactsource']()
         formset_generaterandomnumber = self.form_class['formset_generaterandomnumber']()
-        form_uploadcsv = self.form_class['form_uploadcsv'](data=request.POST, files=request.FILES)
+        form_uploadcsv = self.form_class['form_uploadcsv'](request.POST, request.FILES)
 
         if form_uploadcsv.is_valid():
             csv_file = request.FILES['upload_csv'].read().decode('utf-8')
             io_string = io.StringIO(csv_file)
-            contacts = []
-            for row in csv.reader(io_string, delimiter=','):
-                contacts.append(row[1])
+            reader = csv.reader(io_string, delimiter=',')
 
-            del contacts[0]
+            if len(next(reader)) != 2:
+                return HttpResponse('wrong_csv_format')
+
+            contacts = []
+            for index, row in enumerate(csv.reader(io_string, delimiter=',')):
+                if index != 0:
+                    if row[1][:2] != '08':
+                        return HttpResponse('prefix_invalid')
+                    elif len(row[1]) < 9 or len(row[1]) > 14:
+                        print('asw')
+                        return HttpResponse('length_invalid')
+
+                    contacts.append(row[1])
 
             if os.path.isfile('pickles/contact/contacts_csv_temp_add.p'):
                 os.remove('pickles/contact/contacts_csv_temp_add.p')
@@ -1654,14 +1679,7 @@ class GenerateCSVContactViewAdd(View):
                 pickle.dump(contacts, f)
                 f.close()
 
-        context = {
-            'formset_generaterandomnumber' : formset_generaterandomnumber,
-            'form_contact' : form_contact,
-            'form_contactsource' : form_contactsource,
-            'form_uploadcsv' : form_uploadcsv,
-        }
-
-        return render(request, self.template_name, context)
+            return HttpResponse(status=200)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
 class TempRandomContactViewAdd(View):
@@ -2067,7 +2085,7 @@ class SMSBlastView(View):
 
             contents.append({'pk' : sms.pk, 'message_title' : sms.message_title, 'contact_groups' : contacts, 'sms_count' : sms_count, 'send_date' : sms.send_date, 'send_time' : sms.send_time, 'status' : status})
         
-        contacts = Contact.objects.all().values_list('name', flat=True)
+        contacts = Contact.objects.filter(is_deleted=False).values_list('name', flat=True)
 
         context = {
             'contacts' : list(contacts),
@@ -2598,7 +2616,7 @@ def load_cities(request):
 def load_contacts(request):
     source = request.GET.get('source')
     source_instance = ContactSource.objects.get(source=source)
-    contacts = Contact.objects.filter(source=source_instance)
+    contacts = Contact.objects.filter(source=source_instance, is_deleted=False)
 
     return render(request, 'app/contacts_dropdown_list_options.html', {'contacts': contacts})
     

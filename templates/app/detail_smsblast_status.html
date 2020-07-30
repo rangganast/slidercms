@@ -90,16 +90,23 @@
         <tr>
             <td>{{forloop.counter}}</td>
             <td>{{contact}}</td>
+            {% if statuses %}
 
             {% with start=forloop.counter0|stringformat:"s" end=forloop.counter|stringformat:"s" %}
             {% with statusSlice=""|add:start|add:":"|add:end  %}
-            
+
             {% for status in statuses|slice:statusSlice %}
             <td>{{status}}</td>
             {% endfor %}
+            
+            {% endwith %}
+            {% endwith %}
 
-            {% endwith %}
-            {% endwith %}
+            {% else %}
+
+            <td></td>
+
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

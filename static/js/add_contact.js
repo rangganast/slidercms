@@ -19,10 +19,44 @@ $('#id_source').change(function () {
     $('#submitForms').prop('disabled', true);
 });
 
+$('.first_code').on('input', function () {
+    $('#submitForms').prop('disabled', true)
+    $('#viewRandomNumbers').prop('disabled', true)
+});
+
+$('.digits').on('input', function () {
+    $('#submitForms').prop('disabled', true)
+    $('#viewRandomNumbers').prop('disabled', true)
+});
+
+$('.generate_numbers').on('input', function () {
+    $('#submitForms').prop('disabled', true)
+    $('#viewRandomNumbers').prop('disabled', true)
+});
+
 $('#generateNumber').click(function (e) {
     $('#randomNumberSpinner').show();
 
+    $('.first_code-backend-error').hide();
+    $('.digits-backend-error').hide();
+    $('.generate_numbers-backend-error').hide();
+
     var doStop = false;
+
+    $('.generate_numbers').each(function (index) {
+        var num = Number($(this).val().split('.').join(""))
+
+        if(!$(this).val()) {
+            $('#generate_numbers-' + index + '-empty').show();
+            $('#randomNumberSpinner').hide();
+            
+            doStop = true;
+        } else if (num > 100000) {
+            $('#generate_numbers-' + index + '-exceeded').show();
+            $('#randomNumberSpinner').hide();
+            doStop = true;
+        }
+    });
 
     $('.first_code').each(function (index) {
         if ($(this).val().slice(0, 2) != '08' || $(this).val().length > 4) {
@@ -46,16 +80,6 @@ $('#generateNumber').click(function (e) {
         }
     });
 
-    $('.generate_numbers').each(function (index) {
-        if(!$(this).val()) {
-            $('#generate_numbers-' + index + '-empty').show();
-            $('#randomNumberSpinner').hide();
-
-            doStop = true;
-        } else {
-            $('#generate_numbers-' + index + '-empty').hide();
-        }
-    });
 
     if(!doStop) {
         $.post('/smsblast/generate_random_number_add', $('#randomNumberForm').serialize(), function (e) {});
@@ -80,6 +104,8 @@ $('#id_upload_csv').on('change', function () {
     if($(this).val()) {
         var value = $(this).val().replace(/C:\\fakepath\\/i, '').toString();
         var filename = value.split('.')
+
+        $('.csv-errors').hide();
         
         if (filename[filename.length - 1] != 'csv') {
             $('#csv-inaccurate').show();
@@ -96,6 +122,8 @@ $('#id_upload_csv').on('change', function () {
 })
 
 $('#csvForm').submit(function (event){
+    var doStop = true;
+
     event.preventDefault();
     $.ajax({
         url: $(this).attr("action"),
@@ -104,15 +132,34 @@ $('#csvForm').submit(function (event){
         data: new FormData(this),
         processData: false,
         contentType: false,
+        error: function(data) {
+            if (data['responseText'] == 'prefix_invalid') {
+                $('#csv-invalid-prefix').show();
+                doStop = false;
+            } else if (data['responseText'] == 'length_invalid') {
+                $('#csv-invalid-length').show();
+                doStop = false;
+            } else if (data['responseText'] == 'wrong_csv_format') {
+                $('#csv-invalid-format').show();
+                doStop = false;
+            }
+        }
     });
     
     setTimeout(function () {
         $('#csvNumberSpinner').hide();
-        $('#viewCSVNumbers').prop('disabled', false);
-        $('#csv-inaccurate').hide();
-        if ($('#id_name').val().length > 0) {
-            $('#submitForms').prop('disabled', false);
+        
+        if(doStop){
+            $('#viewCSVNumbers').prop('disabled', false);
+            $('.csv-errors').hide();
+            
+            if ($('#id_name').val().length > 0) {
+                $('#submitForms').prop('disabled', false);
+            }
+        } else {
+            $('#viewCSVNumbers').prop('disabled', true);
         }
+
     }, 1000)
 });
 
@@ -162,8 +209,9 @@ function addContact(input) {
     $(selector).after(newElement);
 
     new AutoNumeric('#id_form-' + (id + 1) + '-generate_numbers', {
-        digitGroupSeparator: ',',
+        digitGroupSeparator: '.',
         decimalPlaces: '0',
+        decimalCharacter: ',',
     });
 }
 

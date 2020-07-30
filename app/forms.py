@@ -1,3 +1,6 @@
+import io
+import re
+import csv
 from django import forms
 from PIL import Image
 from .models import Application, Page, Location, Banner, Installation, Campaign, User, Contact, ContactSource, GenerateContact, SMSBlast
@@ -290,7 +293,7 @@ class GenerateRandomNumberForm(forms.ModelForm):
         widgets = {
             'first_code' : forms.NumberInput({'class' : 'form-control first_code', 'autocomplete' : 'off', 'required' : True}),
             'digits' : forms.NumberInput({'class' : 'form-control digits', 'autocomplete' : 'off', 'required' : True}),
-            'generate_numbers' : forms.TextInput({'class' : 'form-control generate_numbers', 'autocomplete' : 'off', 'required' : True}),
+            'generate_numbers' : forms.TextInput({'class' : 'form-control generate_numbers', 'autocomplete' : 'off', 'max' : 100000, 'required' : True}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -329,6 +332,9 @@ class GenerateRandomNumberForm(forms.ModelForm):
 
         if generate_numbers == '' or generate_numbers == None:
             raise forms.ValidationError(_('Field Jumlah nomor yang di Generate tidak boleh kosong.'))
+        else:
+            if int(generate_numbers) > 100000:
+                raise forms.ValidationError(_('Maksimal Nomor yang bisa di-generate adalah 100.000.'))
 
         return generate_numbers
 
