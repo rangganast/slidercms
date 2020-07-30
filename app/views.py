@@ -1668,7 +1668,6 @@ class GenerateCSVContactViewAdd(View):
                     if row[1][:2] != '08':
                         return HttpResponse('prefix_invalid')
                     elif len(row[1]) < 9 or len(row[1]) > 14:
-                        print('asw')
                         return HttpResponse('length_invalid')
 
                     contacts.append(row[1])
@@ -1883,7 +1882,7 @@ class UpdateRandomGeneratedNumbersView(View):
                     form_id = form.cleaned_data['id']
                     first_code = form.cleaned_data['first_code']
                     digits = form.cleaned_data['digits']
-                    generate_numbers = form.cleaned_data['generate_numbers']
+                    generate_numbers = form.cleaned_data['generate_numbers'].replace('.', '')
 
                     if form_id:
                         generatecontact_instance = form_id
@@ -1967,7 +1966,7 @@ class GenerateRandomContactViewUpdate(View):
             for form in generaterandomform:
                 first_code = form['first_code']
                 digits_count = int(form['digits']) - len(first_code)
-                generate_numbers = int(form['generate_numbers'])
+                generate_numbers = int(form['generate_numbers'].replace('.', ''))
                 
                 while generate_numbers > 0:
                     last_digits = ''.join(choice(digits) for i in range(digits_count))
@@ -2014,11 +2013,20 @@ class GenerateCSVContactViewUpdate(View):
         if form_uploadcsv.is_valid():
             csv_file = request.FILES['upload_csv'].read().decode('utf-8')
             io_string = io.StringIO(csv_file)
-            contacts = []
-            for row in csv.reader(io_string, delimiter=','):
-                contacts.append(row[1])
+            reader = csv.reader(io_string, delimiter=',')
 
-            del contacts[0]
+            if len(next(reader)) != 2:
+                return HttpResponse('wrong_csv_format')
+
+            contacts = []
+            for index, row in enumerate(csv.reader(io_string, delimiter=',')):
+                if index != 0:
+                    if row[1][:2] != '08':
+                        return HttpResponse('prefix_invalid')
+                    elif len(row[1]) < 9 or len(row[1]) > 14:
+                        return HttpResponse('length_invalid')
+
+                    contacts.append(row[1])
 
             if os.path.isfile('pickles/contact/contacts_csv_temp_update.p'):
                 os.remove('pickles/contact/contacts_csv_temp_update.p')
@@ -2027,14 +2035,7 @@ class GenerateCSVContactViewUpdate(View):
                 pickle.dump(contacts, f)
                 f.close()
 
-        context = {
-            'formset_generaterandomnumber' : formset_generaterandomnumber,
-            'form_contact' : form_contact,
-            'form_contactsource' : form_contactsource,
-            'form_uploadcsv' : form_uploadcsv,
-        }
-
-        return render(request, self.template_name, context)
+        return HttpResponse(status=200)
 
 @method_decorator([login_required, marketing_required], name='dispatch')
 class TempRandomContactViewUpdate(View):
