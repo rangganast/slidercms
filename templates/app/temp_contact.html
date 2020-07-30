@@ -38,7 +38,9 @@
     </label>
     <label class="col-sm-1 col-form-label no-padding" style="max-width: 3% !important">:</label>
     <div class="col-sm-9 no-padding">
-        <button type="button" class="btn btn-danger">Cek Nomor</button>
+        <form action="{% url 'app:smsblast_check_contact_add' source='random' name=name count=count %}" method="POST">
+            <button type="submit" class="btn btn-danger">Cek Nomor</button>
+        </form>
     </div>
 </div>
 

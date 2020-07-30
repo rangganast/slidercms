@@ -1541,6 +1541,7 @@ class AddRandomGeneratedNumbersView(View):
                 first_code = form['first_code']
                 digits = form['digits']
                 generate_numbers = form['generate_numbers']
+                generate_numbers = generate_numbers.replace('.', '')
 
                 generatecontact_instance = GenerateContact(first_code=first_code, digits=digits, generate_numbers=generate_numbers, contact=contact_instance)
                 generatecontact_instance.save()
@@ -1609,7 +1610,8 @@ class GenerateRandomContactViewAdd(View):
             for form in generaterandomform:
                 first_code = form['first_code']
                 digits_count = int(form['digits']) - len(first_code)
-                generate_numbers = int(form['generate_numbers'])
+                generate_numbers = int(form['generate_numbers'].replace('.', ''))
+                print(generate_numbers)
                 
                 while generate_numbers > 0:
                     last_digits = ''.join(choice(digits) for i in range(digits_count))
@@ -1722,6 +1724,35 @@ class TempCSVContactViewAdd(View):
             'name' : name,
             'count' : count,
             'contacts' : contacts,
+        }
+
+        return render(request, self.template_name, context)
+
+@method_decorator([login_required, marketing_required], name='dispatch')
+class CheckContactViewAdd(View):
+    initial = {'key', 'value'}
+    template_name = 'app/check_contact.html'
+
+    def post(self, request, source, name, count):
+        if source == 'random':
+            with open('pickles/contact/contacts_random_temp_add.p', 'rb') as f:
+                contacts = pickle.load(f)
+                f.close()
+
+        elif source == 'csv':
+            with open('pickles/contact/contacts_csv_temp_add.p', 'rb') as f:
+                contacts = pickle.load(f)
+                f.close()
+
+        with open('pickles/contact/all_contacts.p', 'rb') as f:
+            all_contacts = pickle.load(f)
+            f.close()
+
+        contact_check = [contact for contact in contacts if contact in all_contacts]
+        print(contact_check)
+
+        context = {
+            'contact_check' : contact_check,
         }
 
         return render(request, self.template_name, context)

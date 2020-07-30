@@ -40,6 +40,7 @@ urlpatterns = [
     path('smsblast/add_smsblast', views.AddSMSBlastView.as_view(), name='smsblast_add_smsblast'),
     path('smsblast/add_smsblast_temp_contacts', views.SMSBlastTempContactsViewAdd.as_view(), name='smsblast_add_smsblast_temp_contacts'),
     path('smsblast/update_smsblast_temp_contacts', views.SMSBlastTempContactsViewUpdate.as_view(), name='smsblast_update_smsblast_temp_contacts'),
+    path('smsblast/check_contact_add/<str:source>/<str:name>/<int:count>', views.CheckContactViewAdd.as_view(), name='smsblast_check_contact_add'),
     path('smsblast/detail_smsblast/<str:pk>', views.DetailSMSBlastView.as_view(), name='smsblast_detail_smsblast'),
     path('smsblast/detail_smsblast_status/<str:pk>', views.DetailSMSBlastStatusView.as_view(), name='smsblast_detail_smsblast_status'),
     path('smsblast/update_smsblast/<str:pk>', views.UpdateSMSBlastView.as_view(), name='smsblast_update_smsblast'),

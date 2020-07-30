@@ -291,8 +291,8 @@ class GenerateRandomNumberForm(forms.ModelForm):
             'generate_numbers' : 'Jumlah Nomor yang Akan Di-generate',
         }
         widgets = {
-            'first_code' : forms.NumberInput({'class' : 'form-control first_code', 'autocomplete' : 'off', 'required' : True}),
-            'digits' : forms.NumberInput({'class' : 'form-control digits', 'autocomplete' : 'off', 'required' : True}),
+            'first_code' : forms.TextInput({'class' : 'form-control first_code', 'autocomplete' : 'off', 'required' : True}),
+            'digits' : forms.TextInput({'class' : 'form-control digits', 'autocomplete' : 'off', 'required' : True}),
             'generate_numbers' : forms.TextInput({'class' : 'form-control generate_numbers', 'autocomplete' : 'off', 'max' : 100000, 'required' : True}),
         }
 
@@ -329,6 +329,7 @@ class GenerateRandomNumberForm(forms.ModelForm):
 
     def clean_generate_numbers(self):
         generate_numbers = self.cleaned_data.get('generate_numbers', False)
+        generate_numbers = generate_numbers.replace('.', '')
 
         if generate_numbers == '' or generate_numbers == None:
             raise forms.ValidationError(_('Field Jumlah nomor yang di Generate tidak boleh kosong.'))
