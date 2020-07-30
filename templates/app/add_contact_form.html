@@ -175,8 +175,10 @@
                 <div class="col-sm-4">
                     <label style="color: white;"></label>
                     <div class="input-group">
-                        <button id="downloadCSVTemplate" type="button" class="btn btn-success">Download
-                            Template</button>
+                        <a href="{% url 'app:download_csv_template' %}">
+                            <button id="downloadCSVTemplate" type="button" class="btn btn-success">Download
+                                Template</button>
+                        </a>
                         <a id="tempCSVContacts" href="{% url 'app:temp_csv_contacts_add' %}" target="_blank">
                             <button id="viewCSVNumbers" type="button" class="btn btn-warning ml-2" disabled>Lihat
                                 Nomor</button>

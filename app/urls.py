@@ -35,6 +35,7 @@ urlpatterns = [
     path('smsblast/generate_csv_update', views.GenerateCSVContactViewUpdate.as_view(), name='generate_csv_udpate'),
     path('smsblast/temp_random_contacts_update', views.TempRandomContactViewUpdate.as_view(), name='temp_random_contacts_update'),
     path('smsblast/temp_csv_contacts_update', views.TempCSVContactViewUpdate.as_view(), name='temp_csv_contacts_update'),
+    path('smsblast/download_csv_template', views.download_csv_template, name='download_csv_template'),
 
     path('smsblast', views.SMSBlastView.as_view(), name='smsblast'),
     path('smsblast/add_smsblast', views.AddSMSBlastView.as_view(), name='smsblast_add_smsblast'),

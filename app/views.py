@@ -24,7 +24,7 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.utils.html import strip_tags
@@ -1611,7 +1611,6 @@ class GenerateRandomContactViewAdd(View):
                 first_code = form['first_code']
                 digits_count = int(form['digits']) - len(first_code)
                 generate_numbers = int(form['generate_numbers'].replace('.', ''))
-                print(generate_numbers)
                 
                 while generate_numbers > 0:
                     last_digits = ''.join(choice(digits) for i in range(digits_count))
@@ -2821,3 +2820,13 @@ def export_excel(request):
     response = HttpResponse(wrapper, content_type='application/force-download')
     response['Content-Disposition'] = 'inline; filename=' + os.path.basename('keywords.xlsx')
     return response
+
+@login_required
+def download_csv_template(request):
+    if os.path.exists('contact_csv_template.csv'):
+        with open('contact_csv_template.csv', 'rb') as f:
+            response = HttpResponse(f.read(), content_type="application/vnd.ms-excel")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename('contact_csv_template.csv')
+            return response
+    
+    raise Http404
