@@ -1,4 +1,5 @@
 .env
+contact_csv_template.csv
 debug.log
 geckodriver.log
 ghostdriver.log
