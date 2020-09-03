@@ -1,7 +1,7 @@
 # Website CMS Project Portofolio
 
 ## Project Definition
-Website CMS is an website project with many features for marketing users.
+Website CMS is an website project with many features for marketing division users.
 
 ## Installation
 - Python 3.7.6
